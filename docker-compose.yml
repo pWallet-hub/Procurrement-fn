@@ -9,8 +9,7 @@ services:
       args:
         VITE_API_BASE: ${VITE_API_BASE:-/api/v1}
     image: afs-procurement-fn
-    ports:
-      - "${WEB_PORT:-8080}:80"
+    expose: ["80"]
     environment:
       # where nginx forwards /api. Any URL: another container, a host port, or a remote server.
       API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:3000}

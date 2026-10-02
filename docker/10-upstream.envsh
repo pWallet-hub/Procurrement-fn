@@ -15,11 +15,12 @@ _hostport="${_rest%%/*}"
 _host="${_hostport%%:*}"
 _port=""
 case "$_hostport" in *:*) _port=":${_hostport##*:}" ;; esac
+API_HOST="$_hostport"
 _scheme="${API_UPSTREAM%%://*}"
 _ip="$(awk -v h="$_host" '$1 !~ /^#/ { for (i = 2; i <= NF; i++) if ($i == h && $1 !~ /:/) { print $1; exit } }' /etc/hosts)"
 if [ -n "$_ip" ] && [ "$_host" != "localhost" ]; then
   API_UPSTREAM="${_scheme}://${_ip}${_port}"
   echo "10-upstream: $_host is in /etc/hosts -> using $API_UPSTREAM"
 fi
-export API_UPSTREAM NGINX_RESOLVER
+export API_UPSTREAM API_HOST NGINX_RESOLVER
 echo "10-upstream: API_UPSTREAM=$API_UPSTREAM resolver=$NGINX_RESOLVER"

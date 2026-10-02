@@ -1,0 +1,5 @@
+# Local development only (loaded automatically by `docker compose`; Coolify does not use it).
+services:
+  web:
+    ports:
+      - "${WEB_PORT:-8080}:80"

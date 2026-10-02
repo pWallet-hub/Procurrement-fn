@@ -10,6 +10,7 @@ RUN npm run build
 
 # --- serve ---
 FROM nginx:1.27-alpine
+RUN apk add --no-cache ca-certificates
 # Runtime setting (see docker/10-upstream.envsh and nginx.conf): any reachable API, e.g. http://host.docker.internal:3100
 ENV API_UPSTREAM=http://host.docker.internal:3000
 COPY nginx.conf /etc/nginx/templates/default.conf.template
