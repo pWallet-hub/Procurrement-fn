@@ -11,6 +11,7 @@ import './styles/base.css';
 import './styles/components.css';
 import './styles/layout.css';
 import './styles/forms.css';
+import './styles/paper.css';
 
 const queryClient = new QueryClient({
   defaultOptions: {

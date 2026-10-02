@@ -17,14 +17,13 @@ export function SlotList({ slots, documentId }: { slots: DocumentSlot[]; documen
             <StatusBadge status={s.status} />
           </div>
           <div className="muted">
-            {humanize(s.role_code)} · step {s.seq}
-            {s.group ? ` (parallel: ${s.group})` : ''}
+            {humanize(s.role_code)}
+            {s.assigned_user && !s.signature ? ` · ${s.assigned_user.full_name}` : ''}
           </div>
-          {s.assigned_user && <div>Assigned to {s.assigned_user.full_name}</div>}
           {s.signature && (
             <div>
               <div>
-                Signed by {s.signature.signer_name} on {formatDateTime(s.signature.signed_at)} ({s.signature.method})
+                Signed by {s.signature.signer_name}, {formatDateTime(s.signature.signed_at)}
               </div>
               {s.signature.method !== 'type' && <SignatureImage documentId={documentId} slotKey={s.slot_key} alt={`Signature of ${s.signature.signer_name}`} />}
             </div>

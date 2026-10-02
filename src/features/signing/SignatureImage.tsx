@@ -1,9 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { documentsApi } from '../../api/documents';
 
-/** Signature image fetched with the bearer token and shown from an object URL. */
-export function SignatureImage({ documentId, slotKey, alt }: { documentId: string; slotKey: string; alt: string }) {
+/** Signature image fetched with the bearer token and shown from an object URL. `fallback` is shown if it cannot be loaded. */
+export function SignatureImage({
+  documentId,
+  slotKey,
+  alt,
+  className = 'sig-preview',
+  fallback = null,
+}: {
+  documentId: string;
+  slotKey: string;
+  alt: string;
+  className?: string;
+  fallback?: ReactNode;
+}) {
   const [url, setUrl] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
   useEffect(() => {
     let made: string | null = null;
     let cancelled = false;
@@ -14,11 +27,14 @@ export function SignatureImage({ documentId, slotKey, alt }: { documentId: strin
         made = URL.createObjectURL(b);
         setUrl(made);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setFailed(true);
+      });
     return () => {
       cancelled = true;
       if (made) URL.revokeObjectURL(made);
     };
   }, [documentId, slotKey]);
-  return url ? <img className="sig-preview" src={url} alt={alt} /> : null;
+  if (url) return <img className={className} src={url} alt={alt} />;
+  return failed ? <>{fallback}</> : null;
 }

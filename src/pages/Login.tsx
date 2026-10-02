@@ -5,8 +5,10 @@ import { errorMessage } from '../api/client';
 import { Alert } from '../ui/Alert';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
+import { PublicLayout } from '../layout/PublicLayout';
 import { Field, fieldAria } from '../ui/Field';
 import { Input } from '../ui/Input';
+import { PasswordInput } from '../ui/PasswordInput';
 
 /** Email + password, then an optional TOTP step when the server answers requires_totp. */
 export function Login() {
@@ -43,8 +45,10 @@ export function Login() {
   }
 
   return (
-    <main className="auth-page">
-      <Card className="auth-card" title="AfS Rwanda Procurement">
+    <PublicLayout auth>
+      <Card className="auth-card">
+        <h1 className="auth-card__title">Sign in</h1>
+        <p className="auth-card__sub">{challenge ? 'Two-step verification' : 'Use your AfS-Rwanda account to continue.'}</p>
         <form className="stack" onSubmit={submit}>
           {!challenge ? (
             <>
@@ -52,7 +56,7 @@ export function Login() {
                 <Input {...fieldAria('email')} type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </Field>
               <Field id="password" label="Password" required>
-                <Input {...fieldAria('password')} type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <PasswordInput {...fieldAria('password')} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
               </Field>
             </>
           ) : (
@@ -61,11 +65,11 @@ export function Login() {
             </Field>
           )}
           {error && <Alert tone="error">{error}</Alert>}
-          <Button type="submit" variant="primary" loading={busy}>
+          <Button type="submit" variant="primary" size="lg" loading={busy}>
             {challenge ? 'Verify' : 'Sign in'}
           </Button>
         </form>
       </Card>
-    </main>
+    </PublicLayout>
   );
 }

@@ -10,6 +10,7 @@ import { ReasonModal } from '../features/cases/ReasonModal';
 import { AuditTable } from '../features/documents/AuditTable';
 import { PdfPreview } from '../features/documents/PdfPreview';
 import { FormRenderer, SaveIndicator, useDocumentEditor } from '../features/forms';
+import { PaperForm } from '../features/paper';
 import { SigningPanel } from '../features/signing/SigningPanel';
 import { AssignDelegate } from '../features/signing/AssignDelegate';
 import { SlotList } from '../features/signing/SlotList';
@@ -18,6 +19,7 @@ import { Alert } from '../ui/Alert';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { ErrorState } from '../ui/ErrorState';
+import { Icon } from '../ui/Icon';
 import { PageHeader } from '../ui/PageHeader';
 import { PageSpinner } from '../ui/Spinner';
 import { StatusBadge } from '../ui/StatusBadge';
@@ -46,7 +48,6 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
   const qc = useQueryClient();
   const toast = useToast();
   const editor = useDocumentEditor(doc, template);
-  const [tab, setTab] = useState('document');
   const [editReqOpen, setEditReqOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const submitKey = useRef<string | null>(null);
@@ -94,6 +95,10 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
     if (fillAt && fillFields.some((f) => f.key === key)) setSignData((d) => ({ ...d, [key]: value }));
     else editor.setField(key, value);
   };
+  // People who have something to fill in land on the editable fields; everyone else sees the paper form.
+  const needsInput = editor.editable || !!fillAt;
+  const [tab, setTab] = useState(needsInput ? 'edit' : 'form');
+  const formData = { ...editor.data, ...signData };
   // GR-06 distance control note: help text of travel_category before pi_final_authorization
   const travel = mySlot?.slot_key === 'pi_final_authorization'
     ? template.schema.sections.flatMap((s) => s.fields).find((f) => f.key === 'travel_category')
@@ -130,31 +135,41 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
         </Alert>
       )}
 
-      <Tabs
-        tabs={[
-          { id: 'document', label: 'Document' },
-          ...(doc.pdf_available ? [{ id: 'pdf', label: 'PDF' }] : []),
-          { id: 'audit', label: 'Audit trail' },
-        ]}
-        active={tab}
-        onChange={setTab}
-      />
+      <div className="doc-toolbar">
+        <Tabs
+          tabs={[
+            { id: 'form', label: 'Form' },
+            ...(needsInput ? [{ id: 'edit', label: 'Edit fields' }] : []),
+            ...(doc.pdf_available ? [{ id: 'pdf', label: 'PDF' }] : []),
+            { id: 'audit', label: 'Audit trail' },
+          ]}
+          active={tab}
+          onChange={setTab}
+        />
+        {tab === 'form' && <Button size="sm" onClick={() => window.print()}><Icon name="print" size={16} /> Print</Button>}
+      </div>
 
-      {tab === 'document' && (
+      {(tab === 'form' || tab === 'edit') && (
         <div className="doc-layout">
-          <Card>
-            <FormRenderer
-              template={template}
-              data={{ ...editor.data, ...signData }}
-              onChange={onFormChange}
-              errors={{ ...editor.errors, ...signErrors }}
-              fillAt={fillAt}
-              readOnly={!editor.editable}
-              caseId={doc.case_id}
-              documentId={doc.id}
-            />
-          </Card>
-          <aside className="stack" aria-label="Signatures">
+          <div className="doc-layout__main">
+            {tab === 'form' ? (
+              <PaperForm template={template} doc={doc} data={formData} />
+            ) : (
+              <Card>
+                <FormRenderer
+                  template={template}
+                  data={formData}
+                  onChange={onFormChange}
+                  errors={{ ...editor.errors, ...signErrors }}
+                  fillAt={fillAt}
+                  readOnly={!editor.editable}
+                  caseId={doc.case_id}
+                  documentId={doc.id}
+                />
+              </Card>
+            )}
+          </div>
+          <aside className="doc-layout__aside" aria-label="Signatures">
             {mySlot && (
               <SigningPanel
                 slotLabel={mySlot.label}
@@ -164,7 +179,7 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
                 defaultName={user?.full_name}
                 onSign={(body, key) => documentsApi.sign(doc.id, mySlot.slot_key, body, key)}
                 onDecline={doc.can.decline.includes(mySlot.slot_key) ? (reason) => documentsApi.decline(doc.id, mySlot.slot_key, reason) : undefined}
-                onDone={refresh}
+                onDone={() => { toast.success('Signed. Thank you.'); void refresh(); }}
                 data={fillAt ? pickKeys(signData, fillFields.map((f) => f.key)) : undefined}
                 notice={travel?.help ? <Alert tone="warning">{travel.help}</Alert> : undefined}
                 onError={(e) => { if (e instanceof ApiError) setSignErrors(e.fields); }}

@@ -1,0 +1,25 @@
+#!/bin/sh
+# Sourced by the nginx image entrypoint before the template is rendered.
+# 1) default API_UPSTREAM, strip a trailing slash
+# 2) NGINX_RESOLVER: first IPv4 nameserver from /etc/resolv.conf (docker's embedded DNS in a compose network)
+# 3) nginx's resolver does not read /etc/hosts, but "extra_hosts: host.docker.internal:host-gateway" only lives there.
+#    If the upstream host is a /etc/hosts entry we swap the name for its IP so the proxy still works.
+API_UPSTREAM="${API_UPSTREAM:-http://host.docker.internal:3000}"
+API_UPSTREAM="${API_UPSTREAM%/}"
+
+NGINX_RESOLVER="$(awk '/^nameserver/ && $2 !~ /:/ {print $2; exit}' /etc/resolv.conf)"
+NGINX_RESOLVER="${NGINX_RESOLVER:-127.0.0.11}"
+
+_rest="${API_UPSTREAM#*://}"
+_hostport="${_rest%%/*}"
+_host="${_hostport%%:*}"
+_port=""
+case "$_hostport" in *:*) _port=":${_hostport##*:}" ;; esac
+_scheme="${API_UPSTREAM%%://*}"
+_ip="$(awk -v h="$_host" '$1 !~ /^#/ { for (i = 2; i <= NF; i++) if ($i == h && $1 !~ /:/) { print $1; exit } }' /etc/hosts)"
+if [ -n "$_ip" ] && [ "$_host" != "localhost" ]; then
+  API_UPSTREAM="${_scheme}://${_ip}${_port}"
+  echo "10-upstream: $_host is in /etc/hosts -> using $API_UPSTREAM"
+fi
+export API_UPSTREAM NGINX_RESOLVER
+echo "10-upstream: API_UPSTREAM=$API_UPSTREAM resolver=$NGINX_RESOLVER"

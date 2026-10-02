@@ -1,6 +1,8 @@
 import type { TimelineStage } from '../../api/types';
 import { cx } from '../../ui/cx';
 
+const STATE_TEXT: Record<string, string> = { done: 'Done', current: 'In progress', upcoming: '', skipped: 'Not needed' };
+
 /** Case stage stepper fed by GET /cases/{id}/timeline. className hooks: .stepper .stepper__step--done|current|skipped */
 export function Stepper({ stages }: { stages: TimelineStage[] }) {
   return (
@@ -11,8 +13,8 @@ export function Stepper({ stages }: { stages: TimelineStage[] }) {
           className={cx('stepper__step', `stepper__step--${s.status === 'upcoming' ? 'upcoming' : s.status}`)}
           aria-current={s.status === 'current' ? 'step' : undefined}
         >
-          {s.label}
-          <span className="visually-hidden"> ({s.status})</span>
+          <span className="stepper__label">{s.label}</span>
+          <span className="stepper__state">{STATE_TEXT[s.status]}</span>
         </li>
       ))}
     </ol>

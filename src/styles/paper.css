@@ -1,0 +1,156 @@
+/*
+ * Paper form view: documents drawn like the printed AfS-Rwanda forms (features/paper).
+ * The paper is always light, also in dark mode (it is a sheet of paper). Restyle via the --paper-* tokens.
+ */
+.paper {
+  --paper-bg: #ffffff;
+  --paper-ink: #16181a;
+  --paper-muted: #5a6168;
+  --paper-line: #3a3f44;        /* table borders */
+  --paper-label-bg: #f1f2f3;    /* shaded label cells */
+  --paper-head-bg: #dce9f5;     /* light blue header rows */
+  --paper-section: #3d6b9a;     /* blue-grey section headings */
+  --paper-note-bg: #fff6d6;
+  --paper-font: Calibri, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --paper-size: 0.8125rem;
+
+  background: var(--paper-bg);
+  color: var(--paper-ink);
+  font-family: var(--paper-font);
+  font-size: var(--paper-size);
+  line-height: 1.4;
+  max-width: 21cm;
+  margin: 0 auto;
+  padding: 1.1cm 1.3cm 1cm;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1);
+  overflow-wrap: anywhere;
+}
+.paper table { border-collapse: collapse; width: 100%; }
+.paper th, .paper td { text-align: left; vertical-align: top; }
+
+.paper__logo { display: block; width: min(11cm, 78%); height: auto; margin: 0 auto 0.4cm; }
+.paper__intro { margin: 0.25cm 0 0.1cm; font-size: var(--paper-size); }
+.paper__notes { margin: 0.25cm 0 0; font-style: italic; font-size: 0.75rem; }
+.paper__footer { margin-top: 0.7cm; text-align: center; color: var(--paper-muted); font-size: 0.7rem; }
+
+/* header box */
+.pf-header { margin-bottom: 0.45cm; }
+.pf-header td { border: 1px solid var(--paper-line); padding: 0.12cm 0.2cm; }
+.pf-header__org { font-weight: 700; font-size: 0.9rem; background: var(--paper-head-bg); }
+.pf-header__title { font-size: 1.05rem; font-weight: 500; text-transform: uppercase; }
+.pf-header__meta { width: 38%; background: #eef4fa; font-size: 0.78rem; }
+.pf-header__meta--form { background: var(--paper-head-bg); font-weight: 700; }
+
+/* section headings */
+.pf-section { margin-top: 0.4cm; }
+.pf-section__title { font-size: 0.95rem; font-weight: 700; color: var(--paper-section); margin: 0 0 0.12cm; }
+
+/* label / value table */
+.pf-kv { margin-bottom: -1px; }
+.pf-kv th, .pf-kv td { border: 1px solid var(--paper-line); padding: 0.1cm 0.2cm; }
+.pf-kv__label { width: 31%; background: var(--paper-label-bg); font-weight: 700; }
+.pf-kv__value { min-height: 0.7cm; }
+
+/* item tables */
+.pf-table-wrap { margin: 0 0 0.2cm; overflow-x: auto; }
+.pf-table__caption { font-weight: 700; margin: 0.15cm 0 0.08cm; }
+.pf-table th, .pf-table td { border: 1px solid var(--paper-line); padding: 0.09cm 0.15cm; }
+.pf-table thead th { background: var(--paper-head-bg); font-weight: 700; font-size: 0.75rem; overflow-wrap: normal; word-break: normal; }
+.pf-table tbody td { height: 0.75cm; }
+.pf-table__num { width: 1.1cm; text-align: center !important; }
+.pf-table__right { text-align: right !important; white-space: nowrap; }
+
+/* values */
+.pf-blank { display: inline-block; min-width: 4.5em; border-bottom: 1px solid var(--paper-muted); height: 1em; vertical-align: baseline; }
+.pf-blank--wide { display: block; width: 100%; height: 1.4em; }
+.pf-date .pf-blank { min-width: 1.8em; margin: 0 0.15em; }
+.pf-multiline { white-space: pre-wrap; }
+.pf-checks { display: flex; flex-wrap: wrap; gap: 0.1cm 0.5cm; }
+.pf-checks--compact { gap: 0.05cm 0.25cm; }
+.pf-check { display: inline-flex; align-items: center; gap: 0.15cm; }
+.pf-box { display: inline-block; flex: none; width: 0.9em; height: 0.9em; border: 1.2px solid var(--paper-ink); position: relative; background: #fff; }
+.pf-box--on::before, .pf-box--on::after { content: ''; position: absolute; left: 50%; top: 50%; width: 120%; height: 1.5px; background: var(--paper-ink); }
+.pf-box--on::before { transform: translate(-50%, -50%) rotate(45deg); }
+.pf-box--on::after { transform: translate(-50%, -50%) rotate(-45deg); }
+
+/* sign-off grid */
+.pf-sign { display: grid; grid-template-columns: repeat(var(--pf-cols, 3), minmax(0, 1fr)); border-top: 1px solid var(--paper-line); border-left: 1px solid var(--paper-line); }
+.pf-sign__cell { border-right: 1px solid var(--paper-line); border-bottom: 1px solid var(--paper-line); break-inside: avoid; }
+.pf-sign__head { background: var(--paper-head-bg); font-weight: 700; padding: 0.08cm 0.2cm; font-size: 0.75rem; border-bottom: 1px solid var(--paper-line); min-height: 3.7em; }
+.pf-sign__body { padding: 0.12cm 0.2cm 0.15cm; display: flex; flex-direction: column; gap: 0.12cm; }
+.pf-sign__line { display: flex; align-items: flex-end; gap: 0.15cm; min-height: 0.7cm; }
+.pf-sign__line--tall { min-height: 1.5cm; }
+.pf-sign__label { flex: none; }
+.pf-sign__val { flex: 1; border-bottom: 1px solid var(--paper-muted); min-height: 1.1em; min-width: 0; display: flex; align-items: flex-end; }
+.pf-sig-img { max-height: 1.6cm; max-width: 100%; display: block; background: transparent; }
+.pf-typed-sig { font-family: var(--font-signature); font-size: 1.2rem; line-height: 1.1; white-space: nowrap; }
+.pf-sign__status { font-style: italic; font-size: 0.72rem; color: var(--paper-muted); }
+.pf-sign__status--declined { color: #b42318; font-weight: 700; }
+.pf-sign__cell--open .pf-sign__head { background: #eaf0f6; }
+
+/* contract layout: plain legal document */
+.paper--contract { font-family: 'Times New Roman', Georgia, serif; font-size: 0.9rem; line-height: 1.45; }
+.paper--contract .paper__intro { font-size: 0.9rem; }
+.pc-title { text-align: center; font-family: Arial, Helvetica, sans-serif; font-size: 0.95rem; font-weight: 700; text-transform: uppercase; margin: 0.3cm 0 0.6cm; }
+.pc-heading { font-family: Arial, Helvetica, sans-serif; font-size: 0.9rem; font-weight: 700; border-bottom: 1px solid #8fb2d1; padding-bottom: 0.1cm; margin: 0.5cm 0 0.25cm; }
+.pc-parties { display: grid; grid-template-columns: 3.2cm 1fr; gap: 0.2cm 0.4cm; margin: 0; }
+.pc-parties dt { font-weight: 700; font-style: italic; font-family: Arial, Helvetica, sans-serif; }
+.pc-parties dd { margin: 0; text-align: justify; }
+.pc-scope { margin: 0; padding-left: 1.2cm; }
+.pc-scope li { padding: 0.05cm 0; }
+.pc-scope__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(3cm, 1fr)); gap: 0.3cm; }
+.pc-scope__cols > span { border-bottom: 1px solid var(--paper-muted); min-height: 1.2em; }
+.pc-clauses { column-count: 2; column-gap: 0.8cm; margin-top: 0.5cm; text-align: justify; }
+.pc-clause { break-inside: avoid; margin-bottom: 0.4cm; }
+.pc-clause h4 { font-family: Arial, Helvetica, sans-serif; font-size: 0.85rem; margin: 0 0 0.1cm; }
+.pc-clause p { margin: 0; }
+.pc-clause__value { font-weight: 700; margin-top: 0.1cm !important; }
+.pc-sign { margin-top: 0.6cm; break-inside: avoid; }
+.pf-sign--plain { border: 0; gap: 1cm; }
+.pf-sign--plain .pf-sign__cell { border: 0; }
+.pf-sign--plain .pf-sign__head { background: none; border: 0; padding: 0 0 0.15cm; font-size: 0.9rem; }
+.pf-sign--plain .pf-sign__body { padding: 0; }
+.paper__footer--letterhead { border-top: 1px solid #8fb2d1; padding-top: 0.2cm; font-family: Arial, Helvetica, sans-serif; }
+
+/* phones: keep the paper readable instead of shrinking it */
+@media (max-width: 700px) {
+  .paper { padding: var(--space-4); border-radius: var(--radius); --paper-size: 0.875rem; }
+  .pf-header, .pf-header tbody, .pf-header tr, .pf-header td { display: block; width: 100%; }
+  .pf-header td { border-bottom: 0; }
+  .pf-header tr:last-child td:last-child { border-bottom: 1px solid var(--paper-line); }
+  .pf-header__meta { width: 100%; }
+  .pf-kv, .pf-kv tbody, .pf-kv tr, .pf-kv th, .pf-kv td { display: block; width: 100%; }
+  .pf-kv tr { margin-bottom: -1px; }
+  .pf-kv th, .pf-kv td { border-bottom: 0; }
+  .pf-kv td { border-top: 0; border-bottom: 1px solid var(--paper-line); }
+  .pf-kv__label { width: 100%; }
+  .pf-table { min-width: 30rem; } /* wide tables scroll sideways inside .pf-table-wrap */
+  .pf-sign { grid-template-columns: minmax(0, 1fr); }
+  .pc-clauses { column-count: 1; }
+  .pc-parties { grid-template-columns: 1fr; }
+  .pf-sign--plain { gap: var(--space-4); }
+}
+
+/* print: hide the app, one clean A4 sheet */
+@page { size: A4; margin: 10mm; }
+@media print {
+  html, body { background: #fff !important; }
+  .shell { display: block; }
+  .shell__sidebar, .shell__header, .shell__backdrop, .toast-region, .no-print, .page-header, .tabs, .doc-layout__aside, .alert, .doc-toolbar { display: none !important; }
+  .shell__main { padding: 0; }
+  .shell__content { max-width: none; }
+  .doc-layout { display: block; }
+  .public-shell, .auth-page { background: #fff; padding: 0; min-height: 0; }
+  .public-brand, .public-footer, .sign-panel { display: none !important; }
+  .public-card, .card { border: 0; box-shadow: none; padding: 0; background: transparent; }
+  .card__body { padding: 0; }
+  .paper { border: 0; box-shadow: none; border-radius: 0; padding: 0; max-width: none; margin: 0; --paper-size: 9.5pt; }
+  .paper__logo { width: 9cm; }
+  .pf-table-wrap { overflow: visible; }
+  .paper tr, .pf-sign__cell, .pf-section__title, .pc-clause { break-inside: avoid; page-break-inside: avoid; }
+  .pf-section__title { break-after: avoid; }
+  .pf-table thead { display: table-header-group; }
+  .paper * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

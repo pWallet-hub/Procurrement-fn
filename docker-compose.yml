@@ -1,0 +1,19 @@
+# Standalone frontend: serves the SPA and proxies /api to ANY running backend.
+#   docker compose up -d --build
+#   API_UPSTREAM=http://host.docker.internal:3100 WEB_PORT=8190 docker compose up -d --build
+# (variables can also live in .env, see .env.example)
+services:
+  web:
+    build:
+      context: .
+      args:
+        VITE_API_BASE: ${VITE_API_BASE:-/api/v1}
+    image: afs-procurement-fn
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    environment:
+      # where nginx forwards /api. Any URL: another container, a host port, or a remote server.
+      API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:3000}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

@@ -158,12 +158,28 @@ export interface SlotDef {
   assign?: 'creator' | 'case_requester';
 }
 
+/** How the printed AfS-Rwanda form looks (API-CONTRACT addendum 2). Every field is optional on the client: see paperMeta.ts for defaults. */
+export interface PaperMeta {
+  layout?: 'form' | 'contract';
+  form_label?: string;
+  title?: string;
+  version?: string;
+  date_label?: string;
+  org?: string;
+  footer?: string;
+  intro?: string;
+  signoff_title?: string;
+  /** section key the sign-off grid is printed before (default: after all sections) */
+  signoff_before?: string;
+  notes?: string;
+}
+
 export interface Template {
   code: string;
   version: number;
   title: string;
   description: string;
-  schema: { sections: Section[] };
+  schema: { sections: Section[]; paper?: PaperMeta };
   signature_slots: SlotDef[];
   workflow: {
     guards_on_submit: string[];

@@ -1,7 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Dev server proxies /api to the backend. Override with VITE_API_PROXY.
+// Dev server proxies /api to any running backend. Set VITE_API_PROXY (env or .env), e.g. http://localhost:3100.
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {

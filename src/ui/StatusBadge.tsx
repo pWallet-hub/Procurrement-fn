@@ -17,6 +17,13 @@ const TONES: Record<string, Tone> = {
   done: 'success',
   current: 'info',
   upcoming: 'neutral',
+  requisition: 'info',
+  quotation: 'info',
+  market_check: 'info',
+  evaluation: 'info',
+  purchase_order: 'info',
+  delivery: 'info',
+  payment: 'info',
 };
 
 export function humanize(s: string): string {
@@ -24,6 +31,6 @@ export function humanize(s: string): string {
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
 
-export function StatusBadge({ status }: { status: string }) {
-  return <Badge tone={TONES[status] ?? 'neutral'}>{humanize(status)}</Badge>;
+export function StatusBadge({ status, label }: { status: string; label?: string }) {
+  return <Badge tone={TONES[status] ?? 'neutral'}>{label ?? humanize(status)}</Badge>;
 }
