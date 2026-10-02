@@ -32,7 +32,7 @@ export function SignatureInput({ defaultName = '', onChange }: { defaultName?: s
 
   function onFile(file?: File) {
     if (!file) return;
-    if (!file.type.startsWith('image/')) return setUploadError('Please choose an image file.');
+    if (!['image/png', 'image/jpeg'].includes(file.type)) return setUploadError('Please choose a PNG or JPG image.');
     if (file.size > MAX_UPLOAD_BYTES) return setUploadError('Image must be under 1 MB.');
     setUploadError(null);
     const reader = new FileReader();
@@ -75,7 +75,7 @@ export function SignatureInput({ defaultName = '', onChange }: { defaultName?: s
       )}
       {method === 'upload' && (
         <Field id="sig-upload" label="Signature image (PNG/JPG, max 1 MB)" error={uploadError ?? undefined}>
-          <input id="sig-upload" type="file" accept="image/*" onChange={(e) => onFile(e.target.files?.[0])} />
+          <input id="sig-upload" type="file" accept="image/png,image/jpeg" onChange={(e) => onFile(e.target.files?.[0])} />
           {uploaded && <img className="sig-preview" src={uploaded} alt="Uploaded signature preview" />}
         </Field>
       )}
