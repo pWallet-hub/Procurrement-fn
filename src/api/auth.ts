@@ -13,5 +13,7 @@ export const authApi = {
     api<Session>('/auth/accept-invite', { method: 'POST', body: { token, password }, auth: false }),
   totpSetup: () => api<{ secret: string; otpauth_url: string }>('/auth/totp/setup', { method: 'POST' }),
   totpEnable: (code: string) => api<{ ok: true }>('/auth/totp/enable', { method: 'POST', body: { code } }),
+  changePassword: (current_password: string, new_password: string) =>
+    api<{ ok: true }>('/auth/change-password', { method: 'POST', body: { current_password, new_password } }),
   me: () => api<User>('/me'),
 };
