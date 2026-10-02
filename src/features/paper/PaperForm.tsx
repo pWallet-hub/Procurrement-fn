@@ -38,10 +38,10 @@ export function PaperForm({ template, doc, data, className }: PaperFormProps) {
     );
   }
 
-  // the date printed in the header box is the form's first date field (issue date, date of request ...)
-  // ("Effective: __/__/__" is the form edition date, not a document date, so it stays blank)
-  const dateField = /effective/i.test(paper.date_label) ? undefined : template.schema.sections.flatMap((s) => s.fields).find((f) => f.type === 'date' && !f.fill_at);
-  const headerDate = dateField ? paperDate(data[dateField.key]) : '';
+  // header date: the document's own date (same choice as the generated PDF)
+  const dateKeys = ['date_of_request', 'collection_date', 'mpv_date', 'issue_date', 'evaluation_date', 'date_submitted'];
+  const dateField = dateKeys.find((k) => data[k]);
+  const headerDate = dateField ? paperDate(data[dateField]) : '';
 
   const signoff = slots.length > 0 && (
     <section className="pf-section">

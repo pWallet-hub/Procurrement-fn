@@ -24,3 +24,9 @@ if [ -n "$_ip" ] && [ "$_host" != "localhost" ]; then
 fi
 export API_UPSTREAM API_HOST NGINX_RESOLVER
 echo "10-upstream: API_UPSTREAM=$API_UPSTREAM resolver=$NGINX_RESOLVER"
+# reachability check at start, printed to the container log (never blocks or fails the start)
+_probe="$(wget -q -T 5 -O - "$API_UPSTREAM/api/v1/health" 2>&1 | head -c 200)"
+case "$_probe" in
+  *'"status":"ok"'*) echo "10-upstream: API reachable: $_probe" ;;
+  *) echo "10-upstream: WARNING API NOT reachable at $API_UPSTREAM/api/v1/health -> ${_probe:-no response (DNS, firewall or wrong URL?)}" ;;
+esac

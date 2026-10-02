@@ -11,8 +11,8 @@ RUN npm run build
 # --- serve ---
 FROM nginx:1.27-alpine
 RUN apk add --no-cache ca-certificates
-# Runtime setting (see docker/10-upstream.envsh and nginx.conf): any reachable API, e.g. http://host.docker.internal:3100
-ENV API_UPSTREAM=http://host.docker.internal:3000
+# Runtime setting (see docker/10-upstream.envsh and nginx.conf). Default = the production API; docker-compose.yml overrides it for local use.
+ENV API_UPSTREAM=https://apipro.afs-rwanda.org
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY docker/10-upstream.envsh /docker-entrypoint.d/10-upstream.envsh
 RUN chmod +x /docker-entrypoint.d/10-upstream.envsh
