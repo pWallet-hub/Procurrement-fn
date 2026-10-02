@@ -1,8 +1,9 @@
 import { Field, fieldAria } from '../../../ui/Field';
-import { Select } from '../../../ui/Input';
+import { Input, Select } from '../../../ui/Input';
 import type { FieldProps } from '../types';
 
-export function SelectField({ field, id, value, onChange, error, readOnly, required, inline }: FieldProps) {
+/** With allow_other an "Other" option (value "other") reveals a text input stored in `${key}_other`. */
+export function SelectField({ field, id, value, onChange, otherValue, onOtherChange, error, readOnly, required, inline }: FieldProps) {
   return (
     <Field id={id} label={field.label} help={field.help} error={error} required={required} hideLabel={inline}>
       <Select
@@ -17,7 +18,11 @@ export function SelectField({ field, id, value, onChange, error, readOnly, requi
             {o.label}
           </option>
         ))}
+        {field.allow_other && <option value="other">Other</option>}
       </Select>
+      {field.allow_other && value === 'other' && (
+        <Input aria-label={`${field.label} other`} value={otherValue ?? ''} readOnly={readOnly} onChange={(e) => onOtherChange(e.target.value)} />
+      )}
     </Field>
   );
 }

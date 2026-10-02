@@ -11,16 +11,14 @@ import { PageSpinner } from '../ui/Spinner';
 import { humanize } from '../ui/StatusBadge';
 import { cx } from '../ui/cx';
 
-// Payload shape is not fixed by the contract: link to a document/case when ids are present.
+// Payload: {subject, title, message, document_id|null, path|null, vars, in_app}
 function target(n: Notification): string | null {
   const p = n.payload ?? {};
-  if (typeof p.document_id === 'string') return `/documents/${p.document_id}`;
-  if (typeof p.case_id === 'string') return `/cases/${p.case_id}`;
-  return null;
+  return typeof p.path === 'string' && p.path ? p.path : null; // SPA route, e.g. /documents/<id>
 }
 function summary(n: Notification): string {
   const p = n.payload ?? {};
-  return (typeof p.message === 'string' && p.message) || (typeof p.title === 'string' && p.title) || '';
+  return (typeof p.message === 'string' && p.message) || (typeof p.title === 'string' && p.title) || (typeof p.subject === 'string' && p.subject) || '';
 }
 
 export function Notifications() {
@@ -43,7 +41,7 @@ export function Notifications() {
                 <div>
                   <strong>{humanize(n.kind)}</strong> {summary(n)}
                   <div className="muted">{formatDateTime(n.created_at)}</div>
-                  {to && <Link to={to}>Open</Link>}
+                  {to && <Link to={to.startsWith('/') ? to : `/${to}`}>Open</Link>}
                 </div>
                 {!n.read_at && <Button size="sm" onClick={() => read.mutate(n.id)}>Mark read</Button>}
               </li>

@@ -125,6 +125,8 @@ export interface FieldDef {
   required_if?: Condition;
   visible_if?: Condition;
   readonly?: boolean;
+  /** filled by the signer of this slot key; read only until that signing panel is open */
+  fill_at?: string;
   options?: FieldOption[];
   allow_other?: boolean;
   min?: number;
@@ -275,6 +277,8 @@ export interface DocumentCan {
   decline: string[];
   revise: boolean;
   cancel: boolean;
+  edit_request: boolean;
+  assign: boolean;
 }
 
 export interface Doc {
@@ -305,6 +309,11 @@ export interface SignBody {
   method: SignMethod;
   signature_image?: string;
   signature_text?: string;
+  /** values of fields with fill_at === this slot */
+  data?: Record<string, unknown>;
+  /** external signers only */
+  signer_name?: string;
+  signer_position?: string;
 }
 export interface SignResult {
   document_state: DocumentState;
@@ -334,6 +343,7 @@ export interface SigningTask {
 }
 export interface ExternalSignInfo {
   document: Doc;
+  template: Template;
   slot: { slot_key: string; label: string; declaration: string };
   signer_email: string;
 }

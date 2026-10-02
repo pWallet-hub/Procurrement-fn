@@ -4,7 +4,7 @@ import type { FieldProps } from '../types';
 
 /** Radio group. With allow_other, an "Other" choice reveals a text input stored in `${key}_other`. */
 export function RadioField({ field, id, value, onChange, otherValue, onOtherChange, error, readOnly, required, inline }: FieldProps) {
-  const OTHER = '__other__';
+  const OTHER = 'other';
   const options = field.options ?? [];
   const known = options.some((o) => o.value === value);
   const otherSelected = field.allow_other && (value === OTHER || (!!value && !known));

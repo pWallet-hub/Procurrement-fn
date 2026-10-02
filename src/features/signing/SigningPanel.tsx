@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { ApiError, errorMessage, newIdempotencyKey } from '../../api/client';
 import type { SignBody } from '../../api/types';
 import { Alert } from '../../ui/Alert';
@@ -6,7 +6,7 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { Field, fieldAria } from '../../ui/Field';
 import { Modal } from '../../ui/Modal';
-import { Textarea } from '../../ui/Input';
+import { Input, Textarea } from '../../ui/Input';
 import { SignatureInput, type SignatureValue } from './SignatureInput';
 
 interface Props {
@@ -21,10 +21,18 @@ interface Props {
   /** omitted for external signers when decline is not supported */
   onDecline?: (reason: string) => Promise<unknown>;
   onDone?: () => void;
+  /** values for fields with fill_at === this slot (sent as body.data) */
+  data?: Record<string, unknown>;
+  /** shown above the declaration (e.g. distance control note) */
+  notice?: ReactNode;
+  /** external signer: ask for name (required) and position */
+  collectSigner?: boolean;
+  /** called with the raw error so the page can show error.fields next to inputs */
+  onError?: (e: unknown) => void;
 }
 
 /** Declaration + (conflict) confirmation + signature + sign/decline for one slot. */
-export function SigningPanel({ slotLabel, declaration, contentHash, requiresConflictConfirmation, defaultName, onSign, onDecline, onDone }: Props) {
+export function SigningPanel({ slotLabel, declaration, contentHash, requiresConflictConfirmation, defaultName, onSign, onDecline, onDone, data, notice, collectSigner, onError }: Props) {
   const [accepted, setAccepted] = useState(false);
   const [conflict, setConflict] = useState(false);
   const [signature, setSignature] = useState<SignatureValue | null>(null);
@@ -32,9 +40,11 @@ export function SigningPanel({ slotLabel, declaration, contentHash, requiresConf
   const [error, setError] = useState<string | null>(null);
   const [declineOpen, setDeclineOpen] = useState(false);
   const [reason, setReason] = useState('');
+  const [signerName, setSignerName] = useState(defaultName ?? '');
+  const [signerPosition, setSignerPosition] = useState('');
   const idemKey = useRef<string | null>(null);
 
-  const ready = accepted && !!signature && !!contentHash && (!requiresConflictConfirmation || conflict);
+  const ready = accepted && !!signature && !!contentHash && (!requiresConflictConfirmation || conflict) && (!collectSigner || !!signerName.trim());
 
   async function sign() {
     if (!ready || !signature || !contentHash) return;
@@ -48,6 +58,8 @@ export function SigningPanel({ slotLabel, declaration, contentHash, requiresConf
           declaration_accepted: true,
           ...(requiresConflictConfirmation ? { conflict_confirmed: conflict } : {}),
           ...signature,
+          ...(data && Object.keys(data).length ? { data } : {}),
+          ...(collectSigner ? { signer_name: signerName.trim(), ...(signerPosition.trim() ? { signer_position: signerPosition.trim() } : {}) } : {}),
         },
         idemKey.current,
       );
@@ -56,6 +68,7 @@ export function SigningPanel({ slotLabel, declaration, contentHash, requiresConf
     } catch (e) {
       if (!(e instanceof ApiError && e.isNetwork)) idemKey.current = null; // real rejection: new attempt, new key
       setError(errorMessage(e));
+      onError?.(e);
     } finally {
       setBusy(false);
     }
@@ -79,6 +92,17 @@ export function SigningPanel({ slotLabel, declaration, contentHash, requiresConf
   return (
     <Card title={`Sign: ${slotLabel}`}>
       <div className="stack">
+        {notice}
+        {collectSigner && (
+          <>
+            <Field id="signer-name" label="Your full name" required>
+              <Input {...fieldAria('signer-name')} value={signerName} onChange={(e) => setSignerName(e.target.value)} />
+            </Field>
+            <Field id="signer-pos" label="Position">
+              <Input {...fieldAria('signer-pos')} value={signerPosition} onChange={(e) => setSignerPosition(e.target.value)} />
+            </Field>
+          </>
+        )}
         <div>
           <div className="field__label">Document fingerprint (SHA-256)</div>
           <div className="hash" data-testid="content-hash">

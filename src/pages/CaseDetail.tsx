@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { ApiError, errorMessage } from '../api/client';
+import { downloadBlob } from '../lib/download';
 import { casesApi } from '../api/cases';
 import type { Case, Stage } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
@@ -73,6 +75,12 @@ export function CaseDetail() {
         actions={
           <>
             <StatusBadge status={c.status} />
+            {c.status === 'closed' && (
+              <Button onClick={async () => {
+                try { downloadBlob(await casesApi.purchaseFile(id), `${c.request_no}-purchase-file.pdf`); }
+                catch (e) { toast.error(e instanceof ApiError && e.status === 404 ? 'The purchase file is not built yet. Try again shortly.' : errorMessage(e)); }
+              }}>Download purchase file</Button>
+            )}
             {isOpen && hasRole(user, 'cfm') && c.current_stage === 'payment' && !c.advance_arrangement && (
               <Button onClick={() => setAdvanceOpen(true)}>Advance arrangement</Button>
             )}
@@ -133,7 +141,7 @@ export function CaseDetail() {
           <dt>Created</dt><dd>{formatDate(c.created_at)}</dd>
           <dt>Closed</dt><dd>{formatDate(c.closed_at)}</dd>
           {c.delivery && Object.entries(c.delivery).map(([k, v]) => (
-            <><dt key={`${k}-t`}>{humanize(k)}</dt><dd key={`${k}-d`}>{String(v)}</dd></>
+            <Fragment key={k}><dt>{humanize(k)}</dt><dd>{String(v)}</dd></Fragment>
           ))}
         </dl>
         {isOpen && hasRole(user, 'accountant') && (

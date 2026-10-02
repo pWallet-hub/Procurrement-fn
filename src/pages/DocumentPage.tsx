@@ -6,12 +6,12 @@ import { documentsApi } from '../api/documents';
 import { templatesApi } from '../api/templates';
 import type { Doc } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
-import { hasRole } from '../auth/permissions';
 import { ReasonModal } from '../features/cases/ReasonModal';
 import { AuditTable } from '../features/documents/AuditTable';
 import { PdfPreview } from '../features/documents/PdfPreview';
 import { FormRenderer, SaveIndicator, useDocumentEditor } from '../features/forms';
 import { SigningPanel } from '../features/signing/SigningPanel';
+import { AssignDelegate } from '../features/signing/AssignDelegate';
 import { SlotList } from '../features/signing/SlotList';
 import { formatDateTime } from '../lib/format';
 import { Alert } from '../ui/Alert';
@@ -50,6 +50,9 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
   const [editReqOpen, setEditReqOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const submitKey = useRef<string | null>(null);
+  // values for fill_at fields, entered while the signing panel is open and sent with the sign call
+  const [signData, setSignData] = useState<Record<string, unknown>>({});
+  const [signErrors, setSignErrors] = useState<Record<string, string>>({});
 
   const refresh = async () => {
     await qc.invalidateQueries({ queryKey: ['document', doc.id] });
@@ -85,9 +88,16 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
 
   const canSignSlots = doc.can.sign;
   const mySlot = doc.slots.find((s) => canSignSlots.includes(s.slot_key));
-  const isCreator = user?.id === doc.created_by.id;
-  // the contract has no can.edit_request flag: creator or accountant while in_signing (see README)
-  const canEditRequest = doc.state === 'in_signing' && (isCreator || hasRole(user, 'accountant'));
+  const fillFields = template.schema.sections.flatMap((s) => s.fields).filter((f) => f.fill_at && f.fill_at === mySlot?.slot_key);
+  const fillAt = fillFields.length ? mySlot?.slot_key : null;
+  const onFormChange = (key: string, value: unknown) => {
+    if (fillAt && fillFields.some((f) => f.key === key)) setSignData((d) => ({ ...d, [key]: value }));
+    else editor.setField(key, value);
+  };
+  // GR-06 distance control note: help text of travel_category before pi_final_authorization
+  const travel = mySlot?.slot_key === 'pi_final_authorization'
+    ? template.schema.sections.flatMap((s) => s.fields).find((f) => f.key === 'travel_category')
+    : undefined;
 
   return (
     <div className="stack">
@@ -107,7 +117,7 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
             {editor.editable && <SaveIndicator status={editor.status} />}
             {doc.can.submit && <Button variant="primary" loading={submit.isPending} onClick={() => submit.mutate()}>Submit for signing</Button>}
             {doc.can.revise && <Button variant="primary" loading={revise.isPending} onClick={() => revise.mutate()}>Revise</Button>}
-            {canEditRequest && <Button onClick={() => setEditReqOpen(true)}>Request edit</Button>}
+            {doc.can.edit_request && <Button onClick={() => setEditReqOpen(true)}>Request edit</Button>}
             {doc.can.cancel && <Button variant="danger" onClick={() => setCancelOpen(true)}>Cancel</Button>}
           </>
         }
@@ -135,9 +145,10 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
           <Card>
             <FormRenderer
               template={template}
-              data={editor.data}
-              onChange={editor.setField}
-              errors={editor.errors}
+              data={{ ...editor.data, ...signData }}
+              onChange={onFormChange}
+              errors={{ ...editor.errors, ...signErrors }}
+              fillAt={fillAt}
               readOnly={!editor.editable}
               caseId={doc.case_id}
               documentId={doc.id}
@@ -154,10 +165,14 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
                 onSign={(body, key) => documentsApi.sign(doc.id, mySlot.slot_key, body, key)}
                 onDecline={doc.can.decline.includes(mySlot.slot_key) ? (reason) => documentsApi.decline(doc.id, mySlot.slot_key, reason) : undefined}
                 onDone={refresh}
+                data={fillAt ? pickKeys(signData, fillFields.map((f) => f.key)) : undefined}
+                notice={travel?.help ? <Alert tone="warning">{travel.help}</Alert> : undefined}
+                onError={(e) => { if (e instanceof ApiError) setSignErrors(e.fields); }}
               />
             )}
             <Card title="Signatures">
-              <SlotList slots={doc.slots} />
+              <SlotList slots={doc.slots} documentId={doc.id} />
+              {doc.can.assign && <div style={{ marginTop: 'var(--space-4)' }}><AssignDelegate doc={doc} onDone={refresh} /></div>}
             </Card>
           </aside>
         </div>
@@ -197,4 +212,8 @@ function AuditTab({ documentId }: { documentId: string }) {
   if (q.isLoading) return <PageSpinner />;
   if (q.error) return <ErrorState error={q.error} />;
   return <AuditTable events={q.data?.items ?? []} />;
+}
+
+function pickKeys(obj: Record<string, unknown>, keys: string[]): Record<string, unknown> {
+  return Object.fromEntries(keys.filter((k) => k in obj).map((k) => [k, obj[k]]));
 }

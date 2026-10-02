@@ -5,6 +5,8 @@ export interface FormContextValue {
   caseId?: string | null;
   documentId?: string | null;
   idPrefix: string;
+  /** slot key whose fill_at fields are editable right now (signing panel open) */
+  fillAt?: string | null;
 }
 
 export const FormContext = createContext<FormContextValue>({ idPrefix: 'form' });

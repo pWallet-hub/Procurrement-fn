@@ -1,4 +1,4 @@
-import { api } from './client';
+import { api, apiBlob } from './client';
 import type { Case, DeliveryInput, Doc, Paginated, Timeline } from './types';
 
 export interface CaseListParams {
@@ -23,5 +23,6 @@ export const casesApi = {
     api<Case>(`/cases/${id}/delivery`, { method: 'POST', body }),
   advanceArrangement: (id: string, reason: string) =>
     api<Case>(`/cases/${id}/advance-arrangement`, { method: 'POST', body: { reason } }),
+  purchaseFile: (id: string) => apiBlob(`/cases/${id}/purchase-file`),
   cancel: (id: string, reason: string) => api<Case>(`/cases/${id}/cancel`, { method: 'POST', body: { reason } }),
 };

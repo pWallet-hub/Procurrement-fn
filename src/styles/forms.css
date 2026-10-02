@@ -20,6 +20,11 @@
 .table-field { display: flex; flex-direction: column; gap: var(--space-2); }
 .table-field__table td, .table-field__table th { vertical-align: top; }
 .table-field__table .field__label { margin: 0; }
+/* wide tables scroll sideways instead of squeezing inputs */
+.table-field { overflow-x: auto; }
+.table-field__table { min-width: 720px; }
+.table-field__table td input:not([type="checkbox"]), .table-field__table td select { min-width: 7rem; }
+.table-field__table td textarea { min-width: 14rem; }
 @media (max-width: 700px) {
   .table-field__table thead { display: none; }
   .table-field__table, .table-field__table tbody, .table-field__table tr, .table-field__table td { display: block; width: 100%; }
@@ -37,3 +42,4 @@
 .slot { border: 1px solid var(--color-border); border-radius: var(--radius); padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-1); }
 .slot__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
 .slot--pending { border-color: var(--color-warning); }
+.form-section__desc { white-space: pre-wrap; }

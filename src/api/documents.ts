@@ -27,6 +27,9 @@ export const documentsApi = {
     api<Doc>(`/documents/${id}/edit-request`, { method: 'POST', body: { reason } }),
   revise: (id: string) => api<Doc>(`/documents/${id}/revise`, { method: 'POST' }),
   cancel: (id: string, reason: string) => api<Doc>(`/documents/${id}/cancel`, { method: 'POST', body: { reason } }),
+  assign: (id: string, slotKey: string, user_id: string) =>
+    api<Doc>(`/documents/${id}/slots/${slotKey}/assign`, { method: 'POST', body: { user_id } }),
+  signatureImage: (id: string, slotKey: string) => apiBlob(`/documents/${id}/slots/${slotKey}/signature.png`),
   pdf: (id: string) => apiBlob(`/documents/${id}/pdf`),
   audit: (id: string) => api<{ items: AuditEvent[] }>(`/documents/${id}/audit`),
 };
