@@ -9,6 +9,7 @@ import { Field, fieldAria } from '../ui/Field';
 import { Input } from '../ui/Input';
 import { PageHeader } from '../ui/PageHeader';
 import { PasswordInput } from '../ui/PasswordInput';
+import { MySignature } from '../features/signing/MySignature';
 
 /** Account details + TOTP enrolment (setup -> show secret -> confirm with a code). */
 export function Profile() {
@@ -61,6 +62,7 @@ export function Profile() {
           <dt>Roles</dt><dd>{user?.roles.join(', ')}</dd>
         </dl>
       </Card>
+      <MySignature />
       <Card title="Change password">
         <form onSubmit={changePassword} className="stack">
           <Field id="pw-current" label="Current password" required>

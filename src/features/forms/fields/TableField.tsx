@@ -1,10 +1,15 @@
 import { Button } from '../../../ui/Button';
 import { Field } from '../../../ui/Field';
 import { FieldRenderer } from '../FieldRenderer';
+import { todayIso } from '../../../lib/format';
 import { isVisible } from '../conditions';
 import type { FieldProps } from '../types';
 
 type Row = Record<string, unknown>;
+
+/** New table row: date columns with default 'today' are prefilled. */
+const newRow = (columns: { key: string; type: string; default?: unknown }[]): Row =>
+  Object.fromEntries(columns.filter((c) => c.type === 'date' && c.default === 'today').map((c) => [c.key, todayIso()]));
 
 /**
  * Repeating rows. Each cell is rendered by the normal field registry (so any field type works as a
@@ -74,7 +79,7 @@ export function TableField({ field, path, id, value, onChange, error, errors, re
         {rows.length === 0 && readOnly && <span className="muted">No rows</span>}
         {!readOnly && (
           <div>
-            <Button size="sm" disabled={!canAdd} onClick={() => onChange([...rows, {}])}>
+            <Button size="sm" disabled={!canAdd} onClick={() => onChange([...rows, newRow(field.columns ?? [])])}>
               Add row
             </Button>
             {field.max_rows != null && (

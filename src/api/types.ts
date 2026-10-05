@@ -38,6 +38,8 @@ export interface User {
   roles: string[];
   permissions: string[];
   totp_enabled: boolean;
+  /** a signature image is saved on the account (GET /me/signature) */
+  has_signature?: boolean;
 }
 
 /** Admin view of a user (adds `active`). */
@@ -137,6 +139,8 @@ export interface FieldDef {
   max_rows?: number;
   accept?: string[];
   computed?: Record<string, unknown>;
+  /** 'today' on date fields: prefilled with today's date */
+  default?: unknown;
   format?: 'money';
 }
 
@@ -267,7 +271,7 @@ export interface DeliveryInput {
 // ---- documents ----
 export type DocumentState = 'draft' | 'in_signing' | 'signed' | 'returned' | 'archived' | 'cancelled';
 export type SlotStatus = 'pending' | 'waiting' | 'signed' | 'declined' | 'skipped';
-export type SignMethod = 'draw' | 'type' | 'upload';
+export type SignMethod = 'draw' | 'type' | 'upload' | 'saved';
 
 export interface DocumentSlot {
   slot_key: string;
@@ -325,6 +329,8 @@ export interface SignBody {
   method: SignMethod;
   signature_image?: string;
   signature_text?: string;
+  /** draw/upload: also store this image as the account's saved signature */
+  save_signature?: boolean;
   /** values of fields with fill_at === this slot */
   data?: Record<string, unknown>;
   /** external signers only */

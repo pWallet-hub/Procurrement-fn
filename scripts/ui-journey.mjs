@@ -31,6 +31,7 @@ const login = async (u) => {
 const decl = () => pg.getByRole('checkbox', { name: /^I /i }).first();
 const sign = async (u) => {
   await login(u); await pg.goto(docUrl); await decl().waitFor({ timeout: 10000 }); await decl().check();
+  const drawTab = pg.getByRole('tab', { name: /^draw$/i }); if (await drawTab.count()) await drawTab.click(); // users with a saved signature land on the Saved tab
   const b = await pg.locator('canvas').first().boundingBox();
   await pg.mouse.move(b.x + 20, b.y + 20); await pg.mouse.down(); await pg.mouse.move(b.x + 100, b.y + 60, { steps: 6 }); await pg.mouse.move(b.x + 160, b.y + 25, { steps: 6 }); await pg.mouse.up();
   await pg.getByRole('button', { name: /^sign$/i }).click(); await pg.waitForTimeout(2000);

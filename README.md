@@ -52,11 +52,11 @@ src/
   api/        typed fetch client (client.ts), types.ts (mirrors the contract), one module per resource
   auth/       AuthProvider, useAuth, route guards (RequireAuth/RequireRole), hasRole()/can()
   ui/         small primitives: Button Card Badge StatusBadge Field Input/Select/Textarea Table Modal
-              Spinner EmptyState Toast PageHeader Alert Tabs Icon - each with a documented className hook
+              Spinner EmptyState Toast PageHeader Alert Tabs Icon FileDropzone - each with a documented className hook
   features/
     forms/    schema driven FormRenderer (editing), fields/ (one component per type), registry, autosave hook
     paper/    PaperForm: read-only "printed form" view (PaperForm, ContractPaper, SignOff, Values, paperMeta)
-    signing/  SignaturePad, SignatureInput, SigningPanel, SlotList
+    signing/  SignaturePad, SignatureInput (saved/draw/type/upload), SigningPanel, SlotList, MySignature (profile card), SavedSignatureImage
     cases/    Stepper, DeliveryForm, ReasonModal
     documents/ PdfPreview, AuditTable
   layout/     AppShell (sidebar + header), PublicLayout (login/supplier/verify frame), nav.ts (sidebar entries + icons)
@@ -125,6 +125,23 @@ breaking rows. On phones label/value cells stack and wide tables scroll sideways
 3. To change how a field **type** prints, edit `Values.tsx` (`PaperValue`). To change the section structure (e.g. pair two short
    fields per row), edit `PaperSection` in `PaperForm.tsx`. To add a new layout, add a value to `PaperMeta.layout`, a component next
    to `ContractPaper.tsx` and branch on it at the top of `PaperForm`.
+
+## Uploads, saved signature and dates
+
+- **`ui/FileDropzone.tsx`** is the one upload pattern: drag and drop (highlight on drag-over), click or Enter/Space to browse,
+  optional paste of an image, client-side type/size checks with plain-language errors, file summary with preview and
+  Replace/Remove. Used by the signature *Upload* tab, by `FileField` (attachments, incl. QC-02 quotation files; same
+  `POST /attachments` call) and can be reused anywhere. Props: `accept`, `acceptLabel`, `maxBytes`, `onFile`, `current`, `onRemove`, `paste`.
+- **Saved signature** (API addendum 4): *Profile -> My signature* (`MySignature.tsx`) draws/uploads, saves (`PUT /me/signature`),
+  shows the saved image (`GET /me/signature` as blob), replaces or deletes it. In the signing panel, if `user.has_signature`
+  the first tab is *Saved signature* (sends `method: 'saved'`; the declaration checkbox is still required). Drawing or
+  uploading shows "Save this signature to my account for next time" (checked by default when none is saved) and sends
+  `save_signature: true`; afterwards `reloadUser()` refreshes `has_signature`. A `no_saved_signature` error shows a message,
+  reloads the user and switches to the other tabs. External suppliers never see saved signatures.
+- **Dates**: stored ISO, shown as dd/mm/yyyy (`lib/format.ts`: `formatDate`, `todayIso`). Every date input has a *Today* button
+  and a "Shown as dd/mm/yyyy" hint; new table rows prefill date columns with `default: 'today'`; drafts keep the dates the
+  backend prefilled (autosave only sends keys the user changed). The signing panel states that the signing date is recorded
+  automatically.
 
 ## UI developer guide - what to restyle first
 

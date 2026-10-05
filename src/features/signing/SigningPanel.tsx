@@ -7,6 +7,8 @@ import { Card } from '../../ui/Card';
 import { Field, fieldAria } from '../../ui/Field';
 import { Modal } from '../../ui/Modal';
 import { Input, Textarea } from '../../ui/Input';
+import { useAuth } from '../../auth/AuthContext';
+import { formatDate } from '../../lib/format';
 import { SignatureInput, type SignatureValue } from './SignatureInput';
 
 interface Props {
@@ -33,6 +35,8 @@ interface Props {
 
 /** Declaration + (conflict) confirmation + signature + sign/decline for one slot. */
 export function SigningPanel({ slotLabel, declaration, contentHash, requiresConflictConfirmation, defaultName, onSign, onDecline, onDone, data, notice, collectSigner, onError }: Props) {
+  const { user, reloadUser } = useAuth();
+  const hasSaved = !collectSigner && !!user?.has_signature;
   const [accepted, setAccepted] = useState(false);
   const [conflict, setConflict] = useState(false);
   const [signature, setSignature] = useState<SignatureValue | null>(null);
@@ -64,10 +68,15 @@ export function SigningPanel({ slotLabel, declaration, contentHash, requiresConf
         idemKey.current,
       );
       idemKey.current = null;
+      if (signature.save_signature) void reloadUser().catch(() => {}); // has_signature may have changed
       onDone?.();
     } catch (e) {
       if (!(e instanceof ApiError && e.isNetwork)) idemKey.current = null; // real rejection: new attempt, new key
-      setError(errorMessage(e));
+      if (e instanceof ApiError && e.code === 'no_saved_signature') {
+        setError('You no longer have a saved signature. Please draw, type or upload one instead.');
+        setSignature(null);
+        void reloadUser().catch(() => {});
+      } else setError(errorMessage(e));
       onError?.(e);
     } finally {
       setBusy(false);
@@ -123,7 +132,9 @@ export function SigningPanel({ slotLabel, declaration, contentHash, requiresConf
           </label>
         )}
 
-        <SignatureInput defaultName={defaultName} onChange={setSignature} />
+        <p className="signing-date">Signing date: <strong>{formatDate(new Date().toISOString())}</strong> — recorded automatically when you sign.</p>
+
+        <SignatureInput key={hasSaved ? 'saved' : 'nosaved'} defaultName={defaultName} onChange={setSignature} hasSaved={hasSaved} allowSave={!collectSigner} />
 
         {error && <Alert tone="error">{error}</Alert>}
 

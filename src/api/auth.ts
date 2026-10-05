@@ -1,4 +1,4 @@
-import { api } from './client';
+import { api, apiBlob } from './client';
 import type { LoginResponse, Session, TokenPair, User } from './types';
 
 export const authApi = {
@@ -16,4 +16,7 @@ export const authApi = {
   changePassword: (current_password: string, new_password: string) =>
     api<{ ok: true }>('/auth/change-password', { method: 'POST', body: { current_password, new_password } }),
   me: () => api<User>('/me'),
+  signature: () => apiBlob('/me/signature'),
+  saveSignature: (signature_image: string) => api<{ ok: true }>('/me/signature', { method: 'PUT', body: { signature_image } }),
+  deleteSignature: () => api<{ ok: true }>('/me/signature', { method: 'DELETE' }),
 };
