@@ -1,12 +1,14 @@
 # AfS Rwanda Procurement - frontend
 
+> New here? Read `Procurrement-bn/docs/HANDOFF.md` (backend repo): it describes the whole project, how to run and test it, the live deployment state and the open work.
+
 React 18 + TypeScript (strict) + Vite + React Router + TanStack Query. Plain CSS with design tokens, no UI kit.
-Every route and the full form/signing flow talk to the API in `../docs/API-CONTRACT.md`. Styling is plain CSS driven by tokens
+Every route and the full form/signing flow talk to the API in `Procurrement-bn/docs/API-CONTRACT.md` (in the backend repo). Styling is plain CSS driven by tokens
 so a UI/UX developer can restyle it (see the UI developer guide).
 
 ## Run (standalone: this repo does not need the backend repo)
 
-The frontend only needs the URL of a running API (see `../docs/API-CONTRACT.md`).
+The frontend only needs the URL of a running API (see `Procurrement-bn/docs/API-CONTRACT.md`, in the backend repo).
 
 ### Development
 
