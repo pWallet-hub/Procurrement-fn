@@ -24,8 +24,19 @@ if [ -n "$_ip" ] && [ "$_host" != "localhost" ]; then
 fi
 export API_UPSTREAM API_HOST NGINX_RESOLVER
 echo "10-upstream: API_UPSTREAM=$API_UPSTREAM resolver=$NGINX_RESOLVER"
-# reachability check at start, printed to the container log (never blocks or fails the start)
-_probe="$(wget -q -T 5 -O - "$API_UPSTREAM/api/v1/health" 2>&1 | head -c 200)"
+# reachability check at start: printed to the container log AND saved to /healthz/upstream.txt (readable in a browser), never blocks the start
+_p="${_port#:}"
+if [ -z "$_p" ]; then if [ "$_scheme" = "https" ]; then _p=443; else _p=80; fi; fi
+_probe="$(wget -q -T 5 -O - "$API_UPSTREAM/api/v1/health" 2>&1 | head -c 300)"
+_report="/usr/share/nginx/html/healthz-upstream.txt"
+{
+  echo "time:      $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  echo "upstream:  $API_UPSTREAM  (Host header: $API_HOST)"
+  echo "resolver:  $NGINX_RESOLVER"
+  echo "dns:       $(nslookup "$_host" 2>&1 | awk '/^Name|^Address/ && !/#/ {printf "%s ", $0}' | head -c 300)"
+  echo "tcp $_p:      $(nc -z -w 4 "$_host" "$_p" 2>&1 && echo open || echo "closed/blocked")"
+  echo "http get:  ${_probe:-no response}"
+} > "$_report" 2>/dev/null || true
 case "$_probe" in
   *'"status":"ok"'*) echo "10-upstream: API reachable: $_probe" ;;
   *) echo "10-upstream: WARNING API NOT reachable at $API_UPSTREAM/api/v1/health -> ${_probe:-no response (DNS, firewall or wrong URL?)}" ;;
