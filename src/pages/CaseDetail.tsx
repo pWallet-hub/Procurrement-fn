@@ -6,7 +6,7 @@ import { downloadBlob } from '../lib/download';
 import { casesApi } from '../api/cases';
 import type { Case, Stage } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
-import { hasRole } from '../auth/permissions';
+import { can, hasRole } from '../auth/permissions';
 import { DeliveryForm } from '../features/cases/DeliveryForm';
 import { ReasonModal } from '../features/cases/ReasonModal';
 import { Stepper } from '../features/cases/Stepper';
@@ -81,7 +81,7 @@ export function CaseDetail() {
                 catch (e) { toast.error(e instanceof ApiError && e.status === 404 ? 'The purchase file is not built yet. Try again shortly.' : errorMessage(e)); }
               }}>Download purchase file</Button>
             )}
-            {isOpen && hasRole(user, 'cfm') && c.current_stage === 'payment' && !c.advance_arrangement && (
+            {isOpen && can(user, 'case.advance_arrangement') && c.current_stage === 'payment' && !c.advance_arrangement && (
               <Button onClick={() => setAdvanceOpen(true)}>Advance arrangement</Button>
             )}
             {isOpen && (hasRole(user, 'admin', 'accountant') || user?.id === c.requested_by.id) && (
@@ -144,7 +144,7 @@ export function CaseDetail() {
             <Fragment key={k}><dt>{humanize(k)}</dt><dd>{String(v)}</dd></Fragment>
           ))}
         </dl>
-        {isOpen && hasRole(user, 'accountant') && (
+        {isOpen && can(user, 'case.configure') && (
           <div className="row" style={{ marginTop: 'var(--space-4)' }}>
             <label className="choice">
               <input type="checkbox" checked={c.market_check_required} disabled={patchCase.isPending} onChange={(e) => patchCase.mutate({ market_check_required: e.target.checked })} />
