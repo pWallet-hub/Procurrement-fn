@@ -10,6 +10,7 @@ import { ReasonModal } from '../features/cases/ReasonModal';
 import { AuditTable } from '../features/documents/AuditTable';
 import { PdfPreview } from '../features/documents/PdfPreview';
 import { FormRenderer, SaveIndicator, useDocumentEditor } from '../features/forms';
+import { previewSlotComputed } from '../features/forms/computed';
 import { PaperForm } from '../features/paper';
 import { SigningPanel } from '../features/signing/SigningPanel';
 import { AssignDelegate } from '../features/signing/AssignDelegate';
@@ -98,7 +99,7 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
   // People who have something to fill in land on the editable fields; everyone else sees the paper form.
   const needsInput = editor.editable || !!fillAt;
   const [tab, setTab] = useState(needsInput ? 'edit' : 'form');
-  const formData = { ...editor.data, ...signData };
+  const formData = { ...editor.data, ...signData, ...(fillAt ? previewSlotComputed(fillFields, { ...editor.data, ...signData }) : {}) };
   // GR-06 distance control note: help text of travel_category before pi_final_authorization
   const travel = mySlot?.slot_key === 'pi_final_authorization'
     ? template.schema.sections.flatMap((s) => s.fields).find((f) => f.key === 'travel_category')

@@ -9,7 +9,7 @@ import { PageSpinner } from '../ui/Spinner';
 import { StatusBadge } from '../ui/StatusBadge';
 import { DataTable } from '../ui/Table';
 
-/** List of standalone documents (GR-06 requests, IM-08 memos) visible to the user. */
+/** List of standalone documents (GR-06 requests, IM-08 memos, TC-10 travel clearances) visible to the user. */
 export function StandaloneList({ docType, title, basePath }: { docType: string; title: string; basePath: string }) {
   const navigate = useNavigate();
   const q = useInfiniteQuery({

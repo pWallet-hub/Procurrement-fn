@@ -8,4 +8,7 @@ export const lookupsApi = {
   departments: () => api<{ items: Department[] }>('/lookups/departments'),
   createSupplier: (body: Partial<Omit<Supplier, 'id'>> & { name: string }) =>
     api<Supplier>('/lookups/suppliers', { method: 'POST', body }),
+  /** needs the budget.manage permission */
+  createBudgetLine: (body: Partial<Omit<BudgetLine, 'id'>> & { code: string }) =>
+    api<BudgetLine>('/lookups/budget-lines', { method: 'POST', body }),
 };

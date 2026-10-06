@@ -43,3 +43,25 @@ function mergeField(f: FieldDef, local: Data, server: Data, set: (k: string, v: 
     if (changed) set(f.key, rows);
   }
 }
+
+const amt = (v: unknown): number =>
+  typeof v === 'number' ? v : v && typeof v === 'object' && 'amount' in v ? Number((v as { amount: unknown }).amount) || 0 : Number(v) || 0;
+const cur = (v: unknown): string | undefined => (v && typeof v === 'object' && 'currency' in v ? String((v as { currency: unknown }).currency) : undefined);
+
+/**
+ * Preview of computed fields filled at a signature slot (e.g. the TC-10 total), while the signer types.
+ * Only top level `add` / `add_times`; the server recomputes the stored value when the slot is signed.
+ */
+export function previewSlotComputed(fields: FieldDef[], data: Data): Data {
+  const out: Data = {};
+  for (const f of fields) {
+    const sp = f.computed as { op?: string; fields?: string[]; field?: string } | undefined;
+    if (f.type !== 'computed' || !sp?.fields || (sp.op !== 'add' && sp.op !== 'add_times')) continue;
+    const vals = sp.fields.map((k) => data[k]);
+    if (vals.every((v) => v == null || v === '')) continue;
+    const n = vals.reduce<number>((s, v) => s + amt(v), 0) * (sp.op === 'add_times' ? amt(data[sp.field ?? '']) : 1);
+    const r = Math.round(n * 100) / 100;
+    out[f.key] = f.format === 'money' ? { amount: r, currency: vals.map(cur).find(Boolean) ?? 'RWF' } : r;
+  }
+  return out;
+}

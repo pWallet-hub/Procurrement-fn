@@ -44,6 +44,8 @@ export function App() {
           <Route path="requests/new" element={<StandaloneNew docType="GR-06" title="New request (GR-06)" />} />
           <Route path="memos" element={<StandaloneList docType="IM-08" title="Memos (IM-08)" basePath="/memos" />} />
           <Route path="memos/new" element={<StandaloneNew docType="IM-08" title="New memo (IM-08)" />} />
+          <Route path="travel" element={<StandaloneList docType="TC-10" title="Travel clearance (TC-10)" basePath="/travel" />} />
+          <Route path="travel/new" element={<StandaloneNew docType="TC-10" title="New travel clearance (TC-10)" />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="profile" element={<Profile />} />
           <Route path="audit" element={<RequireRole roles={AUDIT_ROLES}><Audit /></RequireRole>} />

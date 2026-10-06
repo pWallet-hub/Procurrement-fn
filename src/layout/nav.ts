@@ -17,6 +17,7 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/cases', label: 'Procurement cases', icon: 'folder' },
   { to: '/requests', label: 'Requests (GR-06)', icon: 'file' },
   { to: '/memos', label: 'Memos (IM-08)', icon: 'edit' },
+  { to: '/travel', label: 'Travel clearance (TC-10)', icon: 'file' },
   { to: '/notifications', label: 'Notifications', icon: 'bell' },
   { to: '/audit', label: 'Audit log', icon: 'shield', roles: AUDIT_ROLES },
   { to: '/reports', label: 'Reports', icon: 'chart', roles: REPORT_ROLES },

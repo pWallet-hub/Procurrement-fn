@@ -74,12 +74,19 @@ export interface Supplier {
   email: string;
   address: string;
 }
+export type FundingSource = 'internal' | 'external';
 export interface BudgetLine {
   id: string;
   code: string;
   project: string;
+  /** external = donor / partner funded; `funder` names the source */
+  funding_source: FundingSource;
+  funder: string | null;
+  /** approved budget the available balance is measured against */
+  baseline: number;
   available: number;
   currency: Currency;
+  active?: boolean;
 }
 export interface Department {
   id: string;
@@ -159,7 +166,7 @@ export interface SlotDef {
   seq: number;
   group?: string;
   declaration: string;
-  assign?: 'creator' | 'case_requester';
+  assign?: 'creator' | 'case_requester' | `field:${string}`;
 }
 
 /** How the printed AfS-Rwanda form looks (API-CONTRACT addendum 2). Every field is optional on the client: see paperMeta.ts for defaults. */
