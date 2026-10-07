@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { attachmentsApi } from '../../api/attachments';
 import { ApiError, errorMessage } from '../../api/client';
+import { withHint } from '../forms/problems';
+import { todayIso } from '../../lib/format';
 import { casesApi } from '../../api/cases';
 import { Alert } from '../../ui/Alert';
 import { Button } from '../../ui/Button';
@@ -29,7 +31,10 @@ export function DeliveryForm({ caseId }: { caseId: string }) {
     },
     onError: (e: Error) => setErr(e),
   });
-  const fe = err instanceof ApiError ? err.fields : {};
+  // field errors with the server's hint on how to fix them
+  const fe: Record<string, string> = err instanceof ApiError
+    ? Object.fromEntries(Object.entries(err.fields).map(([k, m]) => [k, withHint(m, err.hints[k])]))
+    : {};
 
   async function upload(file?: File) {
     if (!file) return;
@@ -56,7 +61,7 @@ export function DeliveryForm({ caseId }: { caseId: string }) {
     >
       <div className="grid-2">
         <Field id="d-date" label="Delivery date" required error={fe.delivery_date}>
-          <Input {...fieldAria('d-date')} type="date" value={v.delivery_date} onChange={set('delivery_date')} />
+          <Input {...fieldAria('d-date')} type="date" max={todayIso()} value={v.delivery_date} onChange={set('delivery_date')} />
         </Field>
         <Field id="d-inv" label="Invoice number" required error={fe.invoice_no}>
           <Input {...fieldAria('d-inv')} value={v.invoice_no} onChange={set('invoice_no')} />

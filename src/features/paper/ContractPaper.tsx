@@ -49,7 +49,9 @@ export function ContractPaper({ template, paper, data, ctx, documentId, slots }:
 
   const scopeField = scope?.fields.find((f) => f.type === 'table');
   const scopeRows = (Array.isArray(data[scopeField?.key ?? '']) ? (data[scopeField!.key] as Row[]) : []);
-  const scopeCount = Math.max(scopeRows.length, scopeField?.min_rows ?? 0, 1);
+  const scopeCount = Math.max(scopeRows.length, 8); // the printed contract has 8 numbered lines
+  // as printed: the commercial clauses in two columns, then Confidentiality and Acceptance across the page
+  const fullWidth = (c: { label?: string }) => /^(confidentiality|acceptance)$/i.test(c.label ?? '');
   const scopeCols = (scopeField?.columns ?? []).filter((c) => isVisible(c, data));
 
   return (
@@ -74,7 +76,7 @@ export function ContractPaper({ template, paper, data, ctx, documentId, slots }:
 
       {scope && scopeField && (
         <>
-          <h3 className="pc-heading">{scope.description ?? scope.title}</h3>
+          <h3 className="pc-heading">{scope.description ? `${scope.title}: ${scope.description}` : scope.title}</h3>
           <ol className="pc-scope">
             {Array.from({ length: scopeCount }, (_, i) => {
               const row = scopeRows[i] ?? {};
@@ -94,25 +96,29 @@ export function ContractPaper({ template, paper, data, ctx, documentId, slots }:
         </>
       )}
 
-      <div className="pc-clauses">
-        {clauses.map((c) => (
-          <div key={c.key} className="pc-clause">
-            {c.label && <h4>{c.label}:</h4>}
-            <p>{c.body}</p>
-            {c.extra && (c.extra.type === 'money' || c.extra.type === 'computed') && (
-              <p className="pc-clause__value"><PaperValue field={c.extra} value={data[c.extra.key]} ctx={ctx} /></p>
-            )}
-          </div>
-        ))}
-      </div>
+      {[clauses.filter((c) => !fullWidth(c)), clauses.filter(fullWidth)].map((group, gi) => (
+        <div key={gi} className={gi === 0 ? 'pc-clauses' : 'pc-clauses pc-clauses--full'}>
+          {group.map((c) => (
+            <div key={c.key} className="pc-clause">
+              {c.label && <h4>{c.label}:</h4>}
+              {c.extra && (c.extra.type === 'money' || c.extra.type === 'computed') && (
+                <p className="pc-clause__value"><PaperValue field={c.extra} value={data[c.extra.key]} ctx={ctx} /></p>
+              )}
+              <p>{c.body}</p>
+            </div>
+          ))}
+        </div>
+      ))}
 
       {slots.length > 0 && (
         <section className="pc-sign">
-          <h3 className="pc-heading">Signatures</h3>
+          <h3 className="pc-heading pc-heading--plain">Signed by:</h3>
           <SignOffGrid documentId={documentId} slots={slots} plain />
         </section>
       )}
-      <footer className="paper__footer paper__footer--letterhead">{paper.footer}</footer>
+      <footer className="pc-address">
+        {paper.footer.split('|').map((line) => <div key={line}>{line.trim()}</div>)}
+      </footer>
     </>
   );
 }

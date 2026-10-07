@@ -1,4 +1,5 @@
 import { useRef, useState, type ReactNode } from 'react';
+import { describeError } from '../forms/problems';
 import { ApiError, errorMessage, newIdempotencyKey } from '../../api/client';
 import type { SignBody } from '../../api/types';
 import { Alert } from '../../ui/Alert';
@@ -76,7 +77,7 @@ export function SigningPanel({ slotLabel, declaration, contentHash, requiresConf
         setError('You no longer have a saved signature. Please draw, type or upload one instead.');
         setSignature(null);
         void reloadUser().catch(() => {});
-      } else setError(errorMessage(e));
+      } else setError(describeError(e));
       onError?.(e);
     } finally {
       setBusy(false);

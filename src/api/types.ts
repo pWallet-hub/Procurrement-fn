@@ -1,4 +1,5 @@
 // Types mirroring docs/API-CONTRACT.md. Keep in sync with the contract.
+import type { PaperBlock } from '../features/paper/layoutCore';
 
 export const ROLES = [
   'requesting_staff',
@@ -149,6 +150,8 @@ export interface FieldDef {
   /** 'today' on date fields: prefilled with today's date */
   default?: unknown;
   format?: 'money';
+  /** how to fill the field correctly (the server also sends hints with validation errors) */
+  hint?: string;
 }
 
 export interface Section {
@@ -172,6 +175,11 @@ export interface SlotDef {
 /** How the printed AfS-Rwanda form looks (API-CONTRACT addendum 2). Every field is optional on the client: see paperMeta.ts for defaults. */
 export interface PaperMeta {
   layout?: 'form' | 'contract';
+  /** `box` (default): org / FORM / version box · `title`: centred underlined title (TC-10) */
+  header?: 'box' | 'title';
+  subtitle?: string;
+  /** printed body of the form (see features/paper/layoutCore.ts); absent on older template versions */
+  blocks?: PaperBlock[];
   form_label?: string;
   title?: string;
   version?: string;
@@ -291,6 +299,8 @@ export interface DocumentSlot {
   assigned_user: Ref2 | null;
   signature: {
     signer_name: string;
+    /** the signer's position (job title) at signing time */
+    signer_position?: string | null;
     signed_at: string;
     method: SignMethod;
     image_url?: string;
@@ -326,7 +336,14 @@ export interface Doc {
   can: DocumentCan;
   returned_reason?: string | null;
   pdf_available: boolean;
-  validation?: { errors: Record<string, string> };
+  /** drafts only: problems in what was entered, what is still missing before submit, and how to fix each (by field path) */
+  validation?: DraftValidation;
+}
+
+export interface DraftValidation {
+  errors: Record<string, string>;
+  missing?: Record<string, string>;
+  hints?: Record<string, string>;
 }
 
 export interface SignBody {

@@ -13,6 +13,8 @@ const RETRY_MS = 5000;
 
 /**
  * Local copy of document.data + debounced autosave.
+ * - The server answers every save with the problems in what was typed (`errors`), what is still `missing`
+ *   before submit, and `hints` on how to fix each one.
  * - setField() marks a key dirty; ~2s later one PATCH sends the dirty top level keys.
  * - Server computed values and validation errors from the response are merged back.
  * - Errors are only shown for fields the user touched, until showAllErrors() (after a submit attempt).
@@ -22,6 +24,8 @@ export function useDocumentEditor(doc: Doc, template: Template | undefined) {
   const editable = doc.can.edit && doc.state === 'draft';
   const [data, setData] = useState<Record<string, unknown>>(doc.data ?? {});
   const [serverErrors, setServerErrors] = useState<Errors>(doc.validation?.errors ?? {});
+  const [missing, setMissing] = useState<Errors>(doc.validation?.missing ?? {});
+  const [hints, setHints] = useState<Record<string, string>>(doc.validation?.hints ?? {});
   const [touched, setTouched] = useState<Set<string>>(new Set());
   const [showAll, setShowAll] = useState(false);
   const [status, setStatus] = useState<SaveStatus>('idle');
@@ -42,6 +46,8 @@ export function useDocumentEditor(doc: Doc, template: Template | undefined) {
       const t = templateRef.current;
       if (t) setData((prev) => mergeServerComputed(t, prev, saved.data ?? {}));
       setServerErrors(saved.validation?.errors ?? {});
+      setMissing(saved.validation?.missing ?? {});
+      setHints(saved.validation?.hints ?? {});
       setStatus(Object.keys(pending.current).length ? 'dirty' : 'saved');
     } catch (e) {
       pending.current = { ...body, ...pending.current }; // keep for retry
@@ -50,7 +56,7 @@ export function useDocumentEditor(doc: Doc, template: Template | undefined) {
         clearTimeout(timer.current);
         timer.current = setTimeout(() => void flush(), RETRY_MS);
       } else {
-        if (e instanceof ApiError && Object.keys(e.fields).length) setServerErrors(e.fields);
+        if (e instanceof ApiError && Object.keys(e.fields).length) { setServerErrors(e.fields); setHints((h) => ({ ...h, ...e.hints })); }
         setStatus('error');
       }
     }
@@ -99,11 +105,14 @@ export function useDocumentEditor(doc: Doc, template: Template | undefined) {
     ? serverErrors
     : Object.fromEntries(Object.entries(serverErrors).filter(([p]) => touched.has(rootKey(p))));
 
-  /** Show errors from a failed submit (ApiError.fields) on the form. */
+  /** Show errors from a failed submit (ApiError.fields + hints) on the form. */
   const applyApiError = useCallback((e: unknown) => {
-    if (e instanceof ApiError && Object.keys(e.fields).length) setServerErrors(e.fields);
+    if (e instanceof ApiError && Object.keys(e.fields).length) {
+      setServerErrors(e.fields);
+      setHints((h) => ({ ...h, ...e.hints }));
+    }
     setShowAll(true);
   }, []);
 
-  return { data, setField, editable, errors, status, flush, applyApiError, showAllErrors: () => setShowAll(true) };
+  return { data, setField, editable, errors, missing, hints, status, flush, applyApiError, showAllErrors: () => setShowAll(true) };
 }

@@ -39,17 +39,19 @@ export const tokenStore = {
   },
 };
 
-/** Parsed `{error:{code,message,fields}}` response. `status` 0 means network failure. */
+/** Parsed `{error:{code,message,fields,hints}}` response. `status` 0 means network failure. `hints`: how to fix each field. */
 export class ApiError extends Error {
   status: number;
   code: string;
   fields: Record<string, string>;
-  constructor(status: number, code: string, message: string, fields: Record<string, string> = {}) {
+  hints: Record<string, string>;
+  constructor(status: number, code: string, message: string, fields: Record<string, string> = {}, hints: Record<string, string> = {}) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
     this.fields = fields;
+    this.hints = hints;
   }
   get isNetwork() {
     return this.status === 0;
@@ -99,17 +101,19 @@ async function parseError(res: Response): Promise<ApiError> {
   let code = `http.${res.status}`;
   let message = res.statusText || 'Request failed';
   let fields: Record<string, string> = {};
+  let hints: Record<string, string> = {};
   try {
     const body = await res.json();
     if (body?.error) {
       code = body.error.code ?? code;
       message = body.error.message ?? message;
       fields = body.error.fields ?? {};
+      hints = body.error.hints ?? {};
     }
   } catch {
     /* non JSON body */
   }
-  return new ApiError(res.status, code, message, fields);
+  return new ApiError(res.status, code, message, fields, hints);
 }
 
 let refreshing: Promise<boolean> | null = null;

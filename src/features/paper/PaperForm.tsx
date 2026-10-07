@@ -5,9 +5,10 @@ import { evalCondition, isVisible } from '../forms/conditions';
 import { cx } from '../../ui/cx';
 import { ContractPaper } from './ContractPaper';
 import { isEmpty, paperDate } from './format';
-import { resolvePaper } from './paperMeta';
+import { resolvePaper, type ResolvedPaper } from './paperMeta';
 import { SignOffGrid, toSignOffSlots } from './SignOff';
 import { PaperValue, type ValueCtx } from './Values';
+import { PaperBlocks } from './PaperBlocks';
 import { useRefLabels } from './useRefLabels';
 
 export interface PaperFormProps {
@@ -43,6 +44,32 @@ export function PaperForm({ template, doc, data, className }: PaperFormProps) {
   const dateField = dateKeys.find((k) => data[k]);
   const headerDate = dateField ? paperDate(data[dateField]) : '';
 
+  const intro = paper.intro && (
+    <div className="paper__intro">
+      <PaperBlocks blocks={[{ t: 'text', text: paper.intro, style: 'intro' }]} template={template} data={data} slots={slots} documentId={doc.id} refs={refs} />
+    </div>
+  );
+
+  // forms with a printed layout (template.schema.paper.blocks): drawn exactly like the reference form
+  if (paper.blocks) {
+    return (
+      <article className={cx('paper paper--layout', className)} aria-label={paper.title}>
+        <img className="paper__logo" src="/logo.png" alt="Alliance for Science Rwanda" />
+        {paper.header === 'title' ? (
+          <header className="pf-title">
+            <h2 className="pf-title__main">{paper.title}</h2>
+            {paper.subtitle && <p className="pf-title__sub">{paper.subtitle}</p>}
+          </header>
+        ) : (
+          <HeaderBox paper={paper} headerDate={headerDate} />
+        )}
+        {intro}
+        <PaperBlocks blocks={paper.blocks} template={template} data={data} slots={slots} documentId={doc.id} refs={refs} />
+        <footer className="paper__footer">{paper.footer}</footer>
+      </article>
+    );
+  }
+
   const signoff = slots.length > 0 && (
     <section className="pf-section">
       <h3 className="pf-section__title">{paper.signoff_title}</h3>
@@ -54,23 +81,8 @@ export function PaperForm({ template, doc, data, className }: PaperFormProps) {
     <article className={cx('paper', className)} aria-label={paper.title}>
       <img className="paper__logo" src="/logo.png" alt="Alliance for Science Rwanda" />
 
-      <table className="pf-header">
-        <tbody>
-          <tr>
-            <td className="pf-header__org">{paper.org}</td>
-            <td className="pf-header__meta pf-header__meta--form">FORM: {paper.form_label}</td>
-          </tr>
-          <tr>
-            <td className="pf-header__title">{paper.title}</td>
-            <td className="pf-header__meta">
-              <div>Version: {paper.version}</div>
-              <div>{paper.date_label}: {headerDate || <span className="pf-date"><span className="pf-blank" />/<span className="pf-blank" />/<span className="pf-blank" /></span>}</div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      {paper.intro && <p className="paper__intro">{paper.intro}</p>}
+      <HeaderBox paper={paper} headerDate={headerDate} />
+      {intro}
 
       {template.schema.sections.map((section) => (
         <Fragment key={section.key}>
@@ -84,6 +96,27 @@ export function PaperForm({ template, doc, data, className }: PaperFormProps) {
       {paper.notes && <p className="paper__notes">{paper.notes}</p>}
       <footer className="paper__footer">{paper.footer}</footer>
     </article>
+  );
+}
+
+/** Org / FORM / title / version box at the top of the procurement forms. */
+function HeaderBox({ paper, headerDate }: { paper: ResolvedPaper; headerDate: string }) {
+  return (
+    <table className="pf-header">
+      <tbody>
+        <tr>
+          <td className="pf-header__org">{paper.org}</td>
+          <td className="pf-header__meta pf-header__meta--form">FORM: {paper.form_label}</td>
+        </tr>
+        <tr>
+          <td className="pf-header__title">{paper.title}</td>
+          <td className="pf-header__meta">
+            <div>Version: {paper.version}</div>
+            <div>{paper.date_label}: {headerDate || <span className="pf-date"><span className="pf-blank" />/<span className="pf-blank" />/<span className="pf-blank" /></span>}</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   );
 }
 

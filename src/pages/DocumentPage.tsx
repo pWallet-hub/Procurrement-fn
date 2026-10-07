@@ -26,6 +26,7 @@ import { PageSpinner } from '../ui/Spinner';
 import { StatusBadge } from '../ui/StatusBadge';
 import { TabPanel, Tabs } from '../ui/Tabs';
 import { useToast } from '../ui/Toast';
+import { describeError } from '../features/forms/problems';
 import type { Template } from '../api/types';
 
 export function DocumentPage() {
@@ -55,6 +56,9 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
   // values for fill_at fields, entered while the signing panel is open and sent with the sign call
   const [signData, setSignData] = useState<Record<string, unknown>>({});
   const [signErrors, setSignErrors] = useState<Record<string, string>>({});
+  const [signHints, setSignHints] = useState<Record<string, string>>({});
+  // last refused submit: shown above the form until the next attempt (a toast disappears too quickly)
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const refresh = async () => {
     await qc.invalidateQueries({ queryKey: ['document', doc.id] });
@@ -67,6 +71,7 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
 
   const submit = useMutation({
     mutationFn: async () => {
+      setSubmitError(null);
       await editor.flush(); // make sure the server has the latest edits
       submitKey.current ??= newIdempotencyKey();
       return documentsApi.submit(doc.id, submitKey.current);
@@ -78,7 +83,10 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
     },
     onError: (e: Error) => {
       if (!(e instanceof ApiError && e.isNetwork)) submitKey.current = null;
-      editor.applyApiError(e); // shows error.fields next to the inputs
+      editor.applyApiError(e); // shows error.fields next to the inputs, with hints
+      setSubmitError(describeError(e));
+      // field problems are listed on the editable form
+      if (e instanceof ApiError && Object.keys(e.fields).length && needsInput) setTab('edit');
       toast.error(e.message);
     },
   });
@@ -130,6 +138,7 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
       />
 
       {doc.state === 'returned' && doc.returned_reason && <Alert tone="warning">Returned: {doc.returned_reason}</Alert>}
+      {submitError && editor.editable && <Alert tone="error"><strong>Not submitted.</strong> {submitError}</Alert>}
       {(doc.state === 'signed' || doc.state === 'archived') && (
         <Alert tone="success">
           This document is complete. <Link to={`/verify/${doc.id}`}>Verify authenticity</Link>
@@ -162,6 +171,8 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
                   data={formData}
                   onChange={onFormChange}
                   errors={{ ...editor.errors, ...signErrors }}
+                  hints={{ ...editor.hints, ...signHints }}
+                  missing={editor.editable ? editor.missing : undefined}
                   fillAt={fillAt}
                   readOnly={!editor.editable}
                   caseId={doc.case_id}
@@ -183,7 +194,13 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
                 onDone={() => { toast.success('Signed. Thank you.'); void refresh(); }}
                 data={fillAt ? pickKeys(signData, fillFields.map((f) => f.key)) : undefined}
                 notice={travel?.help ? <Alert tone="warning">{travel.help}</Alert> : undefined}
-                onError={(e) => { if (e instanceof ApiError) setSignErrors(e.fields); }}
+                onError={(e) => {
+                  if (!(e instanceof ApiError)) return;
+                  setSignErrors(e.fields);
+                  setSignHints(e.hints);
+                  // fields to fill at this signature are on the "Edit fields" tab
+                  if (fillAt && Object.keys(e.fields).some((k) => fillFields.some((f) => k === f.key || k.startsWith(`${f.key}[`) || k === `${f.key}_other`))) setTab('edit');
+                }}
               />
             )}
             <Card title="Signatures">

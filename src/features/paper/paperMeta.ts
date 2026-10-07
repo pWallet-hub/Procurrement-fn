@@ -1,6 +1,7 @@
 import type { PaperMeta, Template } from '../../api/types';
 
-export type ResolvedPaper = Required<Omit<PaperMeta, 'intro' | 'notes' | 'signoff_before'>> & { intro?: string; notes?: string; signoff_before?: string };
+export type ResolvedPaper = Required<Omit<PaperMeta, 'intro' | 'notes' | 'signoff_before' | 'header' | 'subtitle' | 'blocks'>> &
+  Pick<PaperMeta, 'intro' | 'notes' | 'signoff_before' | 'subtitle' | 'blocks'> & { header: 'box' | 'title' };
 
 const ORG = 'ALLIANCE FOR SCIENCE RWANDA (AfS-Rwanda)';
 
@@ -22,5 +23,8 @@ export function resolvePaper(t: Template): ResolvedPaper {
     intro: p.intro,
     signoff_before: p.signoff_before,
     notes: p.notes ?? t.workflow.footer_note,
+    header: p.header ?? 'box',
+    subtitle: p.subtitle,
+    blocks: p.blocks?.length ? p.blocks : undefined,
   };
 }

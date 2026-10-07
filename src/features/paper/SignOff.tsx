@@ -12,6 +12,7 @@ export interface SignOffSlot {
   status: string;
   assignedTo?: string;
   signer?: string;
+  position?: string | null;
   signedAt?: string;
   method?: string;
 }
@@ -26,6 +27,7 @@ export function toSignOffSlots(slots: DocumentSlot[], template: Template): SignO
         status: s.status,
         assignedTo: s.assigned_user?.full_name,
         signer: s.signature?.signer_name,
+        position: s.signature?.signer_position,
         signedAt: s.signature?.signed_at,
         method: s.signature?.method,
       }))

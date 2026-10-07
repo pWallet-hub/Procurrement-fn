@@ -4,6 +4,7 @@ import { cx } from '../../ui/cx';
 import { isRequired, isServerFilled, isVisible } from './conditions';
 import type { FieldDef } from '../../api/types';
 import type { Errors } from './types';
+import { withHint } from './problems';
 
 interface Props {
   field: FieldDef;
@@ -20,7 +21,7 @@ interface Props {
 
 /** Resolves visibility / required / readonly, then delegates to the registered component. */
 export function FieldRenderer({ field, container, onChangeKey, pathPrefix = '', errors, readOnly, rootData, inline }: Props) {
-  const { idPrefix, fillAt } = useFormContext();
+  const { idPrefix, fillAt, hints } = useFormContext();
   if (!isVisible(field, rootData)) return null;
 
   const Component = getFieldComponent(field.type);
@@ -35,7 +36,7 @@ export function FieldRenderer({ field, container, onChangeKey, pathPrefix = '', 
       onChange={(v) => onChangeKey(field.key, v)}
       otherValue={typeof other === 'string' ? other : undefined}
       onOtherChange={(v) => onChangeKey(`${field.key}_other`, v)}
-      error={errors[path]}
+      error={errors[path] ? withHint(errors[path], hints?.[path]) : undefined}
       errors={errors}
       readOnly={field.fill_at ? field.fill_at !== fillAt : readOnly || isServerFilled(field)}
       required={isRequired(field, rootData)}
