@@ -94,23 +94,31 @@
  * Printed layout (template.schema.paper.blocks, features/paper/PaperBlocks): the body of each form as on the
  * reference forms. Filled-in values are printed in "ink" (--paper-value) so they stand out from the printed form.
  */
-.paper--layout { --paper-value: #1f3a68; --paper-heading-blue: #2e74b5; --paper-green-bg: #d8e4bc; }
-.pf-h { margin: 0.32cm 0 0.1cm; font-size: 0.86rem; font-weight: 700; line-height: 1.25; break-after: avoid; }
+.paper--layout { --paper-value: #1f3a68; --paper-heading-blue: #2e74b5; --paper-green-bg: #d8e4bc; container-type: inline-size; overflow-wrap: break-word; hyphens: auto; }
+/* the sheet scales with its column like a page preview (A4 width = full size), never below a readable size */
+.paper--layout > * { font-size: clamp(0.7rem, 1.72cqi, var(--paper-size)); }
+.paper--layout .pf-header__org { font-size: 1.08em; }
+.paper--layout .pf-header__title { font-size: 1.22em; font-weight: 700; }
+.paper--layout .pf-header__meta { font-size: 0.94em; }
+.pf-opt { white-space: nowrap; }
+.pf-opt + .pf-opt { margin-left: 0.5em; }
+.pf-h { margin: 0.32cm 0 0.1cm; font-size: 1.06em; font-weight: 700; line-height: 1.25; break-after: avoid; }
 .pf-h--caps { text-transform: uppercase; color: var(--paper-ink); }
 .pf-h--blue { color: var(--paper-heading-blue); }
 .pf-text { margin: 0.12cm 0 0; }
-.pf-text--note { font-style: italic; font-size: 0.72rem; }
+.pf-text--note { font-style: italic; font-size: 0.9em; }
 .pf-text--intro { margin: 0; }
 .paper__intro .pf-text { margin: 0; }
 .pf-title { text-align: center; margin: 0 0 0.45cm; }
-.pf-title__main { margin: 0; font-size: 1.2rem; font-weight: 700; font-style: italic; text-decoration: underline; letter-spacing: 0.01em; }
+.pf-title__main { margin: 0; font-size: 1.5em; font-weight: 700; font-style: italic; text-decoration: underline; letter-spacing: 0.01em; }
 .pf-title__sub { margin: 0.15cm 0 0; font-family: 'Times New Roman', Georgia, serif; font-weight: 700; font-style: italic; }
 
 .pf-grid-wrap { margin-top: 0.1cm; overflow-x: auto; }
 .pf-grid-wrap--attach { margin-top: -1px; }
 .pf-grid { table-layout: fixed; }
 .pf-grid td, .pf-grid th { border: 1px solid var(--paper-line); padding: 0.09cm 0.16cm; vertical-align: middle; font-weight: 400; }
-.pf-grid--small td, .pf-grid--small th, .pf-cell--small { font-size: 0.74rem; }
+.pf-grid--small td, .pf-grid--small th, .pf-cell--small { font-size: 0.92em; }
+.pf-grid--small .pf-cell--small { font-size: 1em; }
 .pf-grid--dashed { border: 1.5px dashed #8fbf6a; }
 .pf-grid--dashed td, .pf-grid--dashed th { border: 0; }
 .pf-grid--none td, .pf-grid--none th { border: 0; padding-left: 0; }
@@ -123,14 +131,14 @@
 .pf-cell--right { text-align: right !important; }
 .pf-cell--center { text-align: center !important; }
 .pf-cell--italic { font-style: italic; }
-.pf-cell__sub { font-weight: 400; font-size: 0.68rem; margin-top: 0.04cm; }
+.pf-cell__sub { font-weight: 400; font-size: 0.86em; margin-top: 0.04cm; }
 .pf-v { color: var(--paper-value, var(--paper-ink)); white-space: pre-wrap; }
 .pf-v--bold { font-weight: 700; }
 .pf-grid .pf-box { margin-right: 0.22em; vertical-align: -0.12em; }
 .pf-grid--dots .pf-blank, .pf-grid--dots .pf-date .pf-blank { border-bottom-style: dotted; border-bottom-width: 2px; }
 .pf-blank--year { min-width: 2.6em !important; }
 .pf-sig { display: inline-block; vertical-align: bottom; max-width: 100%; }
-.pf-sig .pf-sig-img { max-height: 1.2cm; display: inline-block; }
+.pf-sig .pf-sig-img { height: 1.1cm; max-height: 1.1cm; width: auto; max-width: 100%; object-fit: contain; display: inline-block; }
 .pf-grid .pf-sign__status { display: block; margin-top: 0.08cm; }
 
 /* contract layout: plain legal document */

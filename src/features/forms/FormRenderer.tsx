@@ -1,4 +1,4 @@
-import { useId, useMemo, type ReactNode } from 'react';
+import { useId, useMemo, useState, type ReactNode } from 'react';
 import type { Template } from '../../api/types';
 import { Alert } from '../../ui/Alert';
 import { FieldRenderer } from './FieldRenderer';
@@ -36,6 +36,7 @@ export function FormRenderer({ template, data, onChange, errors = {}, hints = {}
   const ctx = useMemo(() => ({ caseId, documentId, idPrefix, fillAt, hints }), [caseId, documentId, idPrefix, fillAt, hints]);
   const errorEntries = Object.entries(errors);
   const missingEntries = Object.entries(missing).filter(([p]) => !(p in errors));
+  const [checklistOpen, setChecklistOpen] = useState(false);
 
   /** Scroll to the input of an error path and focus it (table cells: the cell, else the table). */
   const goTo = (path: string) => {
@@ -71,11 +72,11 @@ export function FormRenderer({ template, data, onChange, errors = {}, hints = {}
           </Alert>
         )}
         {missingEntries.length > 0 && !readOnly && (
-          <details className="form-checklist">
+          <details className="form-checklist" open={checklistOpen} onToggle={(e) => setChecklistOpen(e.currentTarget.open)}>
             <summary>
               <strong>Still to complete before you can submit: {missingEntries.length}</strong>
             </summary>
-            {problemList(missingEntries, false)}
+            {checklistOpen && problemList(missingEntries, false)}
           </details>
         )}
         {template.schema.sections.map((section) =>

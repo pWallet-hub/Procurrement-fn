@@ -109,7 +109,20 @@ function Block({ block: b, prev, ctx, documentId, bySlot }: { block: FlatBlock; 
 }
 
 function Pieces({ pieces, documentId, bySlot }: { pieces: Piece[]; documentId: string; bySlot: Map<string, SignOffSlot> }) {
+  // a check box stays on the same line as its (short) label
+  const skip = new Set<number>();
   const out: ReactNode[] = pieces.map((p, i) => {
+    if (skip.has(i)) return null;
+    const next = pieces[i + 1];
+    if (p.k === 'box' && next && (next.k === 'text' || next.k === 'value') && next.s.trim().length <= 30) {
+      skip.add(i + 1);
+      return (
+        <span key={i} className="pf-opt">
+          <span className={cx('pf-box', p.on && 'pf-box--on')} role="img" aria-label={p.on ? 'checked' : 'not checked'} />
+          {next.k === 'value' ? <span className="pf-v">{next.s}</span> : next.bold ? <strong>{next.s}</strong> : next.s}
+        </span>
+      );
+    }
     switch (p.k) {
       case 'br': return <br key={i} />;
       case 'text': {

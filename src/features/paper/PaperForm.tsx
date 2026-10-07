@@ -53,7 +53,7 @@ export function PaperForm({ template, doc, data, className }: PaperFormProps) {
   // forms with a printed layout (template.schema.paper.blocks): drawn exactly like the reference form
   if (paper.blocks) {
     return (
-      <article className={cx('paper paper--layout', className)} aria-label={paper.title}>
+      <article className={cx('paper paper--layout', className)} aria-label={paper.title} lang="en">
         <img className="paper__logo" src="/logo.png" alt="Alliance for Science Rwanda" />
         {paper.header === 'title' ? (
           <header className="pf-title">
