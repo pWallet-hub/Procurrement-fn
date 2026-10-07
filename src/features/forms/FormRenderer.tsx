@@ -17,6 +17,8 @@ interface Props {
   errors?: Errors;
   /** how to fix each problem, by error path */
   hints?: Record<string, string>;
+  /** later slots whose fields this user may fill in the draft (TC-10 costs for an administrator) */
+  draftFillSlots?: string[];
   /** fields still to complete before the draft can be submitted (shown as a checklist) */
   missing?: Errors;
   /** frozen documents and non-editors */
@@ -31,9 +33,9 @@ interface Props {
  * Schema driven form. Controlled: owns no state. Pair it with useDocumentEditor for autosave.
  * Renders template.schema.sections; each field is resolved through registry.ts.
  */
-export function FormRenderer({ template, data, onChange, errors = {}, hints = {}, missing = {}, readOnly = false, caseId, documentId, fillAt }: Props) {
+export function FormRenderer({ template, data, onChange, errors = {}, hints = {}, missing = {}, readOnly = false, caseId, documentId, fillAt, draftFillSlots }: Props) {
   const idPrefix = useId().replace(/:/g, '');
-  const ctx = useMemo(() => ({ caseId, documentId, idPrefix, fillAt, hints }), [caseId, documentId, idPrefix, fillAt, hints]);
+  const ctx = useMemo(() => ({ caseId, documentId, idPrefix, fillAt, hints, draftFillSlots }), [caseId, documentId, idPrefix, fillAt, hints, draftFillSlots]);
   const errorEntries = Object.entries(errors);
   const missingEntries = Object.entries(missing).filter(([p]) => !(p in errors));
   const [checklistOpen, setChecklistOpen] = useState(false);

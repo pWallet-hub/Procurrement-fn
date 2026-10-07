@@ -21,7 +21,7 @@ interface Props {
 
 /** Resolves visibility / required / readonly, then delegates to the registered component. */
 export function FieldRenderer({ field, container, onChangeKey, pathPrefix = '', errors, readOnly, rootData, inline }: Props) {
-  const { idPrefix, fillAt, hints } = useFormContext();
+  const { idPrefix, fillAt, hints, draftFillSlots } = useFormContext();
   if (!isVisible(field, rootData)) return null;
 
   const Component = getFieldComponent(field.type);
@@ -38,7 +38,9 @@ export function FieldRenderer({ field, container, onChangeKey, pathPrefix = '', 
       onOtherChange={(v) => onChangeKey(`${field.key}_other`, v)}
       error={errors[path] ? withHint(errors[path], hints?.[path]) : undefined}
       errors={errors}
-      readOnly={field.fill_at ? field.fill_at !== fillAt : readOnly || isServerFilled(field)}
+      readOnly={field.fill_at
+        ? !(field.fill_at === fillAt || (!readOnly && !!draftFillSlots?.includes(field.fill_at))) || isServerFilled(field)
+        : readOnly || isServerFilled(field)}
       required={isRequired(field, rootData)}
       inline={inline}
       rootData={rootData}

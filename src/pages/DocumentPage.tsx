@@ -104,10 +104,19 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
     if (fillAt && fillFields.some((f) => f.key === key)) setSignData((d) => ({ ...d, [key]: value }));
     else editor.setField(key, value);
   };
+  // later-slot fields this user may fill in the draft already (an administrator fills the TC-10 costs while creating it)
+  const draftFillSlots = editor.editable
+    ? template.signature_slots.filter((s) => s.draft_fill && user?.roles.includes(s.role)).map((s) => s.key)
+    : [];
   // People who have something to fill in land on the editable fields; everyone else sees the paper form.
   const needsInput = editor.editable || !!fillAt;
   const [tab, setTab] = useState(needsInput ? 'edit' : 'form');
-  const formData = { ...editor.data, ...signData, ...(fillAt ? previewSlotComputed(fillFields, { ...editor.data, ...signData }) : {}) };
+  const draftFills = template.schema.sections.flatMap((s) => s.fields).filter((f) => f.fill_at && draftFillSlots.includes(f.fill_at));
+  const formData = {
+    ...editor.data, ...signData,
+    ...(fillAt ? previewSlotComputed(fillFields, { ...editor.data, ...signData }) : {}),
+    ...(draftFills.length ? previewSlotComputed(draftFills, editor.data) : {}), // live total while the administrator types
+  };
   // GR-06 distance control note: help text of travel_category before pi_final_authorization
   const travel = mySlot?.slot_key === 'pi_final_authorization'
     ? template.schema.sections.flatMap((s) => s.fields).find((f) => f.key === 'travel_category')
@@ -173,6 +182,7 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
                   errors={{ ...editor.errors, ...signErrors }}
                   hints={{ ...editor.hints, ...signHints }}
                   missing={editor.editable ? editor.missing : undefined}
+                  draftFillSlots={draftFillSlots}
                   fillAt={fillAt}
                   readOnly={!editor.editable}
                   caseId={doc.case_id}

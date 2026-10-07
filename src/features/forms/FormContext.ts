@@ -7,6 +7,8 @@ export interface FormContextValue {
   idPrefix: string;
   /** slot key whose fill_at fields are editable right now (signing panel open) */
   fillAt?: string | null;
+  /** later slots whose fill_at fields this user may fill while editing the draft (see SlotDef.draft_fill) */
+  draftFillSlots?: string[];
   /** how to fix each invalid field, by error path (from the server) */
   hints?: Record<string, string>;
 }

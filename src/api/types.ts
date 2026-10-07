@@ -170,6 +170,8 @@ export interface SlotDef {
   group?: string;
   declaration: string;
   assign?: 'creator' | 'case_requester' | `field:${string}`;
+  /** holders of this slot's role may fill its fill_at fields already in the draft (TC-10 costs by an administrator) */
+  draft_fill?: boolean;
 }
 
 /** How the printed AfS-Rwanda form looks (API-CONTRACT addendum 2). Every field is optional on the client: see paperMeta.ts for defaults. */
