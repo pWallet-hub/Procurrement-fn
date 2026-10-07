@@ -76,7 +76,25 @@ await step('requester fills items 1-14 and submits', async () => {
   await pg.waitForSelector('text=/Saved/i', { timeout: 10000 }); await pg.waitForTimeout(1500);
   await pg.getByRole('button', { name: /submit for signing/i }).click(); await decl().waitFor({ timeout: 10000 });
 });
-await step('traveller signs', () => sign('staff'));
+await step('external traveller: typed name instead of staff picker, passport checked', async () => {
+  await pg.goto(BASE + '/travel/new'); await pg.getByRole('button', { name: /create draft/i }).click(); await pg.waitForURL(/\/documents\//);
+  await field('id_number').waitFor({ timeout: 10000 });
+  if (!(await field('issued_to').isVisible())) throw new Error('staff picker not shown for internal');
+  await pg.getByLabel('External', { exact: true }).check();
+  await field('issued_to_name').waitFor({ timeout: 5000 });
+  if (await field('issued_to').isVisible()) throw new Error('staff picker still shown for external');
+  await field('issued_to_name').fill('Jane Visitor');
+  await pg.getByLabel('Passport', { exact: true }).check(); await field('id_number').fill('AB12');
+  await pg.waitForSelector('text=/passport number must be 6 to 9/i', { timeout: 10000 });
+  await field('id_number').fill('PC1234567');
+  await pg.waitForSelector('text=/passport number must be 6 to 9/i', { state: 'detached', timeout: 10000 });
+});
+await step('internal traveller: wrong national ID is flagged', async () => {
+  await pg.goto(BASE + '/travel/new'); await pg.getByRole('button', { name: /create draft/i }).click(); await pg.waitForURL(/\/documents\//);
+  await field('id_number').fill('12345');
+  await pg.waitForSelector('text=/16 digits/', { timeout: 10000 });
+});
+await step('requester signs', () => sign('staff'));
 await step('supervisor named on the form signs', () => sign('director.dept'));
 await step('admin sees the costs task, enters 15-16, total shows live, signs', async () => {
   await sign('admin', async () => {
