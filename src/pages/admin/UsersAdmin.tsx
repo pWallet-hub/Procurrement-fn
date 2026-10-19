@@ -46,7 +46,7 @@ export function UsersAdmin() {
       if (mode === 'invite') return adminApi.createUser(body);
       return adminApi.patchUser((mode as AdminUser).id, { full_name: body.full_name, position: body.position, department_id: body.department_id, roles: body.roles });
     },
-    onSuccess: async (res) => {
+    onSuccess: async () => {
       toast.success(mode === 'invite' ? 'User created; invitation email queued' : 'Saved');
       setMode(null);
       await refresh();
