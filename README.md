@@ -147,6 +147,9 @@ breaking rows. On phones label/value cells stack and wide tables scroll sideways
 
 ## UI developer guide - what to restyle first
 
+For every form (PR-01 to TC-10, the contract and the hand-written pages) and the components it renders, see
+[`docs/FORMS-AND-COMPONENTS.md`](docs/FORMS-AND-COMPONENTS.md).
+
 1. **`src/styles/theme.css`** - all colours, spacing, radius, fonts, control height, dark mode
    (`prefers-color-scheme`, or force with `<html data-theme="dark|light">`). Most of the app follows from this file.
 2. **`src/ui/` primitives + `styles/components.css`** - Button, Card, Badge/StatusBadge (status -> tone map in
