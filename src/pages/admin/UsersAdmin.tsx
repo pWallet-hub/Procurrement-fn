@@ -38,7 +38,6 @@ export function UsersAdmin() {
   const depts = useQuery({ queryKey: ['lookups', 'departments'], queryFn: lookupsApi.departments });
   const [mode, setMode] = useState<null | 'invite' | AdminUser>(null);
   const [form, setForm] = useState(EMPTY);
-  const [inviteLink, setInviteLink] = useState<string | null>(null);
 
   const refresh = () => qc.invalidateQueries({ queryKey: ['admin', 'users'] });
   const save = useMutation({
@@ -48,15 +47,14 @@ export function UsersAdmin() {
       return adminApi.patchUser((mode as AdminUser).id, { full_name: body.full_name, position: body.position, department_id: body.department_id, roles: body.roles });
     },
     onSuccess: async (res) => {
-      toast.success('Saved');
-      if (mode === 'invite') setInviteLink((res as { invite_link?: string }).invite_link ?? null);
+      toast.success(mode === 'invite' ? 'User created; invitation email queued' : 'Saved');
       setMode(null);
       await refresh();
     },
   });
   const act = useMutation({
-    mutationFn: (fn: () => Promise<unknown>) => fn(),
-    onSuccess: async () => { toast.success('Done'); await refresh(); },
+    mutationFn: (action: { run: () => Promise<unknown>; successMessage: string }) => action.run(),
+    onSuccess: async (_result, action) => { toast.success(action.successMessage); await refresh(); },
     onError: (e: Error) => toast.error(e.message),
   });
   const fe = save.error instanceof ApiError ? save.error.fields : {};
@@ -73,11 +71,6 @@ export function UsersAdmin() {
   return (
     <div className="stack">
       <div><Button variant="primary" onClick={() => open('invite')}>Invite user</Button></div>
-      {inviteLink && (
-        <Alert tone="success">
-          Invite link (shown outside production only): <span className="mono">{inviteLink}</span>
-        </Alert>
-      )}
       <DataTable
         rows={users.data?.items ?? []}
         rowKey={(u) => u.id}
@@ -92,9 +85,10 @@ export function UsersAdmin() {
             cell: (u) => (
               <div className="row">
                 <Button size="sm" onClick={() => open(u)}>Edit</Button>
-                <Button size="sm" onClick={() => act.mutate(() => adminApi.patchUser(u.id, { active: u.active === false }))}>{u.active === false ? 'Activate' : 'Deactivate'}</Button>
-                <Button size="sm" onClick={() => window.confirm(`Reset password for ${u.email}?`) && act.mutate(() => adminApi.resetPassword(u.id))}>Reset password</Button>
-                <Button size="sm" onClick={() => window.confirm(`Reset 2FA for ${u.email}?`) && act.mutate(() => adminApi.resetTotp(u.id))}>Reset 2FA</Button>
+                <Button size="sm" onClick={() => act.mutate({ run: () => adminApi.patchUser(u.id, { active: u.active === false }), successMessage: 'User status updated' })}>{u.active === false ? 'Activate' : 'Deactivate'}</Button>
+                {!u.has_password && <Button size="sm" onClick={() => window.confirm(`Send a new invite to ${u.email}? The old invite link will stop working.`) && act.mutate({ run: () => adminApi.resendInvite(u.id), successMessage: 'Invite email queued' })}>Resend invite</Button>}
+                <Button size="sm" onClick={() => window.confirm(`Reset password for ${u.email}?`) && act.mutate({ run: () => adminApi.resetPassword(u.id), successMessage: 'Password reset email queued' })}>Reset password</Button>
+                <Button size="sm" onClick={() => window.confirm(`Reset 2FA for ${u.email}?`) && act.mutate({ run: () => adminApi.resetTotp(u.id), successMessage: '2FA reset' })}>Reset 2FA</Button>
               </div>
             ),
           },

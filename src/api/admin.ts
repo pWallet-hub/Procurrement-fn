@@ -20,8 +20,9 @@ export interface UserPatch {
 
 export const adminApi = {
   users: () => api<List<AdminUser>>('/admin/users'),
-  createUser: (body: InviteBody) => api<{ user: AdminUser; invite_link?: string }>('/admin/users', { method: 'POST', body }),
+  createUser: (body: InviteBody) => api<{ user: AdminUser }>('/admin/users', { method: 'POST', body }),
   patchUser: (id: string, body: UserPatch) => api<AdminUser>(`/admin/users/${id}`, { method: 'PATCH', body }),
+  resendInvite: (id: string) => api<{ ok: true }>(`/admin/users/${id}/resend-invite`, { method: 'POST' }),
   resetPassword: (id: string) => api<unknown>(`/admin/users/${id}/reset-password`, { method: 'POST' }),
   resetTotp: (id: string) => api<unknown>(`/admin/users/${id}/reset-totp`, { method: 'POST' }),
 

@@ -43,9 +43,10 @@ export interface User {
   has_signature?: boolean;
 }
 
-/** Admin view of a user (adds `active`). */
+/** Admin view of a user (adds account status). */
 export interface AdminUser extends User {
   active?: boolean;
+  has_password?: boolean;
 }
 
 // ---- auth ----
