@@ -1,0 +1,205 @@
+/* ==========================================================================
+   DocumentPage Layout & Modern Document Control Styling
+   ========================================================================== */
+
+.doc-page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 88rem;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+}
+
+/* Compact document summary */
+.doc-header-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 0.8rem 1rem;
+  box-shadow: var(--shadow-1);
+}
+
+.doc-header-card .page-header {
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin: 0;
+}
+
+.doc-header-card .page-header > div:first-child {
+  flex: 1 1 20rem;
+  min-width: 0;
+}
+
+.doc-header-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.doc-meta-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.55rem;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.doc-meta-pill {
+  background: var(--color-surface-alt);
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.doc-case-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-link);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.doc-case-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.doc-meta-time {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.doc-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.doc-header-actions .btn {
+  min-height: 2.35rem;
+  padding-inline: 0.75rem;
+}
+
+/* Toolbar & Tabs */
+.doc-toolbar-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 0.2rem 0.6rem;
+  min-height: 2.8rem;
+  box-shadow: var(--shadow-1);
+}
+
+.doc-toolbar-card .tabs {
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-width: 0;
+  margin: 0;
+}
+
+.doc-toolbar-card .tabs__tab {
+  padding: 0.55rem 0.75rem;
+}
+
+.doc-toolbar-card .doc-print-btn {
+  flex: none;
+}
+
+/* Grid Layout */
+.doc-page-stack .doc-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 21.25rem);
+  gap: 1rem;
+  align-items: start;
+}
+
+.doc-layout__main {
+  min-width: 0;
+}
+
+.doc-editor-card {
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+}
+
+.doc-layout__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: sticky;
+  top: 1rem;
+}
+
+.doc-signing-slot {
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.doc-signatures-card {
+  border-radius: var(--radius-lg);
+}
+
+.doc-assign-wrapper {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+  .doc-page-stack .doc-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .doc-layout__aside {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .doc-page-stack {
+    gap: 0.6rem;
+    padding: 0.6rem;
+  }
+
+  .doc-header-card {
+    padding: 0.7rem;
+  }
+
+  .doc-header-card .page-header__actions {
+    width: 100%;
+  }
+
+  .doc-header-actions {
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+
+  .doc-toolbar-card {
+    padding-inline: 0.35rem;
+  }
+
+  .doc-toolbar-card .tabs__tab {
+    padding-inline: 0.5rem;
+  }
+}

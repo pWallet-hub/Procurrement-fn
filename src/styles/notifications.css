@@ -1,0 +1,95 @@
+/* Scoped tokens. Map these to your app's variables if you have them. */
+.notifs {
+  --n-ink: #0f1b33;
+  --n-muted: #6a7691;
+  --n-line: #e6ecf7;
+  --n-card: #ffffff;
+  --n-wash: #f3f7ff;
+  --n-shadow: 0 1px 2px rgba(15, 40, 100, .04), 0 8px 24px -12px rgba(15, 40, 100, .14);
+
+  --c-info: #0b6bff;    --c-info-bg: #e7f0ff;
+  --c-danger: #f03d4a;  --c-danger-bg: #ffecee;
+  --c-warning: #ee8a12; --c-warning-bg: #fff3e1;
+  --c-success: #12a36b; --c-success-bg: #e4f7ee;
+  --c-neutral: #5b6b8c; --c-neutral-bg: #eef1f7;
+  max-width: 760px;
+}
+@media (prefers-color-scheme: dark) {
+  .notifs {
+    --n-ink: #eaf0ff; --n-muted: #9aa8c7; --n-line: #243152;
+    --n-card: #131c33; --n-wash: #0e1527;
+    --n-shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    --c-info-bg: #14264d; --c-danger-bg: #3a1a22; --c-warning-bg: #3a2a12;
+    --c-success-bg: #12301f; --c-neutral-bg: #1b2644;
+  }
+}
+
+/* Toolbar */
+.notifs__bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--n-wash); border: 1px solid var(--n-line); border-radius: 999px; }
+.seg__tab {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .4rem .95rem; border: 0; border-radius: 999px; background: transparent;
+  font: inherit; font-size: .875rem; font-weight: 500; color: var(--n-muted); cursor: pointer;
+  transition: background .15s, color .15s, box-shadow .15s;
+}
+.seg__tab.is-on { background: var(--n-card); color: var(--n-ink); box-shadow: 0 1px 3px rgba(15, 40, 100, .14); }
+.seg__count { min-width: 1.25rem; padding: 0 .35rem; border-radius: 999px; background: var(--c-info); color: #fff; font-size: .75rem; line-height: 1.25rem; text-align: center; }
+.linkbtn { border: 0; background: none; padding: .25rem 0; font: inherit; font-size: .875rem; font-weight: 600; color: var(--c-info); cursor: pointer; }
+.linkbtn:disabled { color: var(--n-muted); cursor: default; opacity: .6; }
+.linkbtn:not(:disabled):hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Groups + card */
+.ngroup { display: grid; gap: .5rem; }
+.ngroup__title { margin: .75rem 0 0 .25rem; font-size: .875rem; font-weight: 600; color: var(--n-muted); }
+.ncard { list-style: none; margin: 0; padding: 0; background: var(--n-card); border-radius: 14px; box-shadow: var(--n-shadow); overflow: hidden; }
+
+/* Row */
+.nrow {
+  --tone: var(--c-neutral); --tone-bg: var(--c-neutral-bg);
+  position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: .9rem;
+  padding: 1rem 1.1rem 1rem 1.25rem; transition: background .15s;
+}
+.nrow + .nrow { border-top: 1px solid var(--n-line); }
+.tone-info    { --tone: var(--c-info);    --tone-bg: var(--c-info-bg); }
+.tone-danger  { --tone: var(--c-danger);  --tone-bg: var(--c-danger-bg); }
+.tone-warning { --tone: var(--c-warning); --tone-bg: var(--c-warning-bg); }
+.tone-success { --tone: var(--c-success); --tone-bg: var(--c-success-bg); }
+
+/* Unread: colored edge + tinted wash. The edge color carries the event type. */
+.nrow.is-unread { background: color-mix(in srgb, var(--tone) 4%, var(--n-card)); }
+.nrow.is-unread::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--tone); border-radius: 0 4px 4px 0; }
+
+.nrow__icon {
+  display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%;
+  background: var(--tone-bg); color: var(--tone);
+}
+.nrow:not(.is-unread) .nrow__icon { background: var(--c-neutral-bg); color: var(--c-neutral); }
+
+.nrow__body { display: grid; gap: .2rem; min-width: 0; color: inherit; text-decoration: none; border-radius: 6px; }
+.nrow__title { font-size: .95rem; font-weight: 600; color: var(--n-ink); }
+.nrow:not(.is-unread) .nrow__title { font-weight: 500; }
+.nrow__text { max-width: 62ch; font-size: .875rem; line-height: 1.5; color: var(--n-muted); overflow-wrap: anywhere; }
+a.nrow__body:hover .nrow__title { color: var(--tone); }
+a.nrow__body:focus-visible, .nrow__read:focus-visible, .seg__tab:focus-visible, .linkbtn:focus-visible {
+  outline: 2px solid var(--c-info); outline-offset: 2px;
+}
+
+.nrow__side { display: grid; justify-items: end; gap: .4rem; }
+.nrow__time { font-size: .8125rem; color: var(--n-muted); white-space: nowrap; }
+.nrow__read {
+  border: 1px solid var(--n-line); background: var(--n-card); color: var(--n-ink);
+  font: inherit; font-size: .8125rem; font-weight: 500; padding: .25rem .65rem; border-radius: 999px; cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.nrow__read:hover { background: var(--n-wash); border-color: var(--tone); }
+
+.notifs__none { margin: 2rem 0; text-align: center; color: var(--n-muted); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 560px) {
+  .nrow { grid-template-columns: auto 1fr; }
+  .nrow__side { grid-column: 2; grid-auto-flow: column; justify-content: space-between; align-items: center; justify-items: start; }
+}
+@media (prefers-reduced-motion: reduce) { .nrow, .seg__tab, .nrow__read { transition: none; } }

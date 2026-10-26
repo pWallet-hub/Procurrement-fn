@@ -18,16 +18,15 @@ import { SlotList } from '../features/signing/SlotList';
 import { formatDateTime } from '../lib/format';
 import { Alert } from '../ui/Alert';
 import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
 import { ErrorState } from '../ui/ErrorState';
 import { Icon } from '../ui/Icon';
-import { PageHeader } from '../ui/PageHeader';
 import { PageSpinner } from '../ui/Spinner';
 import { StatusBadge } from '../ui/StatusBadge';
 import { TabPanel, Tabs } from '../ui/Tabs';
 import { useToast } from '../ui/Toast';
 import { describeError } from '../features/forms/problems';
 import type { Template } from '../api/types';
+// import './DocumentPage.css';
 
 export function DocumentPage() {
   const { id = '' } = useParams();
@@ -123,28 +122,34 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
     : undefined;
 
   return (
-    <div className="stack">
-      <PageHeader
-        title={doc.title}
-        subtitle={
-          <span className="doc-meta">
+    <div className="docpage">
+      <header className="dp-head">
+        <div className="dp-head-main">
+          <p className="dp-id">
+            <span className="dp-type">{doc.doc_type}</span>
+            <span className="dp-version">v{doc.version}</span>
             <StatusBadge status={doc.state} />
-            <span>{doc.doc_type} · v{doc.version}</span>
-            {doc.request_no && <span>Request {doc.request_no}</span>}
-            {doc.case_id && <Link to={`/cases/${doc.case_id}`}>View case</Link>}
-            <span>Updated {formatDateTime(doc.updated_at)}</span>
-          </span>
-        }
-        actions={
-          <>
-            {editor.editable && <SaveIndicator status={editor.status} />}
-            {doc.can.submit && <Button variant="primary" loading={submit.isPending} onClick={() => submit.mutate()}>Submit for signing</Button>}
-            {doc.can.revise && <Button variant="primary" loading={revise.isPending} onClick={() => revise.mutate()}>Revise</Button>}
-            {doc.can.edit_request && <Button onClick={() => setEditReqOpen(true)}>Request edit</Button>}
-            {doc.can.cancel && <Button variant="danger" onClick={() => setCancelOpen(true)}>Cancel</Button>}
-          </>
-        }
-      />
+          </p>
+          <h1>{doc.title}</h1>
+          <dl className="dp-meta">
+            {doc.request_no && (
+              <div><dt>Request</dt><dd>{doc.request_no}</dd></div>
+            )}
+            {doc.case_id && (
+              <div><dt>Case</dt><dd><Link to={`/cases/${doc.case_id}`}>View case</Link></dd></div>
+            )}
+            <div><dt>Updated</dt><dd>{formatDateTime(doc.updated_at)}</dd></div>
+          </dl>
+        </div>
+
+        <div className="dp-actions">
+          {editor.editable && <SaveIndicator status={editor.status} />}
+          {doc.can.submit && <Button variant="primary" loading={submit.isPending} onClick={() => submit.mutate()}>Submit for signing</Button>}
+          {doc.can.revise && <Button variant="primary" loading={revise.isPending} onClick={() => revise.mutate()}>Revise</Button>}
+          {doc.can.edit_request && <Button onClick={() => setEditReqOpen(true)}>Request edit</Button>}
+          {doc.can.cancel && <Button variant="danger" onClick={() => setCancelOpen(true)}>Cancel</Button>}
+        </div>
+      </header>
 
       {doc.state === 'returned' && doc.returned_reason && <Alert tone="warning">Returned: {doc.returned_reason}</Alert>}
       {submitError && editor.editable && <Alert tone="error"><strong>Not submitted.</strong> {submitError}</Alert>}
@@ -154,7 +159,7 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
         </Alert>
       )}
 
-      <div className="doc-toolbar">
+      <div className="dp-toolbar">
         <Tabs
           tabs={[
             { id: 'form', label: 'Form' },
@@ -169,12 +174,12 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
       </div>
 
       {(tab === 'form' || tab === 'edit') && (
-        <div className="doc-layout">
-          <div className="doc-layout__main">
+        <div className={`dp-layout${mySlot ? ' dp-layout--signing' : ''}`}>
+          <div className="dp-main">
             {tab === 'form' ? (
               <PaperForm template={template} doc={doc} data={formData} />
             ) : (
-              <Card>
+              <div className="dp-sheet">
                 <FormRenderer
                   template={template}
                   data={formData}
@@ -188,35 +193,38 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
                   caseId={doc.case_id}
                   documentId={doc.id}
                 />
-              </Card>
+              </div>
             )}
           </div>
-          <aside className="doc-layout__aside" aria-label="Signatures">
+          <aside className="dp-aside" aria-label="Signatures">
             {mySlot && (
-              <SigningPanel
-                slotLabel={mySlot.label}
-                declaration={mySlot.declaration}
-                contentHash={doc.content_hash}
-                requiresConflictConfirmation={template.workflow.requires_conflict_confirmation}
-                defaultName={user?.full_name}
-                onSign={(body, key) => documentsApi.sign(doc.id, mySlot.slot_key, body, key)}
-                onDecline={doc.can.decline.includes(mySlot.slot_key) ? (reason) => documentsApi.decline(doc.id, mySlot.slot_key, reason) : undefined}
-                onDone={() => { toast.success('Signed. Thank you.'); void refresh(); }}
-                data={fillAt ? pickKeys(signData, fillFields.map((f) => f.key)) : undefined}
-                notice={travel?.help ? <Alert tone="warning">{travel.help}</Alert> : undefined}
-                onError={(e) => {
-                  if (!(e instanceof ApiError)) return;
-                  setSignErrors(e.fields);
-                  setSignHints(e.hints);
-                  // fields to fill at this signature are on the "Edit fields" tab
-                  if (fillAt && Object.keys(e.fields).some((k) => fillFields.some((f) => k === f.key || k.startsWith(`${f.key}[`) || k === `${f.key}_other`))) setTab('edit');
-                }}
-              />
+              <div className="dp-signing">
+                <SigningPanel
+                  slotLabel={mySlot.label}
+                  declaration={mySlot.declaration}
+                  contentHash={doc.content_hash}
+                  requiresConflictConfirmation={template.workflow.requires_conflict_confirmation}
+                  defaultName={user?.full_name}
+                  onSign={(body, key) => documentsApi.sign(doc.id, mySlot.slot_key, body, key)}
+                  onDecline={doc.can.decline.includes(mySlot.slot_key) ? (reason) => documentsApi.decline(doc.id, mySlot.slot_key, reason) : undefined}
+                  onDone={() => { toast.success('Signed. Thank you.'); void refresh(); }}
+                  data={fillAt ? pickKeys(signData, fillFields.map((f) => f.key)) : undefined}
+                  notice={travel?.help ? <Alert tone="warning">{travel.help}</Alert> : undefined}
+                  onError={(e) => {
+                    if (!(e instanceof ApiError)) return;
+                    setSignErrors(e.fields);
+                    setSignHints(e.hints);
+                    // fields to fill at this signature are on the "Edit fields" tab
+                    if (fillAt && Object.keys(e.fields).some((k) => fillFields.some((f) => k === f.key || k.startsWith(`${f.key}[`) || k === `${f.key}_other`))) setTab('edit');
+                  }}
+                />
+              </div>
             )}
-            <Card title="Signatures">
+            <section className="dp-slots" aria-labelledby="dp-slots-h">
+              <h2 id="dp-slots-h">Signatures</h2>
               <SlotList slots={doc.slots} documentId={doc.id} />
-              {doc.can.assign && <div style={{ marginTop: 'var(--space-4)' }}><AssignDelegate doc={doc} onDone={refresh} /></div>}
-            </Card>
+              {doc.can.assign && <div className="dp-assign"><AssignDelegate doc={doc} onDone={refresh} /></div>}
+            </section>
           </aside>
         </div>
       )}

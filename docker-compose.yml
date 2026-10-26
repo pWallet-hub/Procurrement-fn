@@ -12,7 +12,7 @@ services:
     expose: ["80"]
     environment:
       # where nginx forwards /api. Any URL: another container, a host port, or a remote server.
-      API_UPSTREAM: ${API_UPSTREAM:-http://host.docker.internal:3000}
+      API_UPSTREAM: ${API_UPSTREAM:-https://apipro.afs-rwanda.org}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped

@@ -1,0 +1,372 @@
+/* ==========================================================================
+   FormRenderer — Modern, Vibrant & Structured Design
+   ========================================================================== */
+
+.form-renderer {
+  --fr-ink: #0f172a;
+  --fr-muted: #64748b;
+  --fr-line: #e2e8f0;
+  --fr-line-strong: #cbd5e1;
+  --fr-paper: #ffffff;
+  --fr-wash: #f8fafc;
+  --fr-accent: #2563eb;
+  --fr-accent-gradient: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  --fr-accent-soft: #eff6ff;
+  --fr-danger: #dc2626;
+  --fr-danger-soft: #fef2f2;
+  --fr-warn: #d97706;
+  --fr-warn-soft: #fffbeb;
+  --fr-radius: 12px;
+  --fr-serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --fr-ring: 0 0 0 4px rgba(37, 99, 235, 0.15);
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 62rem;
+  margin-inline: auto;
+  color: var(--fr-ink);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ---------- Sections ---------- */
+
+.form-section {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  background: var(--fr-paper);
+  border: 1px solid var(--fr-line);
+  border-left: 5px solid var(--fr-accent);
+  border-radius: var(--fr-radius);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: clip;
+}
+
+.form-section:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
+
+.form-section__title {
+  float: left;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.95rem 1.5rem;
+  background: var(--fr-wash);
+  border-bottom: 1px solid var(--fr-line);
+  font-family: var(--fr-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  color: var(--fr-ink);
+}
+
+.form-section__title + * {
+  clear: both;
+}
+
+.form-section__desc {
+  margin: 0;
+  padding: 1rem 1.5rem 0;
+  max-width: 68ch;
+  font-size: 0.925rem;
+  line-height: 1.6;
+  color: var(--fr-muted);
+}
+
+.form-section__fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.35rem;
+  padding: 1.35rem 1.5rem 1.6rem;
+}
+
+/* ---------- Field Styles ---------- */
+
+:where(.form-renderer) label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--fr-ink);
+}
+
+:where(.form-renderer) :is(input:not([type="checkbox"], [type="radio"]), select, textarea) {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--fr-ink);
+  background: var(--fr-paper);
+  border: 1.5px solid var(--fr-line-strong);
+  border-radius: 8px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+:where(.form-renderer) :is(input, select, textarea):hover:not(:disabled) {
+  border-color: var(--fr-accent);
+}
+
+:where(.form-renderer) :is(input, select, textarea, button):focus-visible {
+  outline: none;
+  border-color: var(--fr-accent);
+  box-shadow: var(--fr-ring);
+}
+
+:where(.form-renderer) :is(input, select, textarea):disabled,
+:where(.form-renderer) :is(input, select, textarea)[readonly] {
+  background: var(--fr-wash);
+  color: var(--fr-muted);
+  cursor: default;
+}
+
+:where(.form-renderer) :is(input, select, textarea)[aria-invalid="true"] {
+  border-color: var(--fr-danger);
+  background: var(--fr-danger-soft);
+}
+
+:where(.form-renderer) table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+:where(.form-renderer) :is(th, td) {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--fr-line);
+  text-align: left;
+}
+
+:where(.form-renderer) th {
+  background: var(--fr-wash);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--fr-muted);
+}
+
+.form-renderer--readonly .form-section {
+  border-left-color: var(--fr-line-strong);
+}
+
+.form-renderer--readonly .form-section__title {
+  background: transparent;
+}
+
+/* ---------- Error Notice & Icons ---------- */
+
+.form-notice--error {
+  scroll-margin-top: 1rem;
+  border-radius: var(--fr-radius);
+  background: var(--fr-danger-soft);
+  border: 1px solid color-mix(in srgb, var(--fr-danger) 30%, transparent);
+}
+
+.form-notice__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-notice__title {
+  font-size: 1rem;
+  color: var(--fr-danger);
+}
+
+.form-notice__aside {
+  font-size: 0.85rem;
+  color: var(--fr-muted);
+}
+
+.lucide-header-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+/* ---------- Problem Lists & Items ---------- */
+
+.form-errors {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-errors__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.form-errors__item:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.form-errors__icon {
+  margin-top: 0.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.lucide-err-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--fr-danger);
+}
+
+.lucide-chk-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--fr-warn);
+}
+
+.form-errors__body {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.form-errors__link {
+  appearance: none;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  color: var(--fr-ink);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  cursor: pointer;
+}
+
+.form-errors__link:hover {
+  color: var(--fr-danger);
+}
+
+.form-errors__link:focus-visible {
+  outline: none;
+  border-radius: 2px;
+  box-shadow: var(--fr-ring);
+}
+
+.form-errors__msg {
+  color: var(--fr-ink);
+}
+
+.form-errors__hint {
+  display: block;
+  margin-top: 0.2rem;
+  padding-left: 0.7rem;
+  border-left: 2px solid var(--fr-line-strong);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--fr-muted);
+}
+
+/* ---------- Checklist ---------- */
+
+.form-checklist {
+  background: var(--fr-warn-soft);
+  border: 1px solid color-mix(in srgb, var(--fr-warn) 30%, transparent);
+  border-radius: var(--fr-radius);
+  overflow: clip;
+}
+
+.form-checklist > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1.1rem;
+  list-style: none;
+  cursor: pointer;
+  color: var(--fr-warn);
+  user-select: none;
+}
+
+.form-checklist > summary::-webkit-details-marker {
+  display: none;
+}
+
+.form-checklist__header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.lucide-chevron-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.form-checklist[open] .lucide-chevron-icon {
+  transform: rotate(180deg);
+}
+
+.form-checklist > summary:hover {
+  background: color-mix(in srgb, var(--fr-warn) 6%, transparent);
+}
+
+.form-checklist > summary:focus-visible {
+  outline: none;
+  box-shadow: inset var(--fr-ring);
+}
+
+.form-checklist__count {
+  display: inline-block;
+  min-width: 1.5rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--fr-warn);
+  color: #fff;
+  font-size: 0.85rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.form-checklist__body {
+  padding: 0 0.8rem 0.9rem;
+  border-top: 1px solid color-mix(in srgb, var(--fr-warn) 22%, transparent);
+}
+
+/* ---------- Footer note ---------- */
+
+.form-footer-note {
+  margin: 0;
+  padding: 0.9rem 0 0 1.5rem;
+  border-top: 1px solid var(--fr-line);
+  max-width: 72ch;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--fr-muted);
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 640px) {
+  .form-renderer { gap: 1rem; }
+  .form-section__title { padding: 0.75rem 1rem; font-size: 1.1rem; }
+  .form-section__desc { padding: 0.85rem 1rem 0; }
+  .form-section__fields { padding: 1.1rem 1rem 1.3rem; gap: 1.15rem; }
+  .form-footer-note { padding-left: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lucide-chevron-icon,
+  :where(.form-renderer) :is(input, select, textarea) {
+    transition: none;
+  }
+}
+
+@media print {
+  .form-notice--error, .form-checklist { display: none; }
+  .form-section { break-inside: avoid; box-shadow: none; }
+}
