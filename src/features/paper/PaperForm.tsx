@@ -81,7 +81,7 @@ export function PaperForm({ template, doc, data, className }: PaperFormProps) {
     <article className={cx('paper', className)} aria-label={paper.title}>
       <img className="paper__logo" src="/logo.png" alt="Alliance for Science Rwanda" />
 
-      <HeaderBox paper={paper} headerDate={headerDate} />
+      <HeaderBox paper={paper} headerDate={headerDate} showVersion />
       {intro}
 
       {template.schema.sections.map((section) => (
@@ -99,24 +99,32 @@ export function PaperForm({ template, doc, data, className }: PaperFormProps) {
   );
 }
 
-/** Org / FORM / title / version box at the top of the procurement forms. */
-function HeaderBox({ paper, headerDate }: { paper: ResolvedPaper; headerDate: string }) {
+/**
+ * Org / FORM / title / effective-date box at the top of the printed forms.
+ * Two flex rows (not a table) because the printed form splits the columns differently on each row.
+ */
+function HeaderBox({ paper, headerDate, showVersion = false }: { paper: ResolvedPaper; headerDate: string; showVersion?: boolean }) {
   return (
-    <table className="pf-header">
-      <tbody>
-        <tr>
-          <td className="pf-header__org">{paper.org}</td>
-          <td className="pf-header__meta pf-header__meta--form">FORM: {paper.form_label}</td>
-        </tr>
-        <tr>
-          <td className="pf-header__title">{paper.title}</td>
-          <td className="pf-header__meta">
-            <div>Version: {paper.version}</div>
-            <div>{paper.date_label}: {headerDate || <span className="pf-date"><span className="pf-blank" />/<span className="pf-blank" />/<span className="pf-blank" /></span>}</div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div className="pf-header">
+      <div className="pf-header__row pf-header__row--top">
+        <div className="pf-header__org">{paper.org}</div>
+        <div className="pf-header__meta pf-header__meta--form">FORM: {paper.form_label}</div>
+      </div>
+      <div className="pf-header__row pf-header__row--bottom">
+        <div className="pf-header__title">{paper.title}</div>
+        <div className="pf-header__meta pf-header__meta--eff">
+          {showVersion && <div>Version: {paper.version}</div>}
+          <div>
+            {paper.date_label}:{' '}
+            {headerDate || (
+              <span className="pf-date">
+                <span className="pf-blank pf-blank--eff" />/<span className="pf-blank pf-blank--eff" />/<span className="pf-blank pf-blank--eff pf-blank--eff-year" />
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -194,4 +202,3 @@ export function PaperTable({ field, rows, data, ctx, showTitle }: { field: Field
     </div>
   );
 }
-

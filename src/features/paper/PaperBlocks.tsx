@@ -68,7 +68,18 @@ function Block({ block: b, prev, ctx, documentId, bySlot }: { block: FlatBlock; 
   const render = (text: string, cell: Partial<PaperCell> = {}, bold = false, italic = false) =>
     <Pieces pieces={inlinePieces(text, cell, ctx, bold, italic)} documentId={documentId} bySlot={bySlot} />;
 
-  if (b.t === 'heading') return <h3 className={cx('pf-h', `pf-h--${b.style ?? 'caps'}`)}>{b.text}</h3>;
+  if (b.t === 'heading') {
+    // "B. TYPE OF REQUEST — Tick the applicable category": the part after the dash is printed in mixed case, slightly smaller
+    const dash = b.text.indexOf(' — ');
+    const caps = (b.style ?? 'caps') === 'caps';
+    return (
+      <h3 className={cx('pf-h', `pf-h--${b.style ?? 'caps'}`)}>
+        {dash > 0 && caps
+          ? <>{b.text.slice(0, dash)} <span className="pf-h__tail">{b.text.slice(dash + 1)}</span></>
+          : b.text}
+      </h3>
+    );
+  }
   if (b.t === 'text') return <p className={cx('pf-text', `pf-text--${b.style ?? 'plain'}`)}>{render(b.text, {}, false, b.style === 'note')}</p>;
 
   const total = b.cols.reduce((a, c) => a + c, 0);

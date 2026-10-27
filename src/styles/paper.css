@@ -35,13 +35,35 @@
 .paper__notes { margin: 0.25cm 0 0; font-style: italic; font-size: 0.75rem; }
 .paper__footer { margin-top: 0.7cm; text-align: center; color: var(--paper-muted); font-size: 0.7rem; }
 
-/* header box */
-.pf-header { margin-bottom: 0.45cm; }
-.pf-header td { border: 1px solid var(--paper-line); padding: 0.12cm 0.2cm; }
-.pf-header__org { font-weight: 700; font-size: 0.9rem; background: var(--paper-head-bg); }
-.pf-header__title { font-size: 1.05rem; font-weight: 500; text-transform: uppercase; }
-.pf-header__meta { width: 38%; background: #eef4fa; font-size: 0.78rem; }
-.pf-header__meta--form { background: var(--paper-head-bg); font-weight: 700; }
+/* header box (two rows with different column splits, like the printed form) */
+.pf-header { margin-bottom: 0.05cm; color: #000; font-family: Arial, Helvetica, 'Liberation Sans', sans-serif; }
+.pf-header__row { display: flex; align-items: stretch; }
+.pf-header__row + .pf-header__row { margin-top: -1px; }
+.pf-header__row > div { border: 1px solid #000; padding: 0.05cm 0.2cm; min-width: 0; }
+.pf-header__row > div + div { margin-left: -1px; }
+.pf-header__row--top > :first-child { flex: 0 0 53%; }
+.pf-header__row--bottom > :first-child { flex: 0 0 60%; }
+.pf-header__row--top > :last-child,
+.pf-header__row--bottom > :last-child { flex: 1 1 0; }
+
+/* left column: thin border, bold black text on ONE line (org keeps its own case, title is capitals) */
+.pf-header__org,
+.pf-header__title { font-weight: 700; color: #000; display: flex; align-items: center; white-space: nowrap; }
+.pf-header__org { font-size: 1.16em; line-height: 1.15; text-transform: none; }
+.pf-header__title { font-size: 1.16em; line-height: 1.15; text-transform: uppercase; padding-top: 0.09cm !important; padding-bottom: 0.09cm !important; }
+
+/* right column: one shared light blue, thin border, small text */
+.pf-header__meta { font-size: 0.86em; font-weight: 400; display: flex; flex-direction: column; justify-content: flex-end; }
+.pf-header__meta--form { font-size: 0.92em; font-weight: 700; align-items: center; justify-content: center; text-align: center; }
+.pf-header__meta--eff { align-items: flex-start; padding-top: 0.1cm !important; padding-bottom: 0.05cm !important; padding-left: 0.3cm !important; }
+
+/* backgrounds: each row has its own blue, shared by both cells of that row (sampled from the reference; explicit so no older rule can tint a cell) */
+.pf-header .pf-header__row--top > div { background: #d9eaf7 !important; }
+.pf-header .pf-header__row--bottom > div { background: #eef5fa !important; }
+
+/* effective-date blanks (selectors are scoped to .pf-header so they beat the generic .pf-date .pf-blank rule) */
+.pf-header .pf-date .pf-blank { margin: 0; min-width: 3.6em; height: 1em; border-bottom: 1px solid #000; }
+.pf-header .pf-date .pf-blank--eff-year { min-width: 5.6em; }
 
 /* section headings */
 .pf-section { margin-top: 0.4cm; }
@@ -97,14 +119,18 @@
 .paper--layout { --paper-value: #1f3a68; --paper-heading-blue: #2e74b5; --paper-green-bg: #d8e4bc; container-type: inline-size; overflow-wrap: break-word; hyphens: auto; }
 /* the sheet scales with its column like a page preview (A4 width = full size), never below a readable size */
 .paper--layout > * { font-size: clamp(0.7rem, 1.72cqi, var(--paper-size)); }
-.paper--layout .pf-header__org { font-size: 1.08em; }
-.paper--layout .pf-header__title { font-size: 1.22em; font-weight: 700; }
-.paper--layout .pf-header__meta { font-size: 0.94em; }
+
+/* logo + intro line as in the reference */
+.paper--layout .paper__logo { width: 24.5%; min-width: 3cm; max-width: 5cm; margin: 0 auto 0.08cm; }
+.paper--layout .paper__intro { margin: 0 0 0.06cm; }
+.paper--layout .paper__intro .pf-text { margin: 0; font-weight: 700; font-size: 0.68em; line-height: 1.25; color: #000; }
+
 .pf-opt { white-space: nowrap; }
 .pf-opt + .pf-opt { margin-left: 0.5em; }
-.pf-h { margin: 0.32cm 0 0.1cm; font-size: 1.06em; font-weight: 700; line-height: 1.25; break-after: avoid; }
-.pf-h--caps { text-transform: uppercase; color: var(--paper-ink); }
+.pf-h { margin: 0.22cm 0 0.1cm; font-size: 1.05em; font-weight: 700; line-height: 1.2; letter-spacing: 0; break-after: avoid; font-family: var(--paper-font); }
+.pf-h--caps { text-transform: uppercase; color: #111; }
 .pf-h--blue { color: var(--paper-heading-blue); }
+.pf-h__tail { text-transform: none; font-size: 0.92em; }
 .pf-text { margin: 0.12cm 0 0; }
 .pf-text--note { font-style: italic; font-size: 0.9em; }
 .pf-text--intro { margin: 0; }
@@ -117,6 +143,22 @@
 .pf-grid-wrap--attach { margin-top: -1px; }
 .pf-grid { table-layout: fixed; }
 .pf-grid td, .pf-grid th { border: 1px solid var(--paper-line); padding: 0.09cm 0.16cm; vertical-align: middle; font-weight: 400; }
+/* default (solid) frame as on the printed form: thin black outline, same weight as the inner lines */
+.pf-grid--solid { border: 1px solid #000; font-family: var(--paper-font); }
+.pf-grid--solid td, .pf-grid--solid th {
+  border-width: 1px; border-style: solid; border-color: #000;
+  padding: 0.07cm 0.16cm; height: 0.75cm;
+}
+.pf-grid--solid .pf-cell--label {
+  background: #f2f2f2; color: #000;
+  font-size: 0.85em; line-height: 1.2;
+  overflow-wrap: normal; word-break: normal; hyphens: manual; /* words never break mid-word */
+}
+/* fill-in lines are light grey and never run past their cell */
+.pf-grid--solid .pf-blank { border-bottom: 1px solid #a6a6a6; max-width: 100%; vertical-align: bottom; }
+/* a cell holding only a blank gets a full-width rule on its bottom edge */
+.pf-grid--solid td > .pf-blank:only-child { display: block; width: 100% !important; height: 0; margin: 0 auto; }
+.pf-grid--solid td:has(> .pf-blank:only-child) { vertical-align: middle !important; }
 .pf-grid--small td, .pf-grid--small th, .pf-cell--small { font-size: 0.92em; }
 .pf-grid--small .pf-cell--small { font-size: 1em; }
 .pf-grid--dashed { border: 1.5px dashed #8fbf6a; }
@@ -171,10 +213,11 @@
 /* phones: keep the paper readable instead of shrinking it */
 @media (max-width: 700px) {
   .paper { padding: var(--space-4); border-radius: var(--radius); --paper-size: 0.875rem; }
-  .pf-header, .pf-header tbody, .pf-header tr, .pf-header td { display: block; width: 100%; }
-  .pf-header td { border-bottom: 0; }
-  .pf-header tr:last-child td:last-child { border-bottom: 1px solid var(--paper-line); }
-  .pf-header__meta { width: 100%; }
+  .pf-header__row { flex-direction: column; }
+  .pf-header__org, .pf-header__title { white-space: normal; }
+  .pf-header__row > div + div { margin-left: 0; margin-top: -1px; }
+  .pf-header__row--top > :first-child,
+  .pf-header__row--bottom > :first-child { flex: none; }
   .pf-kv, .pf-kv tbody, .pf-kv tr, .pf-kv th, .pf-kv td { display: block; width: 100%; }
   .pf-kv tr { margin-bottom: -1px; }
   .pf-kv th, .pf-kv td { border-bottom: 0; }
