@@ -86,8 +86,7 @@ export function expandBlocks(blocks: PaperBlock[], data: Record<string, unknown>
           t: 'grid', cols: part.map(() => 1), attach: b.attach || i > 0, small: true,
           rows: [
             part.map((s) => ({ c: s.label, sub: s.sub, head: true, small: true })),
-            part.map((s) => ({ c: `Name: {@${s.slot}.name}\nSignature: {@${s.slot}.signature}{@${s.slot}.status}`, h: 50 })),
-            part.map((s) => ({ c: `Date: {@${s.slot}.date}` })),
+            part.map((s) => ({ c: `Name: {@${s.slot}.name}\nSignature: {@${s.slot}.signature}{@${s.slot}.status}\nDate: {@${s.slot}.date}`, h: 65 })),
           ],
         });
       }
