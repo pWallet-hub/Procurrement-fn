@@ -49,6 +49,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async acceptInvite(token, password) {
         startSession(await authApi.acceptInvite(token, password));
       },
+      async completeSso(code) {
+        startSession(await authApi.ssoExchange(code));
+      },
       async logout() {
         const refresh = tokenStore.refresh;
         try {

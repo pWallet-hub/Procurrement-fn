@@ -10,6 +10,8 @@ export interface AuthContextValue {
   login: (email: string, password: string) => Promise<LoginResult>;
   verifyTotp: (challengeToken: string, code: string) => Promise<void>;
   acceptInvite: (token: string, password: string) => Promise<void>;
+  /** Trade the one-time code from an AFS sign-in for a session. */
+  completeSso: (code: string) => Promise<void>;
   logout: () => Promise<void>;
   reloadUser: () => Promise<void>;
 }

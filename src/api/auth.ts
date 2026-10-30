@@ -9,6 +9,8 @@ export const authApi = {
   refresh: (refresh_token: string) =>
     api<TokenPair>('/auth/refresh', { method: 'POST', body: { refresh_token }, auth: false }),
   logout: (refresh_token: string) => api<{ ok: true }>('/auth/logout', { method: 'POST', body: { refresh_token } }),
+  ssoConfig: () => api<{ enabled: boolean }>('/auth/sso/config', { auth: false }),
+  ssoExchange: (code: string) => api<Session>('/auth/sso/exchange', { method: 'POST', body: { code }, auth: false }),
   acceptInvite: (token: string, password: string) =>
     api<Session>('/auth/accept-invite', { method: 'POST', body: { token, password }, auth: false }),
   totpSetup: () => api<{ secret: string; otpauth_url: string }>('/auth/totp/setup', { method: 'POST' }),
