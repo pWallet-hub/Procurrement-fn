@@ -183,6 +183,115 @@
 .pf-sig .pf-sig-img { height: 1.1cm; max-height: 1.1cm; width: auto; max-width: 100%; object-fit: contain; display: inline-block; }
 .pf-grid .pf-sign__status { display: block; margin-top: 0.08cm; }
 
+/* ===== Section B: TYPE OF REQUEST (matches the printed form) ===== */
+/* heading: one bold black Arial line, same size before and after the dash */
+.pf-h.pf-h--request {
+  font-family: Arial, Helvetica, 'Liberation Sans', sans-serif;
+  font-size: 1.12em; font-weight: 700; color: #000; text-transform: none;
+  margin: 0.25cm 0 0.12cm;
+}
+.pf-h--request .pf-h__tail { font-size: 1em; font-weight: 700; text-transform: none; }
+
+.pf-grid.pf-grid--request {
+  font-family: Arial, Helvetica, 'Liberation Sans', sans-serif;
+  color: #000; border: 1px solid #000;
+}
+.pf-grid--request td, .pf-grid--request th {
+  border: 1px solid #000;
+  background: #f2f2f2;              /* grey: checkbox cells, Other, Noted Details */
+  padding: 0.07cm 0.2cm; height: 0.8cm;
+  font-size: 0.82em; font-weight: 400; line-height: 1.2; vertical-align: middle;
+}
+
+/* option = checkbox + bold capitals */
+.pf-grid--request .pf-opt { display: inline-flex; align-items: center; gap: 0.2em; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+.pf-grid--request .pf-opt + .pf-opt { margin-left: 0; }
+.pf-grid--request .pf-opt strong { font-weight: 700; }
+.pf-grid--request .pf-box { width: 1.35em; height: 1.35em; margin: 0 0.1em 0 0; border: 1px solid #000; background: #fff; vertical-align: middle; }
+
+/* OTHER + Specify */
+.pf-grid--request td.pf-cell--other { vertical-align: middle; }
+.pf-grid--request .pf-cell--other .pf-blank { border-bottom: 1px solid #000; }
+
+/* Estimated total: white, normal weight */
+.pf-grid--request td.pf-cell--plain { background: #fff; font-size: 0.9em; font-weight: 400; line-height: 1.25; }
+
+/* Noted Details: grey, bold, underlined, top-left */
+.pf-grid--request td.pf-cell--noted { vertical-align: top; font-weight: 700; text-decoration: underline; }
+
+/* Requested / Prepared by row: grey bold label, white Name / Signature cells, text sitting on the bottom edge */
+.pf-grid--request tr:last-child td {
+  background: #fff; height: 1.1cm; vertical-align: bottom;
+  padding: 0.05cm 0.2cm 0.06cm;
+  font-size: 0.92em; font-weight: 400; line-height: 1.15; text-transform: none;
+}
+.pf-grid--request tr:last-child td.pf-cell--label {
+  background: #f2f2f2; font-size: 0.98em; font-weight: 700; vertical-align: middle;
+  padding-left: 0.28cm;
+}
+/* Name: two black rules (long + short, small gap); Signature: plain text, no rule */
+.pf-grid--request tr:last-child .pf-blank { border-bottom: 1px solid #000; height: 1em; vertical-align: bottom; margin-left: 0.15em; }
+.pf-grid--request tr:last-child .pf-blank + .pf-blank { margin-left: 0.4em; }
+
+/* ===== Section E: REVIEW & APPROVAL  +  Section F: FINANCE / ADMINISTRATION ACTION ===== */
+/* same printed typeface + size as the reference (Aptos / Segoe UI look); text is ~0.74em of the sheet size.
+   Everything inside the cells is sized in em so the box keeps its proportions when the sheet scales. */
+.pf-grid.pf-grid--review,
+.pf-grid.pf-grid--finance {
+  font-family: Aptos, 'Segoe UI', 'Segoe UI Variable', Calibri, 'Helvetica Neue', Arial, sans-serif;
+  color: #000; border: 1px solid #000;
+}
+.pf-grid--review td, .pf-grid--review th,
+.pf-grid--finance td, .pf-grid--finance th {
+  border: 1px solid #000; background: #fff;
+  padding: 0.02cm 0.6em; height: auto;
+  font-size: 0.68em; font-weight: 400; line-height: 1.2; vertical-align: middle;
+}
+
+/* fill-in lines: thin dark rules sitting on the text baseline */
+.pf-grid--review .pf-blank, .pf-grid--finance .pf-blank {
+  border-bottom: 1px solid #333; height: 1em; vertical-align: baseline; max-width: 100%;
+}
+/* Date: ____/____/_____ (three rules, slash glyphs between, no extra gaps) */
+.pf-grid--review .pf-date .pf-blank, .pf-grid--finance .pf-date .pf-blank { min-width: 4.35em; margin: 0; }
+.pf-grid--review .pf-date .pf-blank.pf-blank--year,
+.pf-grid--finance .pf-date .pf-blank.pf-blank--year { min-width: 5.7em !important; }
+/* Name: one long rule + one short rule, small gap (widths fixed so they match the reference at any template value) */
+.pf-grid--review td > .pf-blank { width: 14.7em !important; margin-left: 0.1em; }
+.pf-grid--review td > .pf-blank + .pf-blank { width: 3.4em !important; margin-left: 0.25em; }
+
+/* E: light-blue centred bold capitals header row */
+.pf-grid--review th, .pf-grid--review td.pf-cell--head {
+  background: #dce9f5; color: #000;
+  font-size: 0.68em; font-weight: 700 !important; text-transform: uppercase; line-height: 1.2;
+  text-align: center !important; vertical-align: middle;
+  padding: 0.03cm 0.7em; height: 0.62cm;
+}
+/* E: white body boxes, Name / Signature / Date on three evenly spaced lines (never wrap, never spill) */
+.pf-grid--review tr:not(:first-child):not(.pf-row--blank) td {
+  vertical-align: top; padding: 0.08cm 0.6em 0; line-height: 2.3; height: 1.7cm;
+  white-space: nowrap; overflow: hidden;
+}
+/* E: thin empty strip along the bottom of the boxes */
+.pf-grid--review tr.pf-row--blank td { height: 0.3cm; padding: 0; }
+
+/* F: green label column, bold */
+.pf-grid--finance td { height: 0.62cm; }
+.pf-grid--finance tr:nth-child(2) td { height: 1cm; }
+.pf-grid--finance td:first-child {
+  background: #d8e4bc; color: #000;
+  font-size: 0.78em; font-weight: 700; padding-left: 0.24cm;
+}
+.pf-grid--finance td:first-child strong { font-weight: 700; }
+/* F: check boxes with normal-weight labels, spread along the row */
+.pf-grid--finance .pf-opt {
+  display: inline-flex; align-items: center; gap: 0.25em;
+  margin-right: 1.4em; font-weight: 400; text-transform: none; white-space: nowrap;
+}
+.pf-grid--finance .pf-opt + .pf-opt { margin-left: 0; }
+.pf-grid--finance .pf-opt:last-child { margin-right: 0; }
+.pf-grid--finance .pf-box { width: 1.3em; height: 1.3em; margin: 0; border: 1px solid #000; background: #fff; vertical-align: middle; }
+
 /* contract layout: plain legal document */
 .paper--contract { font-family: 'Times New Roman', Georgia, serif; font-size: 0.9rem; line-height: 1.45; }
 .paper--contract .paper__intro { font-size: 0.9rem; }
@@ -245,6 +354,11 @@
   .public-brand, .public-footer, .sign-panel { display: none !important; }
   .public-card, .card { border: 0; box-shadow: none; padding: 0; background: transparent; }
   .card__body { padding: 0; }
+  .docpage, .dp-head, .dp-toolbar, .dp-layout, .dp-main, .dp-aside, .dp-signing, .dp-slots, .dp-head-main, .dp-actions, .dp-layout__aside, .alert { display: block !important; }
+  .dp-head, .dp-toolbar, .dp-aside, .dp-signing, .dp-slots, .dp-actions, .alert, .dp-layout__aside { display: none !important; }
+  .dp-layout { display: block !important; }
+  .dp-main { display: block !important; width: 100% !important; max-width: none !important; }
+  .docpage { margin: 0; padding: 0; }
   .paper { border: 0; box-shadow: none; border-radius: 0; padding: 0; max-width: none; margin: 0; --paper-size: 9.5pt; }
   .paper__logo { width: 9cm; }
   .pf-table-wrap, .pf-grid-wrap { overflow: visible; }

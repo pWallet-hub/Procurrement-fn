@@ -254,7 +254,7 @@ Each form below lists where it is opened, its field components, its paper view a
 - **Where:** Standalone. Sidebar **Requests (GR-06)**: `/requests` and `/requests/new` ([StandaloneList.tsx](../src/pages/StandaloneList.tsx), [StandaloneNew.tsx](../src/pages/StandaloneNew.tsx)).
 - **Field components:** [BudgetLineRefField](../src/features/forms/fields/BudgetLineRefField.tsx), [CheckboxGroupField](../src/features/forms/fields/CheckboxGroupField.tsx), [ComputedField](../src/features/forms/fields/ComputedField.tsx), [DateField](../src/features/forms/fields/DateField.tsx), [FileField](../src/features/forms/fields/FileField.tsx), [MoneyField](../src/features/forms/fields/MoneyField.tsx), [NumberField](../src/features/forms/fields/NumberField.tsx), [RadioField](../src/features/forms/fields/RadioField.tsx), [TableField](../src/features/forms/fields/TableField.tsx), [TextField](../src/features/forms/fields/TextField.tsx), [TextareaField](../src/features/forms/fields/TextareaField.tsx), [TimeField](../src/features/forms/fields/TimeField.tsx)
 - **Paper view:** [PaperBlocks](../src/features/paper/PaperBlocks.tsx) with the boxed header + [SignOff](../src/features/paper/SignOff.tsx)
-- **Signers, in order:** Requested / Prepared by (`requesting_staff`) → Accountant — Budget & Control Check (`accountant`) → Director of Department — Activity Reviewer (`director_dept`) → PI — Final Authorization (`pi`) → Processed By (`accountant`)
+- **Signers, in order:** Requested / Prepared by (`requesting_staff`) → Accountant — Budget & Control Check (`accountant`) → Manager of Department — Activity Reviewer (`director_dept`) → PI — Final Authorization (`pi`) → Processed By (`accountant`)
 
 | Section | Field | Component |
 |---|---|---|

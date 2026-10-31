@@ -45,6 +45,30 @@ function fmtValue(refs: RefLabels) {
   };
 }
 
+/**
+ * Sections that have their own printed look. The heading text decides which look the grid right under it gets:
+ *   B. TYPE OF REQUEST — Tick the applicable category   -> pf-grid--request
+ *   E. REVIEW & APPROVAL                                 -> pf-grid--review
+ *   F. FINANCE / ADMINISTRATION ACTION                   -> pf-grid--finance
+ */
+type GridVariant = 'request' | 'review' | 'finance';
+function gridVariant(text: string | undefined): GridVariant | undefined {
+  const t = text ?? '';
+  if (/type of request/i.test(t)) return 'request';
+  if (/review\s*(&|and)\s*approval/i.test(t)) return 'review';
+  if (/finance\s*\/?\s*administration/i.test(t)) return 'finance';
+  return undefined;
+}
+
+/** Cells of the request grid that need their own look (recognised by their printed text). */
+function requestCellClass(text: string | undefined): string | false {
+  const t = (text ?? '').trim();
+  if (/^estimated/i.test(t)) return 'pf-cell--plain';
+  if (/^noted/i.test(t)) return 'pf-cell--noted';
+  if (/other/i.test(t) && /specify/i.test(t)) return 'pf-cell--other';
+  return false;
+}
+
 /** The form body exactly as printed (template.schema.paper.blocks): headings, paragraphs and bordered grids. */
 export function PaperBlocks({ blocks, template, data, slots, documentId, refs }: Props) {
   const ctx: InlineCtx = {
@@ -69,11 +93,12 @@ function Block({ block: b, prev, ctx, documentId, bySlot }: { block: FlatBlock; 
     <Pieces pieces={inlinePieces(text, cell, ctx, bold, italic)} documentId={documentId} bySlot={bySlot} />;
 
   if (b.t === 'heading') {
-    // "B. TYPE OF REQUEST — Tick the applicable category": the part after the dash is printed in mixed case, slightly smaller
+    // "B. TYPE OF REQUEST — Tick the applicable category": printed as one bold line, same size
     const dash = b.text.indexOf(' — ');
     const caps = (b.style ?? 'caps') === 'caps';
+    const form = !!gridVariant(b.text);
     return (
-      <h3 className={cx('pf-h', `pf-h--${b.style ?? 'caps'}`)}>
+      <h3 className={cx('pf-h', `pf-h--${b.style ?? 'caps'}`, form && 'pf-h--request')}>
         {dash > 0 && caps
           ? <>{b.text.slice(0, dash)} <span className="pf-h__tail">{b.text.slice(dash + 1)}</span></>
           : b.text}
@@ -83,36 +108,42 @@ function Block({ block: b, prev, ctx, documentId, bySlot }: { block: FlatBlock; 
   if (b.t === 'text') return <p className={cx('pf-text', `pf-text--${b.style ?? 'plain'}`)}>{render(b.text, {}, false, b.style === 'note')}</p>;
 
   const total = b.cols.reduce((a, c) => a + c, 0);
+  const variant = prev?.t === 'heading' ? gridVariant(prev.text) : undefined;
   return (
     <div className={cx('pf-grid-wrap', b.attach && prev?.t === 'grid' && 'pf-grid-wrap--attach')}>
-      <table className={cx('pf-grid', `pf-grid--${b.frame ?? 'solid'}`, b.dots && 'pf-grid--dots', b.small && 'pf-grid--small', b.cols.length > 4 && 'pf-grid--wide')}>
+      <table className={cx('pf-grid', `pf-grid--${b.frame ?? 'solid'}`, b.dots && 'pf-grid--dots', b.small && 'pf-grid--small', b.cols.length > 4 && 'pf-grid--wide', variant && `pf-grid--${variant}`)}>
         <colgroup>
           {b.cols.map((c, i) => <col key={i} style={{ width: `${(c / total) * 100}%` }} />)}
         </colgroup>
         <tbody>
-          {b.rows.map((row, r) => (
-            <tr key={r}>
-              {row.map((cell, c) => {
-                const Tag = cell.head ? 'th' : 'td';
-                return (
-                  <Tag
-                    key={c}
-                    colSpan={cell.span}
-                    rowSpan={cell.rspan}
-                    scope={cell.head ? 'col' : undefined}
-                    className={cx(
-                      cell.label && 'pf-cell--label', cell.head && 'pf-cell--head', cell.small && 'pf-cell--small', cell.italic && 'pf-cell--italic',
-                      cell.tone && `pf-cell--${cell.tone}`, cell.box && 'pf-cell--box', !!cell.h && 'pf-cell--top', cell.align && `pf-cell--${cell.align}`,
-                    )}
-                    style={cell.h ? { height: `${cell.h}pt` } : undefined}
-                  >
-                    {render(cell.c ?? '', cell, !!(cell.label || cell.head || cell.bold), !!cell.italic)}
-                    {cell.sub && <div className="pf-cell__sub">{render(cell.sub, cell)}</div>}
-                  </Tag>
-                );
-              })}
-            </tr>
-          ))}
+          {b.rows.map((row, r) => {
+            // a row with nothing printed in it (the thin empty strip under the sign-off boxes)
+            const emptyRow = row.every((cell) => !(cell.c ?? '').trim() && !cell.sub);
+            return (
+              <tr key={r} className={cx(emptyRow && 'pf-row--blank')}>
+                {row.map((cell, c) => {
+                  const Tag = cell.head ? 'th' : 'td';
+                  return (
+                    <Tag
+                      key={c}
+                      colSpan={cell.span}
+                      rowSpan={cell.rspan}
+                      scope={cell.head ? 'col' : undefined}
+                      className={cx(
+                        cell.label && 'pf-cell--label', cell.head && 'pf-cell--head', cell.small && 'pf-cell--small', cell.italic && 'pf-cell--italic',
+                        cell.tone && `pf-cell--${cell.tone}`, cell.box && 'pf-cell--box', !!cell.h && 'pf-cell--top', cell.align && `pf-cell--${cell.align}`,
+                        variant === 'request' && requestCellClass(cell.c),
+                      )}
+                      style={cell.h ? { height: `${cell.h}pt` } : undefined}
+                    >
+                      {render(cell.c ?? '', cell, !!(cell.label || cell.head || cell.bold), !!cell.italic)}
+                      {cell.sub && <div className="pf-cell__sub">{render(cell.sub, cell)}</div>}
+                    </Tag>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -125,7 +156,7 @@ function Pieces({ pieces, documentId, bySlot }: { pieces: Piece[]; documentId: s
   const out: ReactNode[] = pieces.map((p, i) => {
     if (skip.has(i)) return null;
     const next = pieces[i + 1];
-    if (p.k === 'box' && next && (next.k === 'text' || next.k === 'value') && next.s.trim().length <= 30) {
+    if (p.k === 'box' && next && (next.k === 'text' || next.k === 'value') && next.s.trim().length <= 40) {
       skip.add(i + 1);
       return (
         <span key={i} className="pf-opt">
