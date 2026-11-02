@@ -21,7 +21,7 @@
   line-height: 1.4;
   max-width: 21cm;
   margin: 0 auto;
-  padding: 1.1cm 1.3cm 1cm;
+  padding: 0.82cm 1.08cm 0.8cm;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-1);
@@ -30,44 +30,41 @@
 .paper table { border-collapse: collapse; width: 100%; }
 .paper th, .paper td { text-align: left; vertical-align: top; }
 
-.paper__logo { display: block; width: min(11cm, 78%); height: auto; margin: 0 auto 0.4cm; }
-.paper__intro { margin: 0.25cm 0 0.1cm; font-size: var(--paper-size); }
+.paper__logo { display: block; width: min(8.8cm, 60%); height: auto; margin: 0 auto 0.2cm; }
+.paper__intro { margin: 0.18cm 0 0.08cm; font-size: var(--paper-size); }
 .paper__notes { margin: 0.25cm 0 0; font-style: italic; font-size: 0.75rem; }
-.paper__footer { margin-top: 0.7cm; text-align: center; color: var(--paper-muted); font-size: 0.7rem; }
+.paper__footer { margin-top: 0.9cm; text-align: center; color: var(--paper-muted); font-size: 0.7rem; }
 
 /* header box (two rows with different column splits, like the printed form) */
 .pf-header { margin-bottom: 0.05cm; color: #000; font-family: Arial, Helvetica, 'Liberation Sans', sans-serif; }
 .pf-header__row { display: flex; align-items: stretch; }
 .pf-header__row + .pf-header__row { margin-top: -1px; }
-.pf-header__row > div { border: 1px solid #000; padding: 0.05cm 0.2cm; min-width: 0; }
+.pf-header__row > div { border: 1px solid #000; padding: 0.04cm 0.18cm; min-width: 0; }
 .pf-header__row > div + div { margin-left: -1px; }
-.pf-header__row--top > :first-child { flex: 0 0 53%; }
-.pf-header__row--bottom > :first-child { flex: 0 0 60%; }
+.pf-header__row--top > :first-child { flex: 0 0 52.5%; }
+.pf-header__row--bottom > :first-child { flex: 0 0 58%; }
 .pf-header__row--top > :last-child,
 .pf-header__row--bottom > :last-child { flex: 1 1 0; }
 
 /* left column: thin border, bold black text on ONE line (org keeps its own case, title is capitals) */
 .pf-header__org,
 .pf-header__title { font-weight: 700; color: #000; display: flex; align-items: center; white-space: nowrap; }
-.pf-header__org { font-size: 1.16em; line-height: 1.15; text-transform: none; }
-.pf-header__title { font-size: 1.16em; line-height: 1.15; text-transform: uppercase; padding-top: 0.09cm !important; padding-bottom: 0.09cm !important; }
+.pf-header__org { font-size: 1.05em; line-height: 1.15; text-transform: none; }
+.pf-header__title { font-size: 1.05em; line-height: 1.15; text-transform: uppercase; padding-top: 0.07cm !important; padding-bottom: 0.07cm !important; }
 
-/* right column: one shared light blue, thin border, small text */
-.pf-header__meta { font-size: 0.86em; font-weight: 400; display: flex; flex-direction: column; justify-content: flex-end; }
-.pf-header__meta--form { font-size: 0.92em; font-weight: 700; align-items: center; justify-content: center; text-align: center; }
-.pf-header__meta--eff { align-items: flex-start; padding-top: 0.1cm !important; padding-bottom: 0.05cm !important; padding-left: 0.3cm !important; }
+.pf-header__meta { font-size: 0.79em; font-weight: 400; display: flex; flex-direction: column; justify-content: flex-end; }
+.pf-header__meta--form { font-size: 0.88em; font-weight: 700; align-items: center; justify-content: center; text-align: center; }
+.pf-header__meta--eff { align-items: flex-start; padding-top: 0.08cm !important; padding-bottom: 0.04cm !important; padding-left: 0.25cm !important; }
 
-/* backgrounds: each row has its own blue, shared by both cells of that row (sampled from the reference; explicit so no older rule can tint a cell) */
 .pf-header .pf-header__row--top > div { background: #d9eaf7 !important; }
 .pf-header .pf-header__row--bottom > div { background: #eef5fa !important; }
 
-/* effective-date blanks (selectors are scoped to .pf-header so they beat the generic .pf-date .pf-blank rule) */
 .pf-header .pf-date .pf-blank { margin: 0; min-width: 3.6em; height: 1em; border-bottom: 1px solid #000; }
 .pf-header .pf-date .pf-blank--eff-year { min-width: 5.6em; }
 
 /* section headings */
-.pf-section { margin-top: 0.4cm; }
-.pf-section__title { font-size: 0.95rem; font-weight: 700; color: var(--paper-section); margin: 0 0 0.12cm; }
+.pf-section { margin-top: 0.1cm; }
+.pf-section__title { font-size: 0.95rem; font-weight: 700; color: var(--paper-section); margin: 0 0 0.07cm; }
 
 /* label / value table */
 .pf-kv { margin-bottom: -1px; }
@@ -76,8 +73,8 @@
 .pf-kv__value { min-height: 0.7cm; }
 
 /* item tables */
-.pf-table-wrap { margin: 0 0 0.2cm; overflow-x: auto; }
-.pf-table__caption { font-weight: 700; margin: 0.15cm 0 0.08cm; }
+.pf-table-wrap { margin: 0 0 0.12cm; overflow-x: auto; }
+.pf-table__caption { font-weight: 700; margin: 0.12cm 0 0.05cm; }
 .pf-table th, .pf-table td { border: 1px solid var(--paper-line); padding: 0.09cm 0.15cm; }
 .pf-table thead th { background: var(--paper-head-bg); font-weight: 700; font-size: 0.75rem; overflow-wrap: normal; word-break: normal; }
 .pf-table tbody td { height: 0.75cm; }
@@ -116,18 +113,52 @@
  * Printed layout (template.schema.paper.blocks, features/paper/PaperBlocks): the body of each form as on the
  * reference forms. Filled-in values are printed in "ink" (--paper-value) so they stand out from the printed form.
  */
-.paper--layout { --paper-value: #1f3a68; --paper-heading-blue: #2e74b5; --paper-green-bg: #d8e4bc; container-type: inline-size; overflow-wrap: break-word; hyphens: auto; }
+.paper--layout { --paper-value: #1f3a68; --paper-heading-blue: #2e74b5; --paper-green-bg: #d8e4bc; container-type: inline-size; overflow-wrap: break-word; hyphens: auto; width: 100%; max-width: 21cm; }
 /* the sheet scales with its column like a page preview (A4 width = full size), never below a readable size */
-.paper--layout > * { font-size: clamp(0.7rem, 1.72cqi, var(--paper-size)); }
+.paper--layout > * { font-size: clamp(0.66rem, 1.55cqi, var(--paper-size)); }
 
 /* logo + intro line as in the reference */
-.paper--layout .paper__logo { width: 24.5%; min-width: 3cm; max-width: 5cm; margin: 0 auto 0.08cm; }
-.paper--layout .paper__intro { margin: 0 0 0.06cm; }
+.paper--layout .paper__intro { margin: 0 0 0.04cm; }
 .paper--layout .paper__intro .pf-text { margin: 0; font-weight: 700; font-size: 0.68em; line-height: 1.25; color: #000; }
+
+/* ===== Header: logo + two-row box (matches the supplied AfS-Rwanda form) =====
+   Keep the logo fully visible at the top while the form sits slightly lower and stays within the printable sheet. */
+.paper--layout { padding-top: calc(0.5cm + 1rem); } /* +1rem so the logo is fully visible and everything sits lower */
+.paper--layout .paper__logo {
+  width: calc(clamp(7.2cm, 46%, 9.0cm) + 2.2rem); min-width: 0; max-width: calc(9.0cm + 2.2rem); height: auto;
+  margin: 0.10cm auto 0.12cm; object-fit: contain; opacity: 1; image-rendering: auto;
+}
+
+.pf-header { margin: 0 0 0.04cm; border: 0; color: #000; font-family: Arial, Helvetica, 'Liberation Sans', sans-serif; }
+.pf-header__row { display: flex; align-items: stretch; }
+.pf-header__row + .pf-header__row { margin-top: -1px; }
+.pf-header__row > div { border: 1px solid #000; padding: 0.045cm 0.2cm; min-width: 0; }
+.pf-header__row > div + div { margin-left: -1px; }
+.pf-header__row--top > div { min-height: 0.52cm; }
+.pf-header__row--bottom > div { min-height: 0.6cm; }
+/* row 1 splits at ~47 %, row 2 at ~57 % (as printed) */
+.pf-header__row--top > :first-child { flex: 0 0 47.5%; }
+.pf-header__row--bottom > :first-child { flex: 0 0 57%; }
+.pf-header__row--top > :last-child,
+.pf-header__row--bottom > :last-child { flex: 1 1 0; }
+/* both rows: the same light blue */
+.pf-header .pf-header__row--top > div,
+.pf-header .pf-header__row--bottom > div { background: #dbe9f6 !important; }
+
+/* left cells: bold black, one line. The organisation keeps its own case ("AfS-Rwanda"), the title is capitals */
+.pf-header__org,
+.pf-header__title { font-weight: 700; color: #000; display: flex; align-items: center; white-space: nowrap; letter-spacing: 0; line-height: 1.1; }
+.pf-header__org { font-size: 0.98em; text-transform: none; }
+.pf-header__title { font-size: 1.02em; text-transform: uppercase; }
+
+/* right cells: FORM code centred, Effective date small and sitting low */
+.pf-header__meta { font-size: 0.8em; font-weight: 700; display: flex; flex-direction: column; justify-content: center; }
+.pf-header__meta--form { font-size: 0.78em; align-items: center; justify-content: center; text-align: center; }
+.pf-header__meta--eff { font-size: 0.68em; font-weight: 400; align-items: flex-start; justify-content: flex-end; padding: 0 0.2cm 0.03cm 0.3cm !important; }
 
 .pf-opt { white-space: nowrap; }
 .pf-opt + .pf-opt { margin-left: 0.5em; }
-.pf-h { margin: 0.22cm 0 0.1cm; font-size: 1.05em; font-weight: 700; line-height: 1.2; letter-spacing: 0; break-after: avoid; font-family: var(--paper-font); }
+.pf-h { margin: 0.1cm 0 0.05cm; font-size: 1.05em; font-weight: 700; line-height: 1.2; letter-spacing: 0; break-after: avoid; font-family: var(--paper-font); }
 .pf-h--caps { text-transform: uppercase; color: #111; }
 .pf-h--blue { color: var(--paper-heading-blue); }
 .pf-h__tail { text-transform: none; font-size: 0.92em; }
@@ -139,7 +170,7 @@
 .pf-title__main { margin: 0; font-size: 1.5em; font-weight: 700; font-style: italic; text-decoration: underline; letter-spacing: 0.01em; }
 .pf-title__sub { margin: 0.15cm 0 0; font-family: 'Times New Roman', Georgia, serif; font-weight: 700; font-style: italic; }
 
-.pf-grid-wrap { margin-top: 0.1cm; overflow-x: auto; }
+.pf-grid-wrap { margin-top: 0.02cm; overflow-x: auto; }
 .pf-grid-wrap--attach { margin-top: -1px; }
 .pf-grid { table-layout: fixed; }
 .pf-grid td, .pf-grid th { border: 1px solid var(--paper-line); padding: 0.09cm 0.16cm; vertical-align: middle; font-weight: 400; }
@@ -183,12 +214,21 @@
 .pf-sig .pf-sig-img { height: 1.1cm; max-height: 1.1cm; width: auto; max-width: 100%; object-fit: contain; display: inline-block; }
 .pf-grid .pf-sign__status { display: block; margin-top: 0.08cm; }
 
+/* ===== Item tables (C. Office supplies / fees, D. Travel): taller fill-in rows =====
+   Any solid grid with a header row (th) that is not one of the special sections below.
+   Each body row gets +1rem of height (0.5rem top + 0.5rem bottom), on top of whatever height the template sets. */
+.paper--layout { --pf-row-pad: 0.5rem; }
+.pf-grid--solid:has(th.pf-cell--head):not(.pf-grid--review):not(.pf-grid--request):not(.pf-grid--finance) td {
+  padding-top: calc(0.07cm + var(--pf-row-pad));
+  padding-bottom: calc(0.07cm + var(--pf-row-pad));
+}
+
 /* ===== Section B: TYPE OF REQUEST (matches the printed form) ===== */
 /* heading: one bold black Arial line, same size before and after the dash */
 .pf-h.pf-h--request {
   font-family: Arial, Helvetica, 'Liberation Sans', sans-serif;
   font-size: 1.12em; font-weight: 700; color: #000; text-transform: none;
-  margin: 0.25cm 0 0.12cm;
+  margin: 0.1cm 0 0.05cm;
 }
 .pf-h--request .pf-h__tail { font-size: 1em; font-weight: 700; text-transform: none; }
 
@@ -269,9 +309,12 @@
 }
 /* E: white body boxes, Name / Signature / Date on three evenly spaced lines (never wrap, never spill) */
 .pf-grid--review tr:not(:first-child):not(.pf-row--blank) td {
-  vertical-align: top; padding: 0.08cm 0.6em 0; line-height: 2.3; height: 1.7cm;
+  vertical-align: top; padding: 0.08cm 0.6em 0.1cm; line-height: 1.75; height: auto; /* tight: lines sit close together */
   white-space: nowrap; overflow: hidden;
 }
+/* "Not yet submitted for signing" sits close to Signature and Date */
+.pf-grid--review .pf-sign__status { line-height: 1.3; margin: 0.12cm 0 0.1cm; }
+.pf-grid--review td br { line-height: 1; }
 /* E: thin empty strip along the bottom of the boxes */
 .pf-grid--review tr.pf-row--blank td { height: 0.3cm; padding: 0; }
 
@@ -339,14 +382,19 @@
   .pf-sign--plain { gap: var(--space-4); }
   .pf-grid { min-width: 34rem; } /* printed grids keep their shape and scroll sideways inside .pf-grid-wrap */
   .pf-grid--wide { min-width: 44rem; }
+  .paper--layout .paper__logo { width: calc(min(70%, 7cm) + 3rem); min-width: 0; max-width: 100%; }
 }
 
-/* print: hide the app, one clean A4 sheet */
-@page { size: A4; margin: 10mm; }
+/* print: hide the app, print the sheet EXACTLY as it looks on screen (A4 width, same sizes, no clipping) */
+@page { size: A4; margin: 0; }
+
 @media print {
-  html, body { background: #fff !important; }
+  html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+
+  /* hide the app chrome */
   .shell { display: block; }
-  .shell__sidebar, .shell__header, .shell__backdrop, .toast-region, .no-print, .page-header, .tabs, .doc-layout__aside, .alert, .doc-toolbar { display: none !important; }
+  .shell__sidebar, .shell__header, .shell__backdrop, .toast-region, .no-print, .page-header,
+  .tabs, .doc-layout__aside, .alert, .doc-toolbar { display: none !important; }
   .shell__main { padding: 0; }
   .shell__content { max-width: none; }
   .doc-layout { display: block; }
@@ -354,18 +402,40 @@
   .public-brand, .public-footer, .sign-panel { display: none !important; }
   .public-card, .card { border: 0; box-shadow: none; padding: 0; background: transparent; }
   .card__body { padding: 0; }
-  .docpage, .dp-head, .dp-toolbar, .dp-layout, .dp-main, .dp-aside, .dp-signing, .dp-slots, .dp-head-main, .dp-actions, .dp-layout__aside, .alert { display: block !important; }
-  .dp-head, .dp-toolbar, .dp-aside, .dp-signing, .dp-slots, .dp-actions, .alert, .dp-layout__aside { display: none !important; }
-  .dp-layout { display: block !important; }
-  .dp-main { display: block !important; width: 100% !important; max-width: none !important; }
-  .docpage { margin: 0; padding: 0; }
-  .paper { border: 0; box-shadow: none; border-radius: 0; padding: 0; max-width: none; margin: 0; --paper-size: 9.5pt; }
-  .paper__logo { width: 9cm; }
+
+  .docpage, .dp-main, .dp-layout { display: block !important; margin: 0; padding: 0; }
+  .dp-main { width: 100% !important; max-width: none !important; }
+  .dp-head, .dp-toolbar, .dp-aside, .dp-signing, .dp-slots, .dp-actions,
+  .dp-layout__aside, .alert { display: none !important; }
+
+  /* the sheet: same width, padding, fonts, logo, header and rows as on screen.
+     NOTHING about size is overridden here (no --paper-size, --print-size, --pf-row-pad,
+     logo, header padding, max-height or overflow), so print = screen. */
+  .paper {
+    width: 210mm;
+    max-width: 210mm;
+    margin: 0 auto;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* optional: if the form ever runs onto a 2nd page, set --print-zoom: 0.96 (or 0.94) here. 1 = identical to screen */
+  .paper--layout {
+    --pf-row-pad: 0.3rem; /* slightly shorter item rows so the form fits ONE page */
+    --print-zoom: 1;
+    zoom: var(--print-zoom);
+    max-height: none;
+    overflow: visible;
+  }
+
   .pf-table-wrap, .pf-grid-wrap { overflow: visible; }
   .pf-grid { min-width: 0 !important; }
-  .pf-h { break-after: avoid; page-break-after: avoid; }
-  .paper tr, .pf-sign__cell, .pf-section__title, .pc-clause { break-inside: avoid; page-break-inside: avoid; }
-  .pf-section__title { break-after: avoid; }
+
+  .pf-h, .pf-section__title { break-after: avoid; page-break-after: avoid; }
+  .paper tr, .pf-sign__cell, .pc-clause { break-inside: avoid; page-break-inside: avoid; }
   .pf-table thead { display: table-header-group; }
-  .paper * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* keep all colours (blue headers, grey cells, green Finance column) */
+  .paper, .paper * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }

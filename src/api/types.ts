@@ -143,6 +143,8 @@ export interface FieldDef {
   min?: number;
   max?: number;
   maxLength?: number;
+  /** keep text short enough to fit on a single printed page */
+  maxWords?: number;
   columns?: FieldDef[];
   min_rows?: number;
   max_rows?: number;
