@@ -1,205 +1,161 @@
 /* ==========================================================================
-   DocumentPage Layout & Modern Document Control Styling
+   DocumentPage: header + tab toolbar only.
+   Scoped to the existing class names, so the form, signatures column,
+   alerts and modals are untouched.
    ========================================================================== */
 
-.doc-page-stack {
+/* ---------- Header ---------- */
+
+.docpage .dp-head {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  max-width: 88rem;
-  margin: 0 auto;
-  padding: 0.75rem 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4, 1rem) var(--space-6, 2rem);
+  padding-bottom: var(--space-4, 1rem);
+  margin-bottom: var(--space-3, 0.75rem);
+  border-bottom: 1px solid var(--color-border);
 }
 
-/* Compact document summary */
-.doc-header-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 0.8rem 1rem;
-  box-shadow: var(--shadow-1);
-}
-
-.doc-header-card .page-header {
-  align-items: center;
-  gap: 0.75rem 1rem;
-  margin: 0;
-}
-
-.doc-header-card .page-header > div:first-child {
-  flex: 1 1 20rem;
+.docpage .dp-head-main {
+  flex: 1 1 22rem;
   min-width: 0;
 }
 
-.doc-header-title {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--color-text);
-  letter-spacing: 0;
-  line-height: 1.2;
-}
-
-.doc-meta-bar {
+/* GR-06 · v1 · Draft  ->  one tidy row */
+.docpage .dp-id {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.4rem 0.55rem;
-  margin-top: 0.35rem;
-  font-size: 0.8rem;
+  gap: 0.5rem 0.65rem;
+  margin: 0;
+  font-size: var(--text-sm, 0.875rem);
   color: var(--color-text-muted);
 }
 
-.doc-meta-pill {
-  background: var(--color-surface-alt);
-  padding: 0.15rem 0.45rem;
+.docpage .dp-type {
+  padding: 0.15rem 0.5rem;
   border-radius: 6px;
+  background: var(--color-surface-alt);
   color: var(--color-text);
-  font-weight: 500;
+  font-weight: 600;
 }
 
-.doc-case-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: var(--color-link);
+.docpage .dp-version {
+  font-variant-numeric: tabular-nums;
+}
+
+.docpage .dp-head h1 {
+  margin: 0.5rem 0 0;
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 1.9rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+/* Label and value side by side instead of stacked */
+.docpage .dp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin: 0.75rem 0 0;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.docpage .dp-meta > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.docpage .dp-meta dt {
+  color: var(--color-text-muted);
+}
+
+.docpage .dp-meta dd {
+  margin: 0;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.docpage .dp-meta a {
+  color: var(--color-primary-ink, var(--color-primary));
   font-weight: 600;
   text-decoration: none;
-  transition: color 0.15s ease;
 }
 
-.doc-case-link:hover {
-  color: #1d4ed8;
+.docpage .dp-meta a:hover {
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.doc-meta-time {
-  font-size: 0.8rem;
-  color: #94a3b8;
-}
-
-.doc-header-actions {
+/* Actions: grouped at the right, evenly spaced */
+.docpage .dp-actions {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
   flex-wrap: wrap;
   justify-content: flex-end;
+  gap: var(--space-2, 0.5rem);
   margin-left: auto;
 }
 
-.doc-header-actions .btn {
-  min-height: 2.35rem;
-  padding-inline: 0.75rem;
-}
+/* ---------- Tab toolbar: tabs left, Print right, one line ---------- */
 
-/* Toolbar & Tabs */
-.doc-toolbar-card {
+.docpage .dp-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 0.2rem 0.6rem;
-  min-height: 2.8rem;
-  box-shadow: var(--shadow-1);
+  gap: var(--space-3, 0.75rem);
+  margin-bottom: var(--space-4, 1rem);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.doc-toolbar-card .tabs {
+.docpage .dp-toolbar .tabs {
   flex: 1 1 auto;
-  align-self: stretch;
   min-width: 0;
   margin: 0;
+  border-bottom: 0;
+  scrollbar-width: none;
 }
 
-.doc-toolbar-card .tabs__tab {
-  padding: 0.55rem 0.75rem;
+.docpage .dp-toolbar .tabs::-webkit-scrollbar {
+  display: none;
 }
 
-.doc-toolbar-card .doc-print-btn {
+.docpage .dp-toolbar .tabs__tab {
+  padding: 0.7rem 0.9rem;
+  margin-bottom: -1px; /* selected underline sits on the toolbar line */
+}
+
+.docpage .dp-toolbar .btn {
   flex: none;
 }
 
-/* Grid Layout */
-.doc-page-stack .doc-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(17rem, 21.25rem);
-  gap: 1rem;
-  align-items: start;
-}
-
-.doc-layout__main {
-  min-width: 0;
-}
-
-.doc-editor-card {
-  border-radius: 16px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
-  border: 1px solid #e2e8f0;
-}
-
-.doc-layout__aside {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  position: sticky;
-  top: 1rem;
-}
-
-.doc-signing-slot {
-  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(12px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-.doc-signatures-card {
-  border-radius: var(--radius-lg);
-}
-
-.doc-assign-wrapper {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--color-border);
-}
-
-/* Responsiveness */
-@media (max-width: 1024px) {
-  .doc-page-stack .doc-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .doc-layout__aside {
-    position: static;
-  }
-}
+/* ---------- Small screens ---------- */
 
 @media (max-width: 600px) {
-  .doc-page-stack {
-    gap: 0.6rem;
-    padding: 0.6rem;
-  }
-
-  .doc-header-card {
-    padding: 0.7rem;
-  }
-
-  .doc-header-card .page-header__actions {
+  .docpage .dp-actions {
     width: 100%;
-  }
-
-  .doc-header-actions {
     justify-content: flex-start;
     margin-left: 0;
   }
 
-  .doc-toolbar-card {
-    padding-inline: 0.35rem;
+  .docpage .dp-actions .btn {
+    flex: 1 1 auto;
   }
 
-  .doc-toolbar-card .tabs__tab {
-    padding-inline: 0.5rem;
+  .docpage .dp-meta {
+    flex-direction: column;
+  }
+}
+
+/* ---------- Print: hide the header controls ---------- */
+
+@media print {
+  .docpage .dp-actions,
+  .docpage .dp-toolbar {
+    display: none !important;
   }
 }

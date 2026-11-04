@@ -1,267 +1,210 @@
 /* ==========================================================================
-   FormRenderer — Modern, Vibrant & Structured Design
+   FormRenderer
+   Same visual language as the New Case page: inset fields, two-column rows,
+   small muted labels, bold section titles separated by rules. Colors derive
+   from currentColor, so the form follows the surrounding theme.
+   Import AFTER the base forms stylesheet so these rules win.
    ========================================================================== */
 
 .form-renderer {
-  --fr-ink: #0f172a;
-  --fr-muted: #64748b;
-  --fr-line: #e2e8f0;
-  --fr-line-strong: #cbd5e1;
-  --fr-paper: #ffffff;
-  --fr-wash: #f8fafc;
-  --fr-accent: #2563eb;
-  --fr-accent-gradient: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
-  --fr-accent-soft: #eff6ff;
-  --fr-danger: #dc2626;
-  --fr-danger-soft: #fef2f2;
-  --fr-warn: #d97706;
-  --fr-warn-soft: #fffbeb;
-  --fr-radius: 12px;
-  --fr-serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
-  --fr-ring: 0 0 0 4px rgba(37, 99, 235, 0.15);
+  --fr-line: color-mix(in srgb, currentColor 16%, transparent);
+  --fr-line-strong: color-mix(in srgb, currentColor 34%, transparent);
+  --fr-muted: color-mix(in srgb, currentColor 62%, transparent);
+  --fr-placeholder: color-mix(in srgb, currentColor 48%, transparent);
+  --fr-wash: color-mix(in srgb, currentColor 5%, transparent);
+  --fr-field-bg: color-mix(in srgb, #000 22%, transparent);
+  --fr-danger: var(--color-danger, #dc2626);
+  --fr-warn: var(--color-warning, #d97706);
+  --fr-radius: 0.3125rem;
 
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.75rem;
   max-width: 62rem;
   margin-inline: auto;
-  color: var(--fr-ink);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: inherit;
 }
 
-/* ---------- Sections ---------- */
+/* ---------- Sections: bold title, rule between sections ---------- */
 
-.form-section {
-  position: relative;
+.form-renderer .form-section {
   margin: 0;
   padding: 0;
+  border: 0;
   min-width: 0;
-  background: var(--fr-paper);
-  border: 1px solid var(--fr-line);
-  border-left: 5px solid var(--fr-accent);
-  border-radius: var(--fr-radius);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: clip;
 }
 
-.form-section:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+.form-renderer .form-section + .form-section {
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--fr-line);
 }
 
-.form-section__title {
+.form-renderer .form-section__title {
   float: left;
   width: 100%;
   box-sizing: border-box;
-  margin: 0;
-  padding: 0.95rem 1.5rem;
-  background: var(--fr-wash);
-  border-bottom: 1px solid var(--fr-line);
-  font-family: var(--fr-serif);
-  font-size: 1.25rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  font-size: 1.5rem;
   font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: -0.005em;
-  color: var(--fr-ink);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: inherit;
 }
+.form-renderer .form-section__title + * { clear: both; }
 
-.form-section__title + * {
-  clear: both;
-}
-
-.form-section__desc {
-  margin: 0;
-  padding: 1rem 1.5rem 0;
+.form-renderer .form-section__desc {
   max-width: 68ch;
-  font-size: 0.925rem;
-  line-height: 1.6;
+  margin: 0 0 1.25rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
   color: var(--fr-muted);
 }
 
-.form-section__fields {
+/* Two columns; wide fields (tables, long text) span both. */
+.form-renderer .form-section__fields {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1.35rem;
-  padding: 1.35rem 1.5rem 1.6rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.125rem 1.75rem;
 }
 
-/* ---------- Field Styles ---------- */
+.form-renderer .form-field { min-width: 0; }
+.form-renderer .form-field--wide { grid-column: 1 / -1; }
 
-:where(.form-renderer) label {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--fr-ink);
-}
+/* ---------- Labels ---------- */
 
-:where(.form-renderer) :is(input:not([type="checkbox"], [type="radio"]), select, textarea) {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0.6rem 0.8rem;
-  font: inherit;
-  font-size: 0.95rem;
-  color: var(--fr-ink);
-  background: var(--fr-paper);
-  border: 1.5px solid var(--fr-line-strong);
-  border-radius: 8px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-}
-
-:where(.form-renderer) :is(input, select, textarea):hover:not(:disabled) {
-  border-color: var(--fr-accent);
-}
-
-:where(.form-renderer) :is(input, select, textarea, button):focus-visible {
-  outline: none;
-  border-color: var(--fr-accent);
-  box-shadow: var(--fr-ring);
-}
-
-:where(.form-renderer) :is(input, select, textarea):disabled,
-:where(.form-renderer) :is(input, select, textarea)[readonly] {
-  background: var(--fr-wash);
+.form-renderer .field__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
   color: var(--fr-muted);
+}
+
+/* ---------- Controls ---------- */
+
+.form-renderer :is(
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="color"]),
+  select,
+  textarea
+) {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--fr-line-strong);
+  border-radius: var(--fr-radius);
+  background: var(--fr-field-bg);
+  color: inherit;
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.3;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-renderer :is(input, textarea)::placeholder {
+  color: var(--fr-placeholder);
+  font-style: italic;
+  opacity: 1;
+}
+
+.form-renderer :is(input, select, textarea):hover:not(:disabled, [readonly]) {
+  border-color: color-mix(in srgb, currentColor 50%, transparent);
+}
+
+.form-renderer :is(input, select, textarea, button):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.form-renderer textarea {
+  min-height: 6.5rem;
+  resize: vertical;
+}
+
+.form-renderer :is(input[type="checkbox"], input[type="radio"]) {
+  accent-color: currentColor;
+}
+
+/* Read-only and locked values: flat, no inset, still legible */
+.form-renderer :is(input, select, textarea):is(:disabled, [readonly]) {
+  background: var(--fr-wash);
+  border-color: var(--fr-line);
+  color: color-mix(in srgb, currentColor 80%, transparent);
   cursor: default;
 }
 
-:where(.form-renderer) :is(input, select, textarea)[aria-invalid="true"] {
+/* Invalid: danger border plus a bar, so it doesn't rely on color alone */
+.form-renderer :is(input, select, textarea)[aria-invalid="true"] {
   border-color: var(--fr-danger);
-  background: var(--fr-danger-soft);
+  box-shadow: inset 3px 0 0 var(--fr-danger);
 }
 
-:where(.form-renderer) table {
+/* ---------- Tables inside forms ---------- */
+
+.form-renderer table {
   width: 100%;
   border-collapse: collapse;
 }
-
-:where(.form-renderer) :is(th, td) {
-  padding: 0.65rem 0.75rem;
+.form-renderer :is(th, td) {
+  padding: 0.625rem 0.75rem;
   border-bottom: 1px solid var(--fr-line);
   text-align: left;
 }
-
-:where(.form-renderer) th {
-  background: var(--fr-wash);
-  font-weight: 600;
-  font-size: 0.85rem;
+.form-renderer th {
+  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--fr-muted);
 }
-
-.form-renderer--readonly .form-section {
-  border-left-color: var(--fr-line-strong);
+.form-renderer td :is(input:not([type="checkbox"], [type="radio"]), select, textarea) {
+  padding: 0.5rem 0.625rem;
 }
 
-.form-renderer--readonly .form-section__title {
-  background: transparent;
-}
+/* ---------- Error summary ---------- */
 
-/* ---------- Error Notice & Icons ---------- */
-
-.form-notice--error {
+.form-renderer .form-notice--error {
   scroll-margin-top: 1rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--fr-danger) 40%, transparent);
+  border-left: 3px solid var(--fr-danger);
   border-radius: var(--fr-radius);
-  background: var(--fr-danger-soft);
-  border: 1px solid color-mix(in srgb, var(--fr-danger) 30%, transparent);
+  background: color-mix(in srgb, var(--fr-danger) 8%, transparent);
 }
 
-.form-notice__header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.form-notice__title {
-  font-size: 1rem;
-  color: var(--fr-danger);
-}
-
-.form-notice__aside {
-  font-size: 0.85rem;
-  color: var(--fr-muted);
-}
-
-.lucide-header-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  flex-shrink: 0;
-}
-
-/* ---------- Problem Lists & Items ---------- */
-
-.form-errors {
-  list-style: none;
-  margin: 0.75rem 0 0;
-  padding: 0;
+.form-renderer .form-errors {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.form-errors__item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  padding: 0.45rem 0.6rem;
-  border-radius: 6px;
-  transition: background-color 0.15s ease;
-}
-
-.form-errors__item:hover {
-  background: rgba(255, 255, 255, 0.7);
-}
-
-.form-errors__icon {
-  margin-top: 0.2rem;
-  display: flex;
-  align-items: center;
-}
-
-.lucide-err-icon {
-  width: 1rem;
-  height: 1rem;
-  color: var(--fr-danger);
-}
-
-.lucide-chk-icon {
-  width: 1rem;
-  height: 1rem;
-  color: var(--fr-warn);
-}
-
-.form-errors__body {
-  flex: 1;
+.form-renderer .form-errors__item {
   line-height: 1.5;
 }
+.form-renderer .form-errors__item + .form-errors__item { margin-top: 0; }
 
-.form-errors__link {
+.form-renderer .form-errors__link {
   appearance: none;
   display: inline;
   margin: 0;
   padding: 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: none;
+  color: inherit;
   font: inherit;
   font-weight: 600;
   text-align: left;
-  color: var(--fr-ink);
-  background: none;
-  border: 0;
-  border-bottom: 1px solid currentColor;
+  text-decoration: none;
   cursor: pointer;
 }
-
-.form-errors__link:hover {
-  color: var(--fr-danger);
+.form-renderer .form-errors__link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
-.form-errors__link:focus-visible {
-  outline: none;
-  border-radius: 2px;
-  box-shadow: var(--fr-ring);
-}
-
-.form-errors__msg {
-  color: var(--fr-ink);
-}
-
-.form-errors__hint {
+.form-renderer .form-errors__hint {
   display: block;
   margin-top: 0.2rem;
   padding-left: 0.7rem;
@@ -271,102 +214,82 @@
   color: var(--fr-muted);
 }
 
-/* ---------- Checklist ---------- */
+/* ---------- Checklist: still to complete ---------- */
 
-.form-checklist {
-  background: var(--fr-warn-soft);
-  border: 1px solid color-mix(in srgb, var(--fr-warn) 30%, transparent);
+.form-renderer .form-checklist {
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--fr-warn) 40%, transparent);
+  border-left: 3px solid var(--fr-warn);
   border-radius: var(--fr-radius);
-  overflow: clip;
+  background: color-mix(in srgb, var(--fr-warn) 7%, transparent);
+  color: inherit;
 }
 
-.form-checklist > summary {
+.form-renderer .form-checklist > summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   padding: 0.8rem 1.1rem;
   list-style: none;
   cursor: pointer;
-  color: var(--fr-warn);
   user-select: none;
 }
-
-.form-checklist > summary::-webkit-details-marker {
-  display: none;
+.form-renderer .form-checklist > summary::-webkit-details-marker { display: none; }
+.form-renderer .form-checklist > summary:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
 }
 
-.form-checklist__header {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
+/* chevron drawn in CSS, flips when open */
+.form-renderer .form-checklist > summary::after {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.25rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+}
+.form-renderer .form-checklist[open] > summary::after {
+  transform: rotate(-135deg);
 }
 
-.lucide-chevron-icon {
-  width: 1.1rem;
-  height: 1.1rem;
-  transition: transform 0.2s ease;
-}
-
-.form-checklist[open] .lucide-chevron-icon {
-  transform: rotate(180deg);
-}
-
-.form-checklist > summary:hover {
-  background: color-mix(in srgb, var(--fr-warn) 6%, transparent);
-}
-
-.form-checklist > summary:focus-visible {
-  outline: none;
-  box-shadow: inset var(--fr-ring);
-}
-
-.form-checklist__count {
-  display: inline-block;
-  min-width: 1.5rem;
-  padding: 0.05rem 0.45rem;
-  border-radius: 999px;
-  background: var(--fr-warn);
-  color: #fff;
-  font-size: 0.85rem;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-
-.form-checklist__body {
-  padding: 0 0.8rem 0.9rem;
-  border-top: 1px solid color-mix(in srgb, var(--fr-warn) 22%, transparent);
+.form-renderer .form-checklist > .form-errors {
+  margin: 0;
+  padding: 0.75rem 1.1rem 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--fr-warn) 25%, transparent);
 }
 
 /* ---------- Footer note ---------- */
 
-.form-footer-note {
-  margin: 0;
-  padding: 0.9rem 0 0 1.5rem;
-  border-top: 1px solid var(--fr-line);
+.form-renderer .form-footer-note {
   max-width: 72ch;
+  margin: 0;
+  padding: 0.9rem 0 0;
+  border-top: 1px solid var(--fr-line);
   font-size: 0.85rem;
   line-height: 1.6;
   color: var(--fr-muted);
 }
 
-/* ---------- Small screens ---------- */
+/* ---------- Responsive, motion, print ---------- */
 
-@media (max-width: 640px) {
-  .form-renderer { gap: 1rem; }
-  .form-section__title { padding: 0.75rem 1rem; font-size: 1.1rem; }
-  .form-section__desc { padding: 0.85rem 1rem 0; }
-  .form-section__fields { padding: 1.1rem 1rem 1.3rem; gap: 1.15rem; }
-  .form-footer-note { padding-left: 1rem; }
+@media (max-width: 40rem) {
+  .form-renderer { gap: 1.25rem; }
+  .form-renderer .form-section__title { font-size: 1.25rem; }
+  .form-renderer .form-section__fields { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lucide-chevron-icon,
-  :where(.form-renderer) :is(input, select, textarea) {
-    transition: none;
-  }
+  .form-renderer * { transition: none !important; }
 }
 
 @media print {
-  .form-notice--error, .form-checklist { display: none; }
-  .form-section { break-inside: avoid; box-shadow: none; }
+  .form-renderer { --fr-field-bg: transparent; }
+  .form-renderer .form-notice--error,
+  .form-renderer .form-checklist { display: none; }
+  .form-renderer .form-section { break-inside: avoid; }
 }
