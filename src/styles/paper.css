@@ -8,7 +8,7 @@
   --paper-muted: #5a6168;
   --paper-line: #3a3f44;        /* table borders */
   --paper-label-bg: #f1f2f3;    /* shaded label cells */
-  --paper-head-bg: #dce9f5;     /* light blue header rows */
+  --paper-head-bg: #EEF5FA;     /* light blue header rows */
   --paper-section: #3d6b9a;     /* blue-grey section headings */
   --paper-note-bg: #fff6d6;
   --paper-font: Calibri, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
@@ -142,8 +142,8 @@
 .pf-header__row--top > :last-child,
 .pf-header__row--bottom > :last-child { flex: 1 1 0; }
 /* both rows: the same light blue */
-.pf-header .pf-header__row--top > div,
-.pf-header .pf-header__row--bottom > div { background: #dbe9f6 !important; }
+.pf-header .pf-header__row--top > div { background: #D9EAF7 !important; }
+.pf-header .pf-header__row--bottom > div { background: #EEF5FA !important; }
 
 /* left cells: bold black, one line. The organisation keeps its own case ("AfS-Rwanda"), the title is capitals */
 .pf-header__org,
