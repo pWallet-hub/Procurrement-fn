@@ -263,8 +263,6 @@
   border-top: 1px solid color-mix(in srgb, var(--fr-warn) 25%, transparent);
 }
 
-/* ---------- Footer note ---------- */
-
 .form-renderer .form-footer-note {
   max-width: 72ch;
   margin: 0;
