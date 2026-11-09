@@ -1,42 +1,59 @@
 /*
  * Design tokens. Restyle the whole app by editing this file first.
- * Dark mode follows the OS via prefers-color-scheme; force with <html data-theme="dark|light">.
+ * Light mode is the default; opt into dark mode with <html data-theme="dark">.
+ * Look: soft lavender page, white cards, dark navy sidebar, green primary actions,
+ * purple / sky / green / amber / coral chart palette.
  */
 :root {
+  color-scheme: light;
+
   /* brand */
-  --color-primary: #1d6f4a;
-  --color-primary-hover: #165a3b;
+  --color-primary: #168a59;
+  --color-primary-hover: #107048;
   --color-primary-contrast: #ffffff;
-  --color-primary-soft: #e4f2eb;   /* tinted backgrounds: active nav item, highlighted rows */
-  --color-primary-ink: #14502f;    /* text on --color-primary-soft */
-  --color-accent: #b7791f;
+  --color-primary-soft: #e3f5ec;
+  --color-primary-ink: #0f5f3d;
+  --color-accent: #f7a928;
+
+  /* chart + KPI palette */
+  --chart-purple: #5b4cc4;
+  --chart-purple-soft: #ece9fb;
+  --chart-sky: #3ba4dc;
+  --chart-sky-soft: #e1f2fb;
+  --chart-green: #2fbf86;
+  --chart-green-soft: #e0f6ec;
+  --chart-amber: #f7b731;
+  --chart-amber-soft: #fff4d9;
+  --chart-coral: #ef6a4c;
+  --chart-coral-soft: #fde8e3;
 
   /* surfaces */
-  --color-bg: #f4f6f5;
+  --color-bg: #f3f3f9;
   --color-surface: #ffffff;
-  --color-surface-alt: #eef0f2;
-  --color-border: #dde2e0;
-  --color-border-strong: #aab1b9;
+  --color-surface-alt: #f6f6fb;
+  --color-border: #e6e8f0;
+  --color-border-strong: #b9bfcd;
+  --color-sidebar: #1c1d33;
 
   /* text */
-  --color-text: #1b1f23;
-  --color-text-muted: #5b6671;
-  --color-link: #1a5fb4;
+  --color-text: #212539;
+  --color-text-muted: #6b7189;
+  --color-link: #4c3fb8;
 
   /* status */
   --color-success: #1e7a3c;
   --color-success-bg: #def3e5;
   --color-warning: #8a5a00;
-  --color-warning-bg: #fdf0cf;
-  --color-danger: #b42318;
+  --color-warning-bg: #fff3d4;
+  --color-danger: #c4311f;
   --color-danger-bg: #fde4e1;
   --color-info: #175cd3;
   --color-info-bg: #dde9fd;
   --color-neutral: #4a5560;
-  --color-neutral-bg: #e6e9ec;
+  --color-neutral-bg: #e9ebf1;
 
-  --color-focus: #2563eb;
-  --color-overlay: rgba(10, 15, 20, 0.5);
+  --color-focus: #4c3fb8;
+  --color-overlay: rgba(10, 15, 30, 0.5);
 
   /* spacing scale */
   --space-1: 0.25rem;
@@ -49,16 +66,15 @@
 
   /* shape */
   --radius-sm: 4px;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.18);
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow-1: 0 1px 2px rgba(56, 65, 74, 0.1), 0 1px 3px rgba(56, 65, 74, 0.06);
+  --shadow-2: 0 8px 24px rgba(30, 32, 60, 0.18);
 
   /* type */
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --font-signature: 'Brush Script MT', 'Segoe Script', 'Snell Roundhand', cursive;
-  /* type scale: page title 2xl, card title lg, body base, secondary sm, captions xs */
   --text-xs: 0.75rem;
   --text-sm: 0.8125rem;
   --text-base: 0.9375rem;
@@ -68,59 +84,40 @@
   --line-height: 1.5;
 
   /* layout */
-  --sidebar-width: 16rem;
-  --header-height: 3.5rem;
-  --content-max: 76rem;
+  --sidebar-width: 16.5rem;
+  --header-height: 3.75rem;
+  --content-max: 80rem;
   --control-height: 2.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --color-primary: #3fa876;
-    --color-primary-hover: #55bd8b;
-    --color-primary-contrast: #0b1510;
-    --color-primary-soft: #16301f;
-    --color-primary-ink: #9be0bb;
-    --color-accent: #e0a64a;
-    --color-bg: #111417;
-    --color-surface: #1a1e22;
-    --color-surface-alt: #232930;
-    --color-border: #2f363d;
-    --color-border-strong: #4a535c;
-    --color-text: #e8ebee;
-    --color-text-muted: #9aa5b0;
-    --color-link: #7ab0ff;
-    --color-success: #6fd18e;
-    --color-success-bg: #14301f;
-    --color-warning: #f0c25c;
-    --color-warning-bg: #3a2c0a;
-    --color-danger: #ff8a7f;
-    --color-danger-bg: #3d1713;
-    --color-info: #8db8ff;
-    --color-info-bg: #14264a;
-    --color-neutral: #b6c0ca;
-    --color-neutral-bg: #2b323a;
-    --color-focus: #6ea0ff;
-    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
-    --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.6);
-    color-scheme: dark;
-  }
-}
 :root[data-theme='dark'] {
-  --color-primary: #3fa876;
-  --color-primary-hover: #55bd8b;
-  --color-primary-contrast: #0b1510;
+  --color-primary: #3fb27f;
+  --color-primary-hover: #55c896;
+  --color-primary-contrast: #07140e;
   --color-primary-soft: #16301f;
   --color-primary-ink: #9be0bb;
-  --color-accent: #e0a64a;
-  --color-bg: #111417;
-  --color-surface: #1a1e22;
-  --color-surface-alt: #232930;
-  --color-border: #2f363d;
-  --color-border-strong: #4a535c;
-  --color-text: #e8ebee;
-  --color-text-muted: #9aa5b0;
-  --color-link: #7ab0ff;
+  --color-accent: #f0b64d;
+
+  --chart-purple: #8a7df0;
+  --chart-purple-soft: #25214a;
+  --chart-sky: #5cb8ea;
+  --chart-sky-soft: #14304a;
+  --chart-green: #4cd49f;
+  --chart-green-soft: #12352a;
+  --chart-amber: #f5c04d;
+  --chart-amber-soft: #3a2f12;
+  --chart-coral: #f58468;
+  --chart-coral-soft: #3d1f1a;
+
+  --color-bg: #12131f;
+  --color-surface: #1b1d2e;
+  --color-surface-alt: #232538;
+  --color-border: #2c2f46;
+  --color-border-strong: #4a4f6b;
+  --color-sidebar: #151625;
+  --color-text: #e8eaf4;
+  --color-text-muted: #9ba1bd;
+  --color-link: #a99fff;
   --color-success: #6fd18e;
   --color-success-bg: #14301f;
   --color-warning: #f0c25c;
@@ -129,9 +126,9 @@
   --color-danger-bg: #3d1713;
   --color-info: #8db8ff;
   --color-info-bg: #14264a;
-  --color-neutral: #b6c0ca;
-  --color-neutral-bg: #2b323a;
-  --color-focus: #6ea0ff;
+  --color-neutral: #b6bccf;
+  --color-neutral-bg: #2b2e45;
+  --color-focus: #a99fff;
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
   --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.6);
   color-scheme: dark;

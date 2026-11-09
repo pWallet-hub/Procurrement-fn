@@ -1,73 +1,84 @@
-/* ==========================================================================
-   DocumentPage: header + tab toolbar only.
-   Scoped to the existing class names, so the form, signatures column,
-   alerts and modals are untouched.
-   ========================================================================== */
-
-/* ---------- Header ---------- */
-
-.docpage .dp-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--space-4, 1rem) var(--space-6, 2rem);
-  padding-bottom: var(--space-4, 1rem);
-  margin-bottom: var(--space-3, 0.75rem);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.docpage .dp-head-main {
-  flex: 1 1 22rem;
+/* Document editor and draft page. All content and actions remain in DocumentPage.tsx.
+   Look: quiet header, underline tabs, a tinted work surface holding white form panels,
+   and a signing sidebar that reads like a ledger. */
+.docpage {
+  --dp-shadow: var(--shadow-1);
   min-width: 0;
 }
 
-/* GR-06 · v1 · Draft  ->  one tidy row */
+.docpage .dp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  margin-bottom: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-1);
+}
+
+.docpage .dp-head-main {
+  flex: 1 1 24rem;
+  min-width: 0;
+}
+
 .docpage .dp-id {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem 0.65rem;
+  gap: var(--space-2);
   margin: 0;
-  font-size: var(--text-sm, 0.875rem);
   color: var(--color-text-muted);
+  font-size: var(--text-sm);
 }
 
 .docpage .dp-type {
-  padding: 0.15rem 0.5rem;
-  border-radius: 6px;
-  background: var(--color-surface-alt);
-  color: var(--color-text);
-  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
+  background: var(--chart-purple-soft);
+  color: var(--chart-purple);
+  font-size: var(--text-xs);
+  font-weight: 700;
 }
 
 .docpage .dp-version {
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: var(--color-neutral-bg);
+  color: var(--color-neutral);
+  font-size: var(--text-xs);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
 .docpage .dp-head h1 {
-  margin: 0.5rem 0 0;
-  font-size: clamp(1.4rem, 1.1rem + 1vw, 1.9rem);
+  max-width: 34ch;
+  margin: var(--space-3) 0 0;
+  color: var(--color-text);
+  font-size: clamp(1.4rem, 1.05rem + 1vw, 1.9rem);
   font-weight: 700;
   line-height: 1.2;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.025em;
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
 
-/* Label and value side by side instead of stacked */
 .docpage .dp-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 1.5rem;
-  margin: 0.75rem 0 0;
-  font-size: var(--text-sm, 0.875rem);
+  gap: var(--space-2) var(--space-5);
+  margin: var(--space-3) 0 0;
+  color: var(--color-text);
+  font-size: var(--text-sm);
 }
 
 .docpage .dp-meta > div {
   display: flex;
   align-items: baseline;
-  gap: 0.4rem;
+  gap: var(--space-2);
 }
 
 .docpage .dp-meta dt {
@@ -76,12 +87,12 @@
 
 .docpage .dp-meta dd {
   margin: 0;
-  font-weight: 500;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
 .docpage .dp-meta a {
-  color: var(--color-primary-ink, var(--color-primary));
+  color: var(--color-link);
   font-weight: 600;
   text-decoration: none;
 }
@@ -91,25 +102,41 @@
   text-underline-offset: 3px;
 }
 
-/* Actions: grouped at the right, evenly spaced */
 .docpage .dp-actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: var(--space-2, 0.5rem);
+  gap: var(--space-2);
   margin-left: auto;
 }
 
-/* ---------- Tab toolbar: tabs left, Print right, one line ---------- */
+.docpage .dp-actions .btn {
+  min-height: 2.75rem;
+  padding-inline: var(--space-5);
+  border-radius: var(--radius);
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(27, 38, 70, 0.08);
+  transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+.docpage .dp-actions .btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(27, 38, 70, 0.12);
+}
 
 .docpage .dp-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3, 0.75rem);
-  margin-bottom: var(--space-4, 1rem);
-  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-3);
+  min-height: 3.75rem;
+  margin-bottom: var(--space-4);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-1);
 }
 
 .docpage .dp-toolbar .tabs {
@@ -125,17 +152,112 @@
 }
 
 .docpage .dp-toolbar .tabs__tab {
-  padding: 0.7rem 0.9rem;
-  margin-bottom: -1px; /* selected underline sits on the toolbar line */
+  padding: 0.95rem 1.1rem;
+  margin-bottom: -1px;
+  border-bottom: 3px solid transparent;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+
+.docpage .dp-toolbar .tabs__tab:hover {
+  color: var(--color-text);
+}
+
+.docpage .dp-toolbar .tabs__tab[aria-selected='true'] {
+  border-bottom-color: var(--chart-purple);
+  color: var(--chart-purple);
 }
 
 .docpage .dp-toolbar .btn {
   flex: none;
+  margin: 0;
 }
 
-/* ---------- Small screens ---------- */
+.docpage .dp-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(17rem, 0.8fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.docpage .dp-main,
+.docpage .dp-aside {
+  min-width: 0;
+}
+
+.docpage .dp-sheet,
+.docpage .dp-slots,
+.docpage .dp-signing {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--dp-shadow);
+}
+
+/* The sheet is the tinted work surface; white form panels sit on it. */
+.docpage .dp-sheet {
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  background: var(--color-surface-alt);
+  box-shadow: none;
+}
+
+.docpage .dp-aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.docpage .dp-slots {
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.docpage .dp-slots h2 {
+  margin: 0 0 var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  font-weight: 700;
+}
+
+.docpage .dp-assign {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.docpage [role='tabpanel'] {
+  min-width: 0;
+}
+
+.docpage > .alert {
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius);
+}
+
+@media (max-width: 900px) {
+  .docpage .dp-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .docpage .dp-aside {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    align-items: start;
+  }
+}
 
 @media (max-width: 600px) {
+  .docpage .dp-head {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .docpage .dp-head h1 {
+    font-size: 1.5rem;
+  }
+
   .docpage .dp-actions {
     width: 100%;
     justify-content: flex-start;
@@ -148,12 +270,47 @@
 
   .docpage .dp-meta {
     flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .docpage .dp-toolbar {
+    align-items: center;
+    padding-inline: var(--space-1);
+  }
+
+  .docpage .dp-toolbar .tabs__tab {
+    padding-inline: 0.55rem;
+    font-size: var(--text-sm);
+  }
+
+  .docpage .dp-toolbar .btn {
+    padding-inline: var(--space-2);
+  }
+
+  .docpage .dp-sheet {
+    padding: var(--space-3);
+  }
+
+  .docpage .dp-slots {
+    padding: var(--space-4);
   }
 }
 
-/* ---------- Print: hide the header controls ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .docpage *,
+  .docpage *::before,
+  .docpage *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
 
 @media print {
+  .docpage .dp-sheet {
+    background: transparent;
+    padding: 0;
+  }
+
   .docpage .dp-actions,
   .docpage .dp-toolbar {
     display: none !important;

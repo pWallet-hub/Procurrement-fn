@@ -150,8 +150,8 @@ breaking rows. On phones label/value cells stack and wide tables scroll sideways
 For every form (PR-01 to TC-10, the contract and the hand-written pages) and the components it renders, see
 [`docs/FORMS-AND-COMPONENTS.md`](docs/FORMS-AND-COMPONENTS.md).
 
-1. **`src/styles/theme.css`** - all colours, spacing, radius, fonts, control height, dark mode
-   (`prefers-color-scheme`, or force with `<html data-theme="dark|light">`). Most of the app follows from this file.
+1. **`src/styles/theme.css`** - all colours, spacing, radius, fonts, control height, light-by-default theme
+   (opt into dark mode with `<html data-theme="dark">`). Most of the app follows from this file.
 2. **`src/ui/` primitives + `styles/components.css`** - Button, Card, Badge/StatusBadge (status -> tone map in
    `StatusBadge.tsx`), Field/Input, Table, Modal (native `<dialog>`), Toast.
 3. **Layout** - `layout/AppShell.tsx`, `nav.ts`, `styles/layout.css` (sidebar collapses to a drawer with a menu button under 900px); public pages use `PublicLayout`. Brand colour `--color-primary` (AfS green), logo `public/logo.png` (transparent PNG; the sidebar crops its side lines with CSS).
