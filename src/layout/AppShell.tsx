@@ -70,7 +70,8 @@ export function AppShell() {
                 className="user-menu__item"
                 onClick={async () => {
                   await logout();
-                  navigate('/login');
+                  // signed_out stops the login page from signing the person straight back in through AFS.
+                  navigate('/login?signed_out=1');
                 }}
               >
                 <Icon name="logout" size={16} /> Sign out

@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { RequireAuth, RequireRole } from './auth/guards';
 import { AppShell } from './layout/AppShell';
 import { Login } from './pages/Login';
+import { SsoComplete } from './pages/SsoComplete';
 import { AcceptInvite } from './pages/AcceptInvite';
 import { ExternalSign } from './pages/ExternalSign';
 import { Verify } from './pages/Verify';
@@ -28,6 +29,7 @@ export function App() {
     <Routes>
       {/* public */}
       <Route path="/login" element={<Login />} />
+      <Route path="/sso/complete" element={<SsoComplete />} />
       <Route path="/accept-invite" element={<AcceptInvite />} />
       <Route path="/sign/:token" element={<ExternalSign />} />
       <Route path="/verify/:documentId" element={<Verify />} />
