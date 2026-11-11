@@ -4,8 +4,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-ARG VITE_API_BASE=/api/v1
-ENV VITE_API_BASE=$VITE_API_BASE
+# Fixed, not a build argument: the portal must call its own origin (/api/v1, proxied by nginx) so the SSO cookies stay
+# on the portal's hostname. Coolify passes every env variable as a build arg, and a leftover absolute VITE_API_BASE
+# (https://apipro...) was baked into the bundle and broke AFS sign-in with sso_error=expired.
+ENV VITE_API_BASE=/api/v1
 RUN npm run build
 
 # --- serve ---
