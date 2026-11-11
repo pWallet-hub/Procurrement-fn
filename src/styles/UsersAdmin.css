@@ -1,0 +1,342 @@
+/* ==========================================================================
+   Users admin. Scoped to .ua so shared table / button styles stay untouched.
+   Goal: one line per person, roles readable at a glance, rare actions tucked
+   into a menu so rows stop wrapping into three lines.
+   ========================================================================== */
+
+.ua { gap: var(--space-4, 1rem); }
+
+/* ---------- Toolbar ---------- */
+
+.ua-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3, 0.75rem) var(--space-4, 1rem);
+}
+
+.ua-toolbar__lead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  flex: 1 1 22rem;
+  min-width: 0;
+}
+
+.ua .ua-search {
+  width: min(100%, 22rem);
+}
+
+.ua-summary {
+  margin: 0;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Table tuning (this page only) ---------- */
+
+.ua .table th,
+.ua .table td {
+  vertical-align: middle;
+  padding-block: 0.8rem;
+}
+
+.ua .table th {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.ua .table th:last-child,
+.ua .table td:last-child {
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* ---------- Person ---------- */
+
+.ua-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 14rem;
+}
+
+.ua-user--inactive .ua-user__text { opacity: 0.6; }
+
+.ua-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-ink, var(--color-primary));
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 700;
+}
+
+.ua-user--inactive .ua-avatar {
+  background: var(--color-neutral-bg);
+  color: var(--color-neutral);
+}
+
+.ua-user__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ua-user__name {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.ua-user__email {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm, 0.875rem);
+  overflow-wrap: anywhere;
+}
+
+.ua-muted { color: var(--color-text-muted); }
+
+/* ---------- Roles ---------- */
+
+.ua-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  max-width: 16rem;
+}
+
+.ua-role {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ua-role--more {
+  color: var(--color-text-muted);
+  cursor: help;
+}
+
+/* ---------- Actions ---------- */
+
+.ua-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ua-more {
+  width: 2rem;
+  padding: 0;
+}
+
+.ua-menu {
+  position: fixed;
+  z-index: 60;
+  min-width: 12.5rem;
+  padding: 0.3rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg, 12px);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-2);
+  text-align: left;
+}
+
+.ua-menu__item {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 0;
+  border-radius: var(--radius, 8px);
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ua-menu__item:hover,
+.ua-menu__item:focus-visible {
+  background: var(--color-surface-alt);
+  outline: none;
+}
+
+.ua-menu__item--danger { color: var(--color-danger); }
+
+.ua-menu__item--danger:hover,
+.ua-menu__item--danger:focus-visible { background: var(--color-danger-bg); }
+
+/* ---------- Empty search ---------- */
+
+.ua-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: var(--space-6, 2rem) var(--space-4, 1rem);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg, 12px);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.ua-empty strong { color: var(--color-text); }
+.ua-empty .btn { margin-top: 0.4rem; }
+
+/* ---------- User modal (invite / edit) ---------- */
+
+.ua-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5, 1.5rem);
+}
+
+.ua-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg, 12px);
+  background: var(--color-surface-alt);
+}
+
+.ua-avatar--lg {
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.ua-identity__text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.ua-identity__name {
+  font-weight: 600;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.ua-identity__email {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.ua-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+
+.ua-section--divided {
+  padding-top: var(--space-5, 1.5rem);
+  border-top: 1px solid var(--color-border);
+}
+
+.ua-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4, 1rem);
+}
+
+.ua-hint {
+  margin: 0;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Role tiles */
+
+.ua-rolegrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.ua-roletile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius, 8px);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.12s, background-color 0.12s;
+}
+
+.ua-roletile:hover { border-color: var(--color-border-strong); }
+
+.ua-roletile input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.ua-roletile__box {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: 5px;
+  background: var(--color-surface);
+  color: transparent;
+  transition: background-color 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.ua-roletile.is-on {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.ua-roletile.is-on .ua-roletile__box {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.ua-roletile:has(input:focus-visible) {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 600px) {
+  .ua-toolbar > .btn { width: 100%; }
+  .ua .ua-search { width: 100%; }
+  .ua-grid2,
+  .ua-rolegrid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ua-roletile,
+  .ua-roletile__box { transition: none; }
+}

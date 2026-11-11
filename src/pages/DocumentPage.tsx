@@ -26,7 +26,7 @@ import { TabPanel, Tabs } from '../ui/Tabs';
 import { useToast } from '../ui/Toast';
 import { describeError } from '../features/forms/problems';
 import type { Template } from '../api/types';
-// import './DocumentPage.css';
+import '../styles/DocumentPage.css';
 
 export function DocumentPage() {
   const { id = '' } = useParams();

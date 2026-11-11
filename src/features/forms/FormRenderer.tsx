@@ -1,6 +1,5 @@
 import { useId, useMemo, useState, type ReactNode } from 'react';
 import type { Template } from '../../api/types';
-import { Alert } from '../../ui/Alert';
 import { FieldRenderer } from './FieldRenderer';
 import { FormContext } from './FormContext';
 import { evalCondition } from './conditions';
@@ -8,6 +7,7 @@ import { describePath } from './paths';
 import { fillPlaceholders } from './placeholders';
 import type { Errors } from './types';
 import { problemSentence } from './problems';
+import '../../styles/Formrenderer.css';
 
 interface Props {
   template: Template;
@@ -54,7 +54,7 @@ export function FormRenderer({ template, data, onChange, errors = {}, hints = {}
   const problemList = (entries: [string, string][], showProblem: boolean): ReactNode => (
     <ul className="form-errors">
       {entries.map(([path, msg]) => (
-        <li key={path}>
+        <li key={path} className="form-errors__item">
           <button type="button" className="form-errors__link" onClick={() => goTo(path)}>{describePath(template, path)}</button>
           {showProblem || msg !== 'required' ? `: ${problemSentence(msg)}.` : ''}
           {hints[path] && <span className="form-errors__hint">{hints[path]}</span>}
@@ -65,13 +65,13 @@ export function FormRenderer({ template, data, onChange, errors = {}, hints = {}
 
   return (
     <FormContext.Provider value={ctx}>
-      <div className="form-renderer">
+      <div className={`form-renderer${readOnly ? ' form-renderer--readonly' : ''}`}>
         {errorEntries.length > 0 && (!readOnly || !!fillAt) && (
-          <Alert tone="error">
+          <div className="form-notice form-notice--error" role="alert">
             <strong>{errorEntries.length === 1 ? '1 field needs attention' : `${errorEntries.length} fields need attention`}</strong>
             {' '}(select a field to go to it)
             {problemList(errorEntries, true)}
-          </Alert>
+          </div>
         )}
         {missingEntries.length > 0 && !readOnly && (
           <details className="form-checklist" open={checklistOpen} onToggle={(e) => setChecklistOpen(e.currentTarget.open)}>
