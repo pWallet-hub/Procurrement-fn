@@ -12,7 +12,17 @@ services:
     expose: ["80"]
     environment:
       # where nginx forwards /api. Any URL: another container, a host port, or a remote server.
-      API_UPSTREAM: ${API_UPSTREAM:-https://apipro.afs-rwanda.org}
+      # Production default: the backend's API over the shared afs-internal network. The public address
+      # (https://apipro.afs-rwanda.org) does not work from containers on the same host (hairpin is blocked).
+      API_UPSTREAM: ${API_UPSTREAM:-http://procurement-api:3000}
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks: [default, afs]
     restart: unless-stopped
+
+networks:
+  # Shared with AFS Command Center and the Procurement backend (Command Center creates it; deploy it and the backend first).
+  # Locally, docker-compose.override.yml replaces it with a private network.
+  afs:
+    name: afs-internal
+    external: true

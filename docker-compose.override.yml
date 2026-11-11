@@ -3,3 +3,12 @@ services:
   web:
     ports:
       - "${WEB_PORT:-8080}:80"
+    environment:
+      # Locally there is no shared network with the backend: default to the public production API (see .env.example).
+      API_UPSTREAM: ${API_UPSTREAM:-https://apipro.afs-rwanda.org}
+
+# Production joins the shared `afs-internal` network (external). Locally there is none, so use a private one.
+networks:
+  afs:
+    name: procurement-fn-afs-local
+    external: false
