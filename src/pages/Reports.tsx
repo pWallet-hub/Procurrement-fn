@@ -8,10 +8,10 @@ import { PageSpinner } from '../ui/Spinner';
 import { humanize } from '../ui/StatusBadge';
 import { Table } from '../ui/Table';
 
-const REPORTS: Array<{ name: ReportName; title: string }> = [
-  { name: 'open-cases', title: 'Open cases' },
-  { name: 'cycle-time', title: 'Cycle time' },
-  { name: 'spend', title: 'Spend' },
+const REPORTS: Array<{ name: ReportName; title: string; about: string }> = [
+  { name: 'open-cases', title: 'Open cases', about: 'Cases that are still in progress and the stage each one has reached.' },
+  { name: 'cycle-time', title: 'Cycle time', about: 'How long cases take to move through the procurement stages.' },
+  { name: 'spend', title: 'Spend', about: 'How much has been spent through procurement cases.' },
 ];
 
 function cell(v: unknown): string {
@@ -26,7 +26,7 @@ function ReportTable({ name }: { name: ReportName }) {
   if (q.isLoading) return <PageSpinner />;
   if (q.error) return <ErrorState error={q.error} />;
   const rows = q.data?.rows ?? [];
-  if (rows.length === 0) return <EmptyState title="No data." />;
+  if (rows.length === 0) return <EmptyState title="Nothing to report yet" icon="chart">This report fills in as cases are created and completed.</EmptyState>;
   const cols = Array.from(new Set(rows.flatMap((r) => Object.keys(r))));
   return (
     <Table>
@@ -39,9 +39,9 @@ function ReportTable({ name }: { name: ReportName }) {
 export function Reports() {
   return (
     <div className="stack">
-      <PageHeader title="Reports" />
+      <PageHeader title="Reports" subtitle="Summaries of procurement activity across all cases." />
       {REPORTS.map((r) => (
-        <Card key={r.name} title={r.title}><ReportTable name={r.name} /></Card>
+        <Card key={r.name} title={r.title} actions={<span className="muted" style={{ fontSize: 'var(--text-sm)' }}>{r.about}</span>}><ReportTable name={r.name} /></Card>
       ))}
     </div>
   );

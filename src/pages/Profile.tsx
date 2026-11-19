@@ -1,3 +1,4 @@
+import { humanize } from '../ui/StatusBadge';
 import { useState } from 'react';
 import { authApi } from '../api/auth';
 import { errorMessage } from '../api/client';
@@ -52,14 +53,14 @@ export function Profile() {
 
   return (
     <div className="stack">
-      <PageHeader title="My account" />
+      <PageHeader back={{ to: '/', label: 'My actions' }} title="My account" />
       <Card title="Details">
         <dl className="kv">
           <dt>Name</dt><dd>{user?.full_name}</dd>
           <dt>Email</dt><dd>{user?.email}</dd>
           <dt>Position</dt><dd>{user?.position}</dd>
           <dt>Department</dt><dd>{user?.department?.name ?? '—'}</dd>
-          <dt>Roles</dt><dd>{user?.roles.join(', ')}</dd>
+          <dt>Roles</dt><dd>{user?.roles.map(humanize).join(', ')}</dd>
         </dl>
       </Card>
       <MySignature />

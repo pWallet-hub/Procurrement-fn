@@ -15,6 +15,7 @@ import { formatDate, formatNumber } from '../lib/format';
 import { Alert } from '../ui/Alert';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
+import { Icon } from '../ui/Icon';
 import { ErrorState } from '../ui/ErrorState';
 import { PageHeader } from '../ui/PageHeader';
 import { PageSpinner } from '../ui/Spinner';
@@ -66,11 +67,40 @@ export function CaseDetail() {
   const c = caseQ.data;
   const isOpen = c.status === 'open';
   const next = creatableDocTypes(c);
+  const drafts = c.documents.filter((d) => d.state === 'draft');
+  const mine = c.next_actions.filter((a) => a.assigned_user?.id === user?.id || (!a.assigned_user && hasRole(user, a.role)));
+
+  // One plain sentence about what the case is waiting for, and the button that does it.
+  const nextStep = !isOpen ? null
+    : mine.length > 0 ? {
+        tone: 'action' as const,
+        text: <>Your signature is needed on <strong>{mine[0]!.doc_type}</strong>: {mine[0]!.label}.</>,
+        action: <Button variant="primary" onClick={() => navigate(`/documents/${mine[0]!.document_id}`)}>Review &amp; sign <Icon name="arrowRight" size={16} /></Button>,
+      }
+    : drafts.length > 0 ? {
+        tone: 'action' as const,
+        text: <><strong>{drafts[0]!.doc_type}</strong> is still a draft. Complete it and submit it to start the signatures.</>,
+        action: <Button variant="primary" onClick={() => navigate(`/documents/${drafts[0]!.id}`)}>Continue {drafts[0]!.doc_type} <Icon name="arrowRight" size={16} /></Button>,
+      }
+    : c.next_actions.length > 0 ? {
+        tone: 'wait' as const,
+        text: <>Waiting for <strong>{c.next_actions[0]!.assigned_user?.full_name ?? humanize(c.next_actions[0]!.role)}</strong> to sign {c.next_actions[0]!.doc_type} ({c.next_actions[0]!.label}).{c.next_actions.length > 1 ? ` ${c.next_actions.length - 1} more signature(s) pending.` : ''}</>,
+        action: null,
+      }
+    : next.length > 0 ? {
+        tone: 'action' as const,
+        text: <>The case is ready for the next document: <strong>{next.join(' or ')}</strong>.</>,
+        action: next.map((t) => (
+          <Button key={t} variant="primary" loading={createDoc.isPending && createDoc.variables === t} onClick={() => createDoc.mutate(t)}>Create {t}</Button>
+        )),
+      }
+    : null;
 
   return (
     <div className="stack">
       <PageHeader
-        title={`${c.request_no} - ${c.project}`}
+        back={{ to: '/cases', label: 'procurement cases' }}
+        title={`${c.request_no} · ${c.project}`}
         subtitle={<>Requested by {c.requested_by.full_name} · required by {formatDate(c.required_by)}</>}
         actions={
           <>
@@ -85,11 +115,19 @@ export function CaseDetail() {
               <Button onClick={() => setAdvanceOpen(true)}>Advance arrangement</Button>
             )}
             {isOpen && (hasRole(user, 'admin', 'accountant') || user?.id === c.requested_by.id) && (
-              <Button variant="danger" onClick={() => setCancelOpen(true)}>Cancel case</Button>
+              <Button className="btn--danger-soft" onClick={() => setCancelOpen(true)}>Cancel case</Button>
             )}
           </>
         }
       />
+
+      {nextStep && (
+        <section className={`next-step next-step--${nextStep.tone}`} aria-label="Next step">
+          <span className="next-step__icon"><Icon name={nextStep.tone === 'action' ? 'arrowRight' : 'tasks'} size={20} /></span>
+          <div className="next-step__text"><span className="next-step__kicker">Next step</span>{nextStep.text}</div>
+          {nextStep.action && <div className="next-step__actions">{nextStep.action}</div>}
+        </section>
+      )}
 
       {c.advance_arrangement && <Alert tone="warning">Advance arrangement recorded by CFM: {c.advance_arrangement.reason}</Alert>}
 
@@ -127,7 +165,7 @@ export function CaseDetail() {
                 <div className="muted">{humanize(a.role)}{a.assigned_user ? ` · ${a.assigned_user.full_name}` : ''}</div>
               </li>
             ))}
-            {c.next_actions.length === 0 && <li className="muted">Nothing is waiting.</li>}
+            {c.next_actions.length === 0 && <li className="muted">{drafts.length > 0 ? 'No signatures yet: the draft has not been submitted.' : 'No signatures are waiting.'}</li>}
           </ul>
         </Card>
       </div>
@@ -135,11 +173,11 @@ export function CaseDetail() {
       <Card title="Case summary">
         <dl className="kv">
           <dt>Stage</dt><dd>{humanize(c.current_stage)}</dd>
-          <dt>Budget line</dt><dd>{c.budget_line?.code ?? '—'}</dd>
-          <dt>Selected supplier</dt><dd>{c.selected_supplier?.name ?? '—'}</dd>
-          <dt>Approved amount</dt><dd>{c.approved_amount != null ? `${formatNumber(c.approved_amount)} ${c.currency}` : '—'}</dd>
+          <dt>Budget line</dt><dd>{c.budget_line?.code ?? <span className="muted">Not set yet</span>}</dd>
+          <dt>Selected supplier</dt><dd>{c.selected_supplier?.name ?? <span className="muted">Chosen at evaluation</span>}</dd>
+          <dt>Approved amount</dt><dd>{c.approved_amount != null ? `${formatNumber(c.approved_amount)} ${c.currency}` : <span className="muted">Not approved yet</span>}</dd>
           <dt>Created</dt><dd>{formatDate(c.created_at)}</dd>
-          <dt>Closed</dt><dd>{formatDate(c.closed_at)}</dd>
+          {c.closed_at && <><dt>Closed</dt><dd>{formatDate(c.closed_at)}</dd></>}
           {c.delivery && Object.entries(c.delivery).map(([k, v]) => (
             <Fragment key={k}><dt>{humanize(k)}</dt><dd>{String(v)}</dd></Fragment>
           ))}

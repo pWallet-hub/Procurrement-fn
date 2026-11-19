@@ -30,11 +30,13 @@ export function DataTable<T>({
   rows: T[];
   rowKey: (row: T) => string;
   onRowClick?: (row: T) => void;
-  empty?: string;
+  /** Text for an empty list, or a full <EmptyState> with a hint and the next action. */
+  empty?: string | ReactNode;
 }) {
-  if (rows.length === 0) return <EmptyState title={empty} />;
+  if (rows.length === 0) return typeof empty === 'string' ? <EmptyState title={empty} /> : <>{empty}</>;
   return (
-    <Table>
+    // On phones the rows become stacked cards (see .table--cards in components.css); data-label names each value.
+    <Table className="table--cards">
       <thead>
         <tr>
           {columns.map((c) => (
@@ -52,7 +54,7 @@ export function DataTable<T>({
             onClick={onRowClick ? () => onRowClick(r) : undefined}
           >
             {columns.map((c) => (
-              <td key={c.header}>{c.cell(r)}</td>
+              <td key={c.header} data-label={c.header}>{c.cell(r)}</td>
             ))}
           </tr>
         ))}

@@ -183,14 +183,12 @@
 }
 
 .nc-actions > .btn:first-child:not(.btn--primary) {
-  border-color: var(--color-danger);
-  background: var(--color-danger);
-  color: #fff;
+  /* Cancel only leaves the page; red would suggest it deletes something. */
+  background: var(--color-surface);
 }
 
 .nc-actions > .btn:first-child:not(.btn--primary):hover:not(:disabled) {
-  filter: brightness(0.94);
-  background: var(--color-danger);
+  background: var(--color-surface-alt);
 }
 
 .nc-actions > .btn:focus-visible {

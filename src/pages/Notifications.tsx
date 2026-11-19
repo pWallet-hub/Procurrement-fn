@@ -121,7 +121,7 @@ export function Notifications() {
       ) : q.error ? (
         <ErrorState error={q.error} />
       ) : items.length === 0 ? (
-        <EmptyState title="You're all caught up." />
+        <EmptyState title="You're all caught up" icon="bell">New requests to sign, returned documents and other updates will show up here.</EmptyState>
       ) : (
         <>
           <div className="notifs__bar">

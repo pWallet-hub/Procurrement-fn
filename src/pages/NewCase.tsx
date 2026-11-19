@@ -37,7 +37,7 @@ export function NewCase() {
 
   return (
     <div className="stack newcase">
-      <PageHeader title="New procurement case" subtitle="Starts a case and a draft Procurement Requisition (PR-01)." />
+      <PageHeader back={{ to: '/cases', label: 'procurement cases' }} title="New procurement case" subtitle="Starts a case and a draft Procurement Requisition (PR-01)." />
 
       <div className="nc-layout">
         <Card>

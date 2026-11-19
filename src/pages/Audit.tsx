@@ -24,13 +24,16 @@ export function Audit() {
 
   return (
     <div className="stack">
-      <PageHeader title="Audit log" />
-      <form className="grid-2" onSubmit={(e) => { e.preventDefault(); setFilter(draft); }}>
-        <Field id="a-case" label="Case id"><Input {...fieldAria('a-case')} value={draft.case_id ?? ''} onChange={set('case_id')} /></Field>
-        <Field id="a-actor" label="Actor (user id)"><Input {...fieldAria('a-actor')} value={draft.actor ?? ''} onChange={set('actor')} /></Field>
+      <PageHeader title="Audit log" subtitle="Who did what, and when. Every sign-in, signature and change is recorded here and cannot be edited." />
+      <form className="card card__body audit-filters" onSubmit={(e) => { e.preventDefault(); setFilter(draft); }}>
         <Field id="a-from" label="From"><Input {...fieldAria('a-from')} type="date" value={draft.from ?? ''} onChange={set('from')} /></Field>
         <Field id="a-to" label="To"><Input {...fieldAria('a-to')} type="date" value={draft.to ?? ''} onChange={set('to')} /></Field>
-        <div className="row"><Button type="submit" variant="primary">Apply filters</Button></div>
+        <Field id="a-case" label="Case ID" help="From the case's address bar"><Input {...fieldAria('a-case', 'help')} placeholder="Paste a case ID" value={draft.case_id ?? ''} onChange={set('case_id')} /></Field>
+        <Field id="a-actor" label="User ID" help="The person who acted"><Input {...fieldAria('a-actor', 'help')} placeholder="Paste a user ID" value={draft.actor ?? ''} onChange={set('actor')} /></Field>
+        <div className="row audit-filters__actions">
+          <Button type="submit" variant="primary">Apply filters</Button>
+          {Object.values(filter).some(Boolean) && <Button variant="ghost" onClick={() => { setDraft({}); setFilter({}); }}>Clear</Button>}
+        </div>
       </form>
       {q.isLoading ? <PageSpinner /> : q.error ? <ErrorState error={q.error} /> : (
         <>

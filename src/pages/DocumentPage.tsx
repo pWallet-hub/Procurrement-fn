@@ -17,6 +17,7 @@ import { AssignDelegate } from '../features/signing/AssignDelegate';
 import { SlotList } from '../features/signing/SlotList';
 import { formatDateTime } from '../lib/format';
 import { Alert } from '../ui/Alert';
+import { BackLink } from '../ui/BackLink';
 import { Button } from '../ui/Button';
 import { ErrorState } from '../ui/ErrorState';
 import { Icon } from '../ui/Icon';
@@ -27,6 +28,17 @@ import { useToast } from '../ui/Toast';
 import { describeError } from '../features/forms/problems';
 import type { Template } from '../api/types';
 import '../styles/DocumentPage.css';
+
+/** Where "Back" goes when the document was opened directly: its case, or the list of its kind. */
+function documentParent(doc: { case_id: string | null; doc_type: string; request_no?: string | null }): { to: string; label: string } {
+  if (doc.case_id) return { to: `/cases/${doc.case_id}`, label: doc.request_no ? `case ${doc.request_no}` : 'the case' };
+  const lists: Record<string, { to: string; label: string }> = {
+    'GR-06': { to: '/requests', label: 'requests' },
+    'IM-08': { to: '/memos', label: 'memos' },
+    'TC-10': { to: '/travel', label: 'travel clearances' },
+  };
+  return lists[doc.doc_type] ?? { to: '/', label: 'My actions' };
+}
 
 export function DocumentPage() {
   const { id = '' } = useParams();
@@ -123,6 +135,7 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
 
   return (
     <div className="docpage">
+      <BackLink {...documentParent(doc)} />
       <header className="dp-head">
         <div className="dp-head-main">
           <p className="dp-id">

@@ -42,12 +42,12 @@ export function App() {
           <Route path="cases/new" element={<NewCase />} />
           <Route path="cases/:id" element={<CaseDetail />} />
           <Route path="documents/:id" element={<DocumentPage />} />
-          <Route path="requests" element={<StandaloneList docType="GR-06" title="Requests (GR-06)" basePath="/requests" />} />
-          <Route path="requests/new" element={<StandaloneNew docType="GR-06" title="New request (GR-06)" />} />
-          <Route path="memos" element={<StandaloneList docType="IM-08" title="Memos (IM-08)" basePath="/memos" />} />
-          <Route path="memos/new" element={<StandaloneNew docType="IM-08" title="New memo (IM-08)" />} />
-          <Route path="travel" element={<StandaloneList docType="TC-10" title="Travel clearance (TC-10)" basePath="/travel" />} />
-          <Route path="travel/new" element={<StandaloneNew docType="TC-10" title="New travel clearance (TC-10)" />} />
+          <Route path="requests" element={<StandaloneList docType="GR-06" title="Requests" noun="request" basePath="/requests" />} />
+          <Route path="requests/new" element={<StandaloneNew docType="GR-06" title="New request (GR-06)" basePath="/requests" listLabel="requests" />} />
+          <Route path="memos" element={<StandaloneList docType="IM-08" title="Memos" noun="memo" basePath="/memos" />} />
+          <Route path="memos/new" element={<StandaloneNew docType="IM-08" title="New memo (IM-08)" basePath="/memos" listLabel="memos" />} />
+          <Route path="travel" element={<StandaloneList docType="TC-10" title="Travel clearances" noun="travel clearance" basePath="/travel" />} />
+          <Route path="travel/new" element={<StandaloneNew docType="TC-10" title="New travel clearance (TC-10)" basePath="/travel" listLabel="travel clearances" />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="profile" element={<Profile />} />
           <Route path="audit" element={<RequireRole roles={AUDIT_ROLES}><Audit /></RequireRole>} />

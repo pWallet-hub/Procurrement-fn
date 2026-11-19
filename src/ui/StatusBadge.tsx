@@ -26,9 +26,14 @@ const TONES: Record<string, Tone> = {
   payment: 'info',
 };
 
+/** Short forms that read as letters, not words ("pi" is shown as "PI", not "Pi"). */
+const ACRONYMS = new Set(['pi', 'cfm', 'id', 'po', 'pr', 'gr', 'im', 'tc', 'rwf', 'usd', 'eur', 'pdf', 'totp', 'sso', 'afs']);
+
 export function humanize(s: string): string {
-  const t = s.replace(/[_.-]+/g, ' ');
-  return t.charAt(0).toUpperCase() + t.slice(1);
+  const t = s.replace(/[_.-]+/g, ' ').trim();
+  const words = t.split(' ').map((w) => (ACRONYMS.has(w.toLowerCase()) ? w.toUpperCase() : w));
+  const out = words.join(' ');
+  return out.charAt(0).toUpperCase() + out.slice(1);
 }
 
 export function StatusBadge({ status, label }: { status: string; label?: string }) {
