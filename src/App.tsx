@@ -22,6 +22,9 @@ import { AdminLayout } from './pages/admin/AdminLayout';
 import { UsersAdmin } from './pages/admin/UsersAdmin';
 import { DepartmentsAdmin, BudgetLinesAdmin, SuppliersAdmin } from './pages/admin/LookupAdmin';
 import { TemplatesAdmin } from './pages/admin/TemplatesAdmin';
+import { AdminOverview } from './pages/admin/AdminOverview';
+import { SystemHealth } from './pages/admin/SystemHealth';
+import { Help } from './pages/Help';
 import { AUDIT_ROLES, REPORT_ROLES } from './auth/permissions';
 
 export function App() {
@@ -50,10 +53,13 @@ export function App() {
           <Route path="travel/new" element={<StandaloneNew docType="TC-10" title="New travel clearance (TC-10)" basePath="/travel" listLabel="travel clearances" />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="help" element={<Help />} />
           <Route path="audit" element={<RequireRole roles={AUDIT_ROLES}><Audit /></RequireRole>} />
           <Route path="reports" element={<RequireRole roles={REPORT_ROLES}><Reports /></RequireRole>} />
           <Route path="admin" element={<RequireRole roles={['admin']}><AdminLayout /></RequireRole>}>
-            <Route index element={<Navigate to="users" replace />} />
+            <Route index element={<Navigate to="overview" replace />} />
+            <Route path="overview" element={<AdminOverview />} />
+            <Route path="system" element={<SystemHealth />} />
             <Route path="users" element={<UsersAdmin />} />
             <Route path="departments" element={<DepartmentsAdmin />} />
             <Route path="budget-lines" element={<BudgetLinesAdmin />} />

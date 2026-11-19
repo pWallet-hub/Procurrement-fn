@@ -151,3 +151,25 @@ fieldset.field > legend { padding: 0; }
 .back-link__icon { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--color-surface-alt); }
 .back-link + .page-header, .back-link + .dp-head { margin-top: 0; }
 @media print { .back-link { display: none; } }
+
+/* ---------------------------------------------------------------------------------------------
+ * Links: one consistent, clearly clickable style (forms and generated PDFs keep their own)
+ * ------------------------------------------------------------------------------------------- */
+a { color: var(--color-link); text-decoration: none; font-weight: 500; text-underline-offset: 0.2em; text-decoration-thickness: 1px; transition: color 0.12s; }
+a:hover { color: var(--color-primary-hover); text-decoration: underline; }
+a:visited { color: var(--color-link); }
+/* Links inside running text stay underlined so they are recognisable without colour. */
+p a, li > a:only-child:not([class]), dd a, .alert a, .collapse__body a { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); }
+p a:hover, dd a:hover, .alert a:hover, .collapse__body a:hover { text-decoration-color: currentColor; }
+/* Links in tables and lists read as the item's name: bold, no underline until hovered. */
+.table td a, .case-row, .ov-item__title { font-weight: 600; color: var(--color-text); }
+.table td a:hover, .ov-item__title:hover { color: var(--color-primary); }
+.table td a strong { font-weight: 600; }
+/* Card header links ("See all") look like small actions. */
+.card__header > a { display: inline-flex; align-items: center; gap: 0.25rem; font-size: var(--text-sm); font-weight: 600; color: var(--color-primary); padding: 0.25rem 0.6rem; border-radius: 999px; }
+.card__header > a:hover { background: var(--color-primary-soft); text-decoration: none; }
+/* Buttons and menu items rendered as links never look like links. */
+a.btn, a.btn:hover, a.nav__link, a.user-menu__item, a.create-menu__item, a.bell, a.brand, a.ov-tile, a.system-banner, a.ov-alert { text-decoration: none; }
+a.btn--primary, a.btn--primary:visited { color: var(--color-primary-contrast); }
+/* The forms and printed paper keep their original look. */
+.paper a, .dp-sheet a, .paper-form a { font-weight: inherit; color: inherit; text-decoration: underline; }

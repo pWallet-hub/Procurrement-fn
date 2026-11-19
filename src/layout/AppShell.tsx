@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../auth/AuthContext';
 import { hasRole } from '../auth/permissions';
 import { notificationsApi } from '../api/notifications';
+import { systemApi } from '../api/system';
 import { Icon } from '../ui/Icon';
 import { cx } from '../ui/cx';
 import { CREATE_ITEMS, NAV_GROUPS } from './nav';
@@ -47,6 +48,12 @@ export function AppShell() {
     return () => window.removeEventListener('keydown', onKey);
   }, [navOpen]);
 
+  // Administrators see a banner on every page when part of the system stops working (checked every 5 minutes).
+  const isAdmin = hasRole(user, 'admin');
+  const health = useQuery({ queryKey: ['system-health'], queryFn: systemApi.health, enabled: isAdmin, refetchInterval: 5 * 60_000, staleTime: 60_000 });
+  const broken = isAdmin && health.data?.status === 'error' ? health.data.checks.filter((c) => c.status === 'error') : [];
+  const onSystemPage = location.pathname.startsWith('/admin/system');
+
   const notes = useQuery({ queryKey: ['notifications'], queryFn: notificationsApi.list, refetchInterval: 60_000 });
   const unread = (notes.data?.items ?? []).filter((n) => !n.read_at).length;
 
@@ -82,6 +89,9 @@ export function AppShell() {
               </div>
             </details>
           )}
+          <Link to="/help" className="bell" aria-label="Help" title="Help">
+            <Icon name="help" />
+          </Link>
           <Link to="/notifications" className="bell" aria-label={`Notifications${unread ? `, ${unread} unread` : ''}`}>
             <Icon name="bell" />
             {unread > 0 && <span className="bell__count">{unread > 99 ? '99+' : unread}</span>}
@@ -141,6 +151,13 @@ export function AppShell() {
 
       <main className="shell__main">
         <div className="shell__content">
+          {broken.length > 0 && !onSystemPage && (
+            <Link to="/admin/system" className="system-banner" role="alert">
+              <Icon name="alert" size={18} />
+              <span><strong>Not working:</strong> {broken.map((c) => c.label).join(', ')}. People may be affected.</span>
+              <span className="system-banner__go">Open system health <Icon name="arrowRight" size={16} /></span>
+            </Link>
+          )}
           <Outlet />
         </div>
       </main>

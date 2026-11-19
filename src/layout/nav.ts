@@ -44,6 +44,9 @@ export const NAV_GROUPS: NavGroup[] = [
       { to: '/admin', label: 'Administration', icon: 'settings', roles: ['admin'] },
     ],
   },
+  {
+    items: [{ to: '/help', label: 'Help', icon: 'help' }],
+  },
 ];
 
 /** Everything that can be started from the header's "New" menu. */
