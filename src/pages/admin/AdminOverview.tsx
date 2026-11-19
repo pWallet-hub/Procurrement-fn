@@ -78,7 +78,7 @@ export function AdminOverview() {
       {problems.length > 0 && (
         <Link to="/admin/system" className={cx('ov-alert', health.data?.status === 'error' && 'ov-alert--bad')}>
           <Icon name="alert" size={20} />
-          <span><strong>{health.data?.status === 'error' ? 'Part of the system is not working' : 'Something needs attention'}:</strong> {problems.map((p) => p.label).join(', ')}.</span>
+          <span><strong>{health.data?.status === 'error' ? 'Part of the system is not working' : 'Something needs attention'}:</strong> {(health.data?.status === 'error' ? problems.filter((p) => p.status === 'error') : problems).map((p) => p.label).join(', ')}.</span>
           <span className="ov-alert__go">See system health <Icon name="arrowRight" size={16} /></span>
         </Link>
       )}

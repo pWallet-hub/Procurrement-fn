@@ -44,6 +44,12 @@ function CheckCard({ c }: { c: HealthCheck }) {
   );
 }
 
+function headline(status: CheckStatus, broken: number, problems: number) {
+  if (status === 'ok') return 'Everything is working';
+  if (status === 'error') return broken === 1 ? '1 part of the system is not working' : `${broken} parts of the system are not working`;
+  return problems === 1 ? '1 thing needs attention' : `${problems} things need attention`;
+}
+
 /** Administration > System health: is every part of the system working, and what to do when it is not. */
 export function SystemHealth() {
   const q = useQuery({ queryKey: ['system-health'], queryFn: systemApi.health, refetchInterval: 60_000 });
@@ -63,7 +69,7 @@ export function SystemHealth() {
         <span className="health-banner__icon" aria-hidden="true"><Icon name={STATUS[h.status].icon} size={26} /></span>
         <div className="health-banner__text">
           <h2>
-            {h.status === 'ok' ? 'Everything is working' : h.status === 'error' ? `${problems.filter((p) => p.status === 'error').length} part(s) of the system are not working` : `${problems.length} thing(s) need attention`}
+            {headline(h.status, problems.filter((p) => p.status === 'error').length, problems.length)}
           </h2>
           <p className="muted">
             Checked {formatDateTime(h.checked_at)} · rechecks every minute · {h.environment} · {h.app_url}

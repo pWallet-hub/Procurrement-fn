@@ -52,7 +52,8 @@ export function AppShell() {
   const isAdmin = hasRole(user, 'admin');
   const health = useQuery({ queryKey: ['system-health'], queryFn: systemApi.health, enabled: isAdmin, refetchInterval: 5 * 60_000, staleTime: 60_000 });
   const broken = isAdmin && health.data?.status === 'error' ? health.data.checks.filter((c) => c.status === 'error') : [];
-  const onSystemPage = location.pathname.startsWith('/admin/system');
+  // the Overview and System health pages show the problem themselves
+  const onSystemPage = /^\/admin(\/(overview|system))?\/?$/.test(location.pathname);
 
   const notes = useQuery({ queryKey: ['notifications'], queryFn: notificationsApi.list, refetchInterval: 60_000 });
   const unread = (notes.data?.items ?? []).filter((n) => !n.read_at).length;

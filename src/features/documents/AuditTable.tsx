@@ -37,7 +37,8 @@ export function AuditTable({ events }: { events: AuditEvent[] }) {
         { header: 'When', cell: (e) => formatDateTime(e.at) },
         { header: 'Who', cell: (e) => e.actor?.full_name ?? 'System' },
         { header: 'What', cell: (e) => <span title={e.action}>{auditActionLabel(e.action)}</span> },
-        { header: 'On', cell: (e) => <span title={e.object_id}>{humanize(e.object_type)} <span className="mono muted">{e.object_id.slice(0, 8)}</span></span> },
+        // System-wide entries (e.g. "audit verified") have no object id.
+        { header: 'On', cell: (e) => <span title={e.object_id ?? undefined}>{e.object_type ? humanize(e.object_type) : '—'} {e.object_id && <span className="mono muted">{e.object_id.slice(0, 8)}</span>}</span> },
         { header: 'Detail', cell: (e) => <span className="mono">{detailText(e.detail)}</span> },
       ]}
     />

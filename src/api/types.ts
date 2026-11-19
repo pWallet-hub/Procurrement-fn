@@ -418,8 +418,9 @@ export interface AuditEvent {
   at: string;
   actor: Ref2 | null;
   action: string;
-  object_type: string;
-  object_id: string;
+  /** null for system-wide entries (e.g. an administrator verifying the audit trail) */
+  object_type: string | null;
+  object_id: string | null;
   case_id: string | null;
   detail: unknown;
 }

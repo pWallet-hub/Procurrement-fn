@@ -73,9 +73,9 @@ export function CasesList() {
           <Icon name="search" size={18} />
           <Input type="search" placeholder="Search by request number or project" value={q} onChange={(e) => setQ(e.target.value)} />
         </label>
-        <div className="chips" role="group" aria-label="Status">
+        <div className="filter-chips" role="group" aria-label="Status">
           {STATUSES.map((s) => (
-            <button key={s.value} type="button" className="chip" aria-pressed={status === s.value} onClick={() => setParam('status', s.value)}>{s.label}</button>
+            <button key={s.value} type="button" className="filter-chip" aria-pressed={status === s.value} onClick={() => setParam('status', s.value)}>{s.label}</button>
           ))}
         </div>
         <Select aria-label="Stage" value={stage} onChange={(e) => setParam('stage', e.target.value)}>

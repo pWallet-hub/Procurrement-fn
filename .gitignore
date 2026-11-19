@@ -4,3 +4,7 @@ dist
 .env.local
 *.log
 .DS_Store
+
+# browser tests
+e2e/test-results
+e2e/playwright-report
