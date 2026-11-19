@@ -117,7 +117,7 @@ export function Help() {
           <section id="signing" className="card card__body help-section">
             <h2>How signing works</h2>
             <ul className="help-points">
-              <li><Icon name="edit" size={18} /><span>The author fills in the form and clicks <strong>Submit for signing</strong>. From then on the content is locked and fingerprinted, so nobody can change what was signed.</span></li>
+              <li><Icon name="edit" size={18} /><span>The author fills in the form and clicks <strong>Sign &amp; submit</strong>: on requisitions, memos and travel clearances the requester signs their own box first, so a request never goes out unsigned. From then on the content is locked and fingerprinted, so nobody can change what was signed.</span></li>
               <li><Icon name="bell" size={18} /><span>Each signer is asked in turn, by email and on <strong>My actions</strong>. A reminder follows automatically if they wait too long.</span></li>
               <li><Icon name="check" size={18} /><span>A signer can <strong>sign</strong>, or <strong>decline</strong> with a reason: the document is then returned to its author to correct and resubmit.</span></li>
               <li><Icon name="file" size={18} /><span>When everyone has signed, a PDF with all signatures and a verification QR code is produced and kept with the case.</span></li>

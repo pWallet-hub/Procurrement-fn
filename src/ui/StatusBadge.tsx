@@ -29,7 +29,14 @@ const TONES: Record<string, Tone> = {
 /** Short forms that read as letters, not words ("pi" is shown as "PI", not "Pi"). */
 const ACRONYMS = new Set(['pi', 'cfm', 'id', 'po', 'pr', 'gr', 'im', 'tc', 'rwf', 'usd', 'eur', 'pdf', 'totp', 'sso', 'afs']);
 
+/** Titles for codes whose words alone read badly (role codes). The codes themselves never change. */
+const TITLES: Record<string, string> = {
+  director_dept: 'Manager of Department',
+  director_comms: 'Director of Communications',
+};
+
 export function humanize(s: string): string {
+  if (TITLES[s]) return TITLES[s];
   const t = s.replace(/[_.-]+/g, ' ').trim();
   const words = t.split(' ').map((w) => (ACRONYMS.has(w.toLowerCase()) ? w.toUpperCase() : w));
   const out = words.join(' ');

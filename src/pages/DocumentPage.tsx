@@ -13,6 +13,7 @@ import { FormRenderer, SaveIndicator, useDocumentEditor } from '../features/form
 import { previewSlotComputed } from '../features/forms/computed';
 import { PaperForm } from '../features/paper';
 import { SigningPanel } from '../features/signing/SigningPanel';
+import { SubmitSignModal, type SubmitSignature } from '../features/signing/SubmitSignModal';
 import { AssignDelegate } from '../features/signing/AssignDelegate';
 import { SlotList } from '../features/signing/SlotList';
 import { formatDateTime } from '../lib/format';
@@ -80,20 +81,37 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
     }
   };
 
+  // The creator signs their own first box (Prepared / Requested by, Originating Staff, Traveller) as part of submitting.
+  const firstSeq = Math.min(...template.signature_slots.map((sl) => sl.seq));
+  const ownSlot = doc.created_by?.id === user?.id
+    ? template.signature_slots.find((sl) => sl.assign === 'creator' && sl.seq === firstSeq)
+    : undefined;
+  const [signOpen, setSignOpen] = useState(false);
+  const [signError, setSignError] = useState<string | null>(null);
+
   const submit = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (signature?: SubmitSignature) => {
       setSubmitError(null);
+      setSignError(null);
       await editor.flush(); // make sure the server has the latest edits
       submitKey.current ??= newIdempotencyKey();
-      return documentsApi.submit(doc.id, submitKey.current);
+      return documentsApi.submit(doc.id, submitKey.current, signature);
     },
     onSuccess: async () => {
       submitKey.current = null;
-      toast.success('Submitted for signing');
+      setSignOpen(false);
+      toast.success(ownSlot ? 'Signed and submitted' : 'Submitted for signing');
       await refresh();
     },
     onError: (e: Error) => {
       if (!(e instanceof ApiError && e.isNetwork)) submitKey.current = null;
+      // a signature problem stays in the dialog; form problems close it and show next to the fields
+      const formProblem = e instanceof ApiError && Object.keys(e.fields).some((f) => f !== 'signature' && f !== 'declaration_accepted' && f !== 'method' && f !== 'signature_image' && f !== 'signature_text');
+      if (signOpen && !formProblem) {
+        setSignError(describeError(e));
+        return;
+      }
+      setSignOpen(false);
       editor.applyApiError(e); // shows error.fields next to the inputs, with hints
       setSubmitError(describeError(e));
       // field problems are listed on the editable form
@@ -157,7 +175,9 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
 
         <div className="dp-actions">
           {editor.editable && <SaveIndicator status={editor.status} />}
-          {doc.can.submit && <Button variant="primary" loading={submit.isPending} onClick={() => submit.mutate()}>Submit for signing</Button>}
+          {doc.can.submit && (ownSlot
+            ? <Button variant="primary" loading={submit.isPending} onClick={() => { setSignError(null); setSignOpen(true); }}><Icon name="edit" size={16} /> Sign &amp; submit</Button>
+            : <Button variant="primary" loading={submit.isPending} onClick={() => submit.mutate(undefined)}>Submit for signing</Button>)}
           {doc.can.revise && <Button variant="primary" loading={revise.isPending} onClick={() => revise.mutate()}>Revise</Button>}
           {doc.can.edit_request && <Button onClick={() => setEditReqOpen(true)}>Request edit</Button>}
           {doc.can.cancel && <Button variant="danger" onClick={() => setCancelOpen(true)}>Cancel</Button>}
@@ -244,6 +264,18 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
       {tab === 'pdf' && <TabPanel><PdfPreview documentId={doc.id} filename={`${doc.request_no ?? doc.doc_type}-${doc.doc_type}.pdf`} /></TabPanel>}
       {tab === 'audit' && <TabPanel><AuditTab documentId={doc.id} /></TabPanel>}
 
+      {ownSlot && (
+        <SubmitSignModal
+          open={signOpen}
+          onClose={() => setSignOpen(false)}
+          slotLabel={ownSlot.label}
+          declaration={ownSlot.declaration}
+          requiresConflictConfirmation={template.workflow.requires_conflict_confirmation}
+          busy={submit.isPending}
+          error={signError}
+          onSubmit={(signature) => submit.mutate(signature)}
+        />
+      )}
       <ReasonModal
         open={editReqOpen}
         title="Request edit (voids collected signatures)"

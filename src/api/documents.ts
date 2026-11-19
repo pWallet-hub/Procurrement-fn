@@ -17,8 +17,9 @@ export const documentsApi = {
   /** Autosave. `data` is merged server side at top level key level (draft only). */
   patch: (id: string, data: Record<string, unknown>) =>
     api<Doc>(`/documents/${id}`, { method: 'PATCH', body: { data } }),
-  submit: (id: string, idempotencyKey: string) =>
-    api<Doc>(`/documents/${id}/submit`, { method: 'POST', idempotencyKey }),
+  /** `signature`: the creator's own first signature (Prepared / Requested by), required when they sign first. */
+  submit: (id: string, idempotencyKey: string, signature?: Omit<SignBody, 'content_hash'>) =>
+    api<Doc>(`/documents/${id}/submit`, { method: 'POST', idempotencyKey, ...(signature ? { body: { signature } } : {}) }),
   sign: (id: string, slotKey: string, body: SignBody, idempotencyKey: string) =>
     api<SignResult>(`/documents/${id}/slots/${slotKey}/sign`, { method: 'POST', body, idempotencyKey }),
   decline: (id: string, slotKey: string, reason: string) =>
