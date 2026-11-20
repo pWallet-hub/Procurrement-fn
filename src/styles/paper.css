@@ -119,7 +119,7 @@
 
 /* logo + intro line as in the reference */
 .paper--layout .paper__intro { margin: 0 0 0.04cm; }
-.paper--layout .paper__intro .pf-text { margin: 0; font-weight: 700; font-size: 0.68em; line-height: 1.25; color: #000; }
+.paper--layout .paper__intro .pf-text { margin: 0; font-weight: 700; font-size: calc(0.68em + 2px); line-height: 1.25; color: #000; }
 
 /* ===== Header: logo + two-row box (matches the supplied AfS-Rwanda form) =====
    Keep the logo fully visible at the top while the form sits slightly lower and stays within the printable sheet. */
@@ -285,7 +285,7 @@
 .pf-grid--finance td, .pf-grid--finance th {
   border: 1px solid #000; background: #fff;
   padding: 0.02cm 0.6em; height: auto;
-  font-size: 0.68em; font-weight: 400; line-height: 1.2; vertical-align: middle;
+  font-size: calc(0.68em + 2px); font-weight: 400; line-height: 1.2; vertical-align: middle;
 }
 
 /* fill-in lines: thin dark rules sitting on the text baseline */
@@ -303,14 +303,67 @@
 /* E: light-blue centred bold capitals header row */
 .pf-grid--review th, .pf-grid--review td.pf-cell--head {
   background: #dce9f5; color: #000;
-  font-size: 0.68em; font-weight: 700 !important; text-transform: uppercase; line-height: 1.2;
+  font-size: calc(0.68em + 2px); font-weight: 700 !important; text-transform: uppercase; line-height: 1.2;
   text-align: center !important; vertical-align: middle;
   padding: 0.03cm 0.7em; height: 0.62cm;
 }
 /* E: white body boxes, Name / Signature / Date on three evenly spaced lines (never wrap, never spill) */
 .pf-grid--review tr:not(:first-child):not(.pf-row--blank) td {
-  vertical-align: top; padding: 0.08cm 0.6em 0.1cm; line-height: 1.75; height: auto; /* tight: lines sit close together */
+  vertical-align: top; padding: 0.08cm 0.6em 0.1cm; line-height: 1.45; height: auto;
   white-space: nowrap; overflow: hidden;
+}
+/* Keep every signature mark vertically centred and aligned with the same text baseline. */
+.pf-grid--review .pf-sig,
+.pf-grid--finance .pf-sig {
+  display: inline-flex;
+  align-items: center;
+  height: 1.1cm;
+  max-width: 100%;
+  vertical-align: middle;
+  line-height: 1;
+}
+.pf-grid--review .pf-signoff-inline,
+.pf-grid--finance .pf-signoff-inline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.35cm;
+  width: 100%;
+  white-space: nowrap;
+}
+.pf-grid--review .pf-signoff-inline__name,
+.pf-grid--finance .pf-signoff-inline__name {
+  min-width: 0;
+  justify-self: start;
+  text-align: left;
+}
+.pf-grid--review .pf-signoff-inline__signature,
+.pf-grid--finance .pf-signoff-inline__signature {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  min-width: 2.5cm;
+}
+.pf-grid--review .pf-signoff-inline__date,
+.pf-grid--finance .pf-signoff-inline__date {
+  justify-self: end;
+  text-align: right;
+  white-space: nowrap;
+}
+.pf-grid--review .pf-sig .pf-sig-img,
+.pf-grid--finance .pf-sig .pf-sig-img {
+  height: 1.1cm;
+  max-height: 1.1cm;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+.pf-grid--review .pf-typed-sig,
+.pf-grid--finance .pf-typed-sig {
+  font-size: calc(1.2rem + 2px);
+  line-height: 1;
 }
 /* "Not yet submitted for signing" sits close to Signature and Date */
 .pf-grid--review .pf-sign__status { line-height: 1.3; margin: 0.12cm 0 0.1cm; }
@@ -323,7 +376,7 @@
 .pf-grid--finance tr:nth-child(2) td { height: 1cm; }
 .pf-grid--finance td:first-child {
   background: #d8e4bc; color: #000;
-  font-size: 0.78em; font-weight: 700; padding-left: 0.24cm;
+  font-size: calc(0.78em + 2px); font-weight: 700; padding-left: 0.24cm;
 }
 .pf-grid--finance td:first-child strong { font-weight: 700; }
 /* F: check boxes with normal-weight labels, spread along the row */

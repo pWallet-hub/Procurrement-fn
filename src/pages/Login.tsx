@@ -90,6 +90,7 @@ export function Login() {
   const from = (location.state as { from?: string } | null)?.from ?? '/';
   const params = new URLSearchParams(location.search);
   const ssoError = params.get('sso_error');
+  const isLocalhost = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
   const [sso, setSso] = useState<{ enabled: boolean; password_login: boolean } | null>(null);
   const [checking, setChecking] = useState(false);
   const [formError, setFormError] = useState('');
@@ -106,7 +107,7 @@ export function Login() {
       .then((config) => {
         if (cancelled) return;
         setSso(config);
-        if (config.enabled && !showForm) {
+        if (config.enabled && !showForm && !isLocalhost) {
           setChecking(true);
           window.location.replace(`${API_BASE}/auth/sso/login?next=${encodeURIComponent(from)}&silent=1`);
         }
@@ -117,8 +118,6 @@ export function Login() {
     return () => {
       cancelled = true;
     };
-    // Runs once, when the page opens.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (user) return <Navigate to={from} replace />;

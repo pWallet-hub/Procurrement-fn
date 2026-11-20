@@ -153,6 +153,66 @@ function Block({ block: b, prev, ctx, documentId, bySlot }: { block: FlatBlock; 
 function Pieces({ pieces, documentId, bySlot }: { pieces: Piece[]; documentId: string; bySlot: Map<string, SignOffSlot> }) {
   // a check box stays on the same line as its (short) label
   const skip = new Set<number>();
+  const hasSignaturePiece = pieces.some((p) => p.k === 'sig');
+  const hasNamePiece = pieces.some((p) => p.k === 'text' && /\bName:/i.test(p.s));
+  const hasDatePiece = pieces.some((p) => p.k === 'text' && /\bDate:/i.test(p.s));
+
+  if (hasSignaturePiece && hasNamePiece && hasDatePiece && !pieces.some((p) => p.k === 'br')) {
+    const signatureIndex = pieces.findIndex((p) => p.k === 'sig');
+    const dateIndex = pieces.findIndex((p, i) => i > signatureIndex && p.k === 'text' && /\bDate:/i.test(p.s));
+    const nameIndex = pieces.findIndex((p) => p.k === 'text' && /\bName:/i.test(p.s));
+
+    if (signatureIndex >= 0 && dateIndex >= 0 && nameIndex >= 0) {
+      const signatureLabelIndex = pieces.findIndex((p, i) => i >= nameIndex && i < signatureIndex && p.k === 'text' && /\bSignature:/i.test(p.s));
+      const nameEnd = signatureLabelIndex >= 0 ? signatureLabelIndex : signatureIndex;
+      const dateLabelIndex = dateIndex;
+
+      const renderPiece = (p: Piece, i: number): ReactNode => {
+        if (skip.has(i)) return null;
+        switch (p.k) {
+          case 'text': {
+            let n: ReactNode = p.s;
+            if (p.italic) n = <em>{n}</em>;
+            if (p.bold) n = <strong>{n}</strong>;
+            return <Fragment key={i}>{n}</Fragment>;
+          }
+          case 'value': return <span key={i} className={cx('pf-v', p.bold && 'pf-v--bold')}>{p.s}</span>;
+          case 'box': return <span key={i} className={cx('pf-box', p.on && 'pf-box--on')} role="img" aria-label={p.on ? 'checked' : 'not checked'} />;
+          case 'blank':
+            return p.date
+              ? <span key={i} className="pf-date" aria-hidden="true"><span className="pf-blank" />/<span className="pf-blank" />/<span className="pf-blank pf-blank--year" /></span>
+              : <span key={i} className="pf-blank" style={{ width: `${Math.max(2, p.n * 0.45)}em` }} aria-hidden="true" />;
+          case 'sig': {
+            const s = bySlot.get(p.slot);
+            return s ? <span key={i} className="pf-sig"><SignatureMark documentId={documentId} slot={s} /></span> : null;
+          }
+          case 'status':
+            return (
+              <span key={i} className={cx('pf-sign__status', `pf-sign__status--${p.status}`)}>
+                {STATUS_TEXT[p.status] ?? p.status}
+                {p.assigned && p.status !== 'unsigned' ? ` - ${p.assigned}` : ''}
+              </span>
+            );
+          default: return null;
+        }
+      };
+
+      return (
+        <span className="pf-signoff-inline">
+          <span className="pf-signoff-inline__name">
+            {pieces.slice(nameIndex, nameEnd).map(renderPiece)}
+          </span>
+          <span className="pf-signoff-inline__signature">
+            {pieces.slice(signatureLabelIndex >= 0 ? signatureLabelIndex : signatureIndex, dateIndex).map(renderPiece)}
+          </span>
+          <span className="pf-signoff-inline__date">
+            {pieces.slice(dateLabelIndex).map(renderPiece)}
+          </span>
+        </span>
+      );
+    }
+  }
+
   const out: ReactNode[] = pieces.map((p, i) => {
     if (skip.has(i)) return null;
     const next = pieces[i + 1];
