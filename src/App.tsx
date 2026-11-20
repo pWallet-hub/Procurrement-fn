@@ -21,7 +21,7 @@ import { Profile } from './pages/Profile';
 import { NotFound } from './pages/NotFound';
 import { AdminLayout } from './pages/admin/AdminLayout';
 import { UsersAdmin } from './pages/admin/UsersAdmin';
-import { DepartmentsAdmin, BudgetLinesAdmin, SuppliersAdmin } from './pages/admin/LookupAdmin';
+import { DepartmentsAdmin, BudgetLinesAdmin, SuppliersAdmin, ProgramsAdmin, TravellersAdmin } from './pages/admin/LookupAdmin';
 import { TemplatesAdmin } from './pages/admin/TemplatesAdmin';
 import { AdminOverview } from './pages/admin/AdminOverview';
 import { SystemHealth } from './pages/admin/SystemHealth';
@@ -66,6 +66,8 @@ export function App() {
             <Route path="departments" element={<DepartmentsAdmin />} />
             <Route path="budget-lines" element={<BudgetLinesAdmin />} />
             <Route path="suppliers" element={<SuppliersAdmin />} />
+            <Route path="programs" element={<ProgramsAdmin />} />
+            <Route path="travellers" element={<TravellersAdmin />} />
             <Route path="templates" element={<TemplatesAdmin />} />
           </Route>
           <Route path="*" element={<NotFound />} />

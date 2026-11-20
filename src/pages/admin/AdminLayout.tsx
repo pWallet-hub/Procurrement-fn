@@ -9,6 +9,8 @@ const LINKS = [
   ['departments', 'Departments'],
   ['budget-lines', 'Budget lines'],
   ['suppliers', 'Suppliers'],
+  ['programs', 'Programs'],
+  ['travellers', 'Travellers'],
   ['templates', 'Templates'],
 ];
 

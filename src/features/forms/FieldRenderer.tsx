@@ -24,7 +24,7 @@ export function FieldRenderer({ field, container, onChangeKey, pathPrefix = '', 
   const { idPrefix, fillAt, hints, draftFillSlots } = useFormContext();
   if (!isVisible(field, rootData)) return null;
 
-  const Component = getFieldComponent(field.type);
+  const Component = getFieldComponent(field.type, field.widget);
   const path = `${pathPrefix}${field.key}`;
   const other = container[`${field.key}_other`];
   const el = (

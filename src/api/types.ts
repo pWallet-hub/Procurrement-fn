@@ -60,6 +60,38 @@ export interface Session extends TokenPair {
 export type LoginResponse = Session | { requires_totp: true; challenge_token: string };
 
 // ---- lookups ----
+export interface Program {
+  id: string;
+  name: string;
+  active?: boolean;
+}
+
+/** A person who can travel: a staff member (details when saved) or a saved external traveller. */
+export interface TravellerOption {
+  traveller_type: 'internal_afs_staff' | 'external';
+  staff: string | null;
+  name: string;
+  id_type: string | null;
+  id_number: string | null;
+  account_number: string | null;
+  function: string | null;
+  /** where the signed clearance is e-mailed (staff: their account e-mail) */
+  email: string | null;
+}
+
+export interface TravellerProfile {
+  id: string;
+  user_id: string | null;
+  full_name: string;
+  traveller_type: 'internal_afs_staff' | 'external';
+  id_type: string | null;
+  id_number: string | null;
+  account_number: string | null;
+  function: string | null;
+  email: string | null;
+  active: boolean;
+}
+
 export interface LookupUser {
   id: string;
   full_name: string;
@@ -119,6 +151,7 @@ export type FieldType =
   | 'user_ref'
   | 'supplier_ref'
   | 'budget_line_ref'
+  | 'program_ref'
   | 'computed'
   | 'case_ref';
 
@@ -155,6 +188,8 @@ export interface FieldDef {
   format?: 'money';
   /** how to fill the field correctly (the server also sends hints with validation errors) */
   hint?: string;
+  /** table drawn by a dedicated editor (`travellers`: TC-10 traveller picker with saved details) */
+  widget?: 'travellers';
 }
 
 export interface Section {
@@ -163,6 +198,8 @@ export interface Section {
   description?: string;
   fields: FieldDef[];
   visible_if?: Condition;
+  /** kept in the data and printed, not shown in the editor (values the server derives) */
+  hidden?: boolean;
 }
 
 export interface SlotDef {
@@ -342,6 +379,10 @@ export interface Doc {
   can: DocumentCan;
   returned_reason?: string | null;
   pdf_available: boolean;
+  /** boxes this user would sign but may not: they requested the document (an approver must be someone else) */
+  requester_blocked?: string[];
+  /** submit of a travel clearance for several travellers: one clearance per traveller (this one first) */
+  issued_documents?: string[];
   /** drafts only: problems in what was entered, what is still missing before submit, and how to fix each (by field path) */
   validation?: DraftValidation;
 }

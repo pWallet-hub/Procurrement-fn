@@ -300,21 +300,17 @@ Each form below lists where it is opened, its field components, its paper view a
 ### TC-10: Travel Clearance
 
 - **Where:** Standalone. Sidebar **Travel clearance (TC-10)**: `/travel` and `/travel/new`.
-- **Field components:** [BudgetLineRefField](../src/features/forms/fields/BudgetLineRefField.tsx), [CheckboxGroupField](../src/features/forms/fields/CheckboxGroupField.tsx), [ComputedField](../src/features/forms/fields/ComputedField.tsx), [DateField](../src/features/forms/fields/DateField.tsx), [MoneyField](../src/features/forms/fields/MoneyField.tsx), [NumberField](../src/features/forms/fields/NumberField.tsx), [RadioField](../src/features/forms/fields/RadioField.tsx), [TextField](../src/features/forms/fields/TextField.tsx), [TextareaField](../src/features/forms/fields/TextareaField.tsx), [UserRefField](../src/features/forms/fields/UserRefField.tsx)
-- **Paper view:** [PaperBlocks](../src/features/paper/PaperBlocks.tsx) with the centred *title* header + [SignOff](../src/features/paper/SignOff.tsx)
-- **Signers, in order:** Traveller (requested by) (`requesting_staff`) → Supervisor who proposed the mission (`director_dept`) → Costs entered by (Administrator) (`admin`) → Funding checked by (Accountant) (`accountant`) → Approved By (`pi`)
+- **Field components:** [TravellersField](../src/features/forms/fields/TravellersField.tsx), [ProgramRefField](../src/features/forms/fields/ProgramRefField.tsx), [BudgetLineRefField](../src/features/forms/fields/BudgetLineRefField.tsx), [CheckboxGroupField](../src/features/forms/fields/CheckboxGroupField.tsx), [ComputedField](../src/features/forms/fields/ComputedField.tsx), [DateField](../src/features/forms/fields/DateField.tsx), [MoneyField](../src/features/forms/fields/MoneyField.tsx), [NumberField](../src/features/forms/fields/NumberField.tsx), [RadioField](../src/features/forms/fields/RadioField.tsx), [TextField](../src/features/forms/fields/TextField.tsx), [TextareaField](../src/features/forms/fields/TextareaField.tsx), [UserRefField](../src/features/forms/fields/UserRefField.tsx)
+- **Paper view:** [PaperBlocks](../src/features/paper/PaperBlocks.tsx) with the centred *title* header
+- **Signers:** Requested & approved by (the creator) only. The clearance is complete at submit. One request for several travellers issues one clearance per traveller; each traveller is e-mailed their signed PDF.
 
 | Section | Field | Component |
 |---|---|---|
-| Traveller | Traveller | RadioField |
-|  | Issued to Mr/Mrs/Ms | UserRefField *(conditional)* |
-|  | Issued to Mr/Mrs/Ms (full name) | TextField *(conditional)* |
-|  | ID type | RadioField |
-|  | ID | TextField |
-|  | Account number | TextField |
-|  | Function | TextField |
-| Mission | 5. Program | TextField |
-|  | 6. Funding (budget line) | BudgetLineRefField |
+| Travellers | Travellers (type, staff member or name + e-mail, ID type, ID, account number, function; saved details filled in) | TravellersField |
+| Mission | 5. Program | ProgramRefField |
+|  | 6. Funding (Internal / External) | RadioField |
+|  | Budget line *(internal)* | BudgetLineRefField |
+|  | Funded by *(external)* | TextField |
 |  | 7. Expected results | TextareaField |
 |  | 8. Purpose of the mission | TextareaField |
 |  | 9. Supervisor who proposed the mission | UserRefField |
@@ -325,11 +321,11 @@ Each form below lists where it is opened, its field components, its paper view a
 |  | 13. Duration (days) | NumberField |
 |  | 14. Means of transport | CheckboxGroupField |
 |  | Issued at | TextField |
-| Mission Costs | 15. Mission allowance per day | MoneyField *(filled at signer `admin_costs`)* |
-|  | 16. Accommodation & incidental per day | MoneyField *(filled at signer `admin_costs`)* |
-|  | Transport cost (whole mission) | MoneyField *(filled at signer `admin_costs`)* |
-|  | Transport details | TextField *(filled at signer `admin_costs`)* |
-|  | 17. Total amount | ComputedField *(filled at signer `admin_costs`)* |
+| Mission Costs *(internal funding only)* | 15. Mission allowance & incidental per day | MoneyField |
+|  | 16. Accommodation per day | MoneyField |
+|  | Transport cost (whole mission) | MoneyField |
+|  | Transport details | TextField |
+|  | 17. Total amount | ComputedField |
 | Visa of Hosting Institution | Authorized Name, Signature & Stamp | TextareaField |
 |  | Arrival date | TextField |
 |  | Departure date | TextField |

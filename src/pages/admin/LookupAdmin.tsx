@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminApi } from '../../api/admin';
-import type { BudgetLine } from '../../api/types';
+import type { BudgetLine, TravellerProfile } from '../../api/types';
 import { formatNumber } from '../../lib/format';
 import { ApiError, errorMessage } from '../../api/client';
 import { Alert } from '../../ui/Alert';
@@ -31,18 +31,21 @@ interface CrudProps<T extends { id: string }> {
   title: string;
   queryKey: string;
   list: () => Promise<{ items: T[] }>;
-  create: (body: Record<string, unknown>) => Promise<unknown>;
+  /** absent: rows are added elsewhere (e.g. saved travellers come from submitted clearances) */
+  create?: (body: Record<string, unknown>) => Promise<unknown>;
   update: (id: string, body: Record<string, unknown>) => Promise<unknown>;
   fields: FieldSpec[];
   /** extra read-only list columns (e.g. budget used) */
   extraColumns?: { header: string; cell: (row: T) => string }[];
+  /** short explanation above the list */
+  intro?: string;
 }
 
 const cellText = (f: FieldSpec, v: unknown) =>
   v == null ? '' : f.type === 'number' ? formatNumber(Number(v)) : f.options?.find((o) => o.value === v)?.label ?? String(v);
 
 /** Generic list + create/edit modal used for departments, budget lines and suppliers. */
-function Crud<T extends { id: string }>({ title, queryKey, list, create, update, fields, extraColumns = [] }: CrudProps<T>) {
+function Crud<T extends { id: string }>({ title, queryKey, list, create, update, fields, extraColumns = [], intro }: CrudProps<T>) {
   const qc = useQueryClient();
   const toast = useToast();
   const q = useQuery({ queryKey: ['admin', queryKey], queryFn: list });
@@ -56,7 +59,7 @@ function Crud<T extends { id: string }>({ title, queryKey, list, create, update,
         if (f.createOnly && editing !== 'new') continue;
         body[f.key] = f.type === 'number' ? (values[f.key] === '' ? null : Number(values[f.key])) : values[f.key] ?? '';
       }
-      return editing === 'new' ? create(body) : update((editing as T).id, body);
+      return editing === 'new' && create ? create(body) : update((editing as T).id, body);
     },
     onSuccess: async () => {
       toast.success('Saved');
@@ -77,7 +80,8 @@ function Crud<T extends { id: string }>({ title, queryKey, list, create, update,
   if (q.error) return <ErrorState error={q.error} />;
   return (
     <div className="stack">
-      <div><Button variant="primary" onClick={() => open('new')}>Add {title}</Button></div>
+      {intro && <p className="muted" style={{ margin: 0 }}>{intro}</p>}
+      {create && <div><Button variant="primary" onClick={() => open('new')}>Add {title}</Button></div>}
       <DataTable
         rows={q.data?.items ?? []}
         rowKey={(r) => r.id}
@@ -160,5 +164,42 @@ export const SuppliersAdmin = () => (
       { key: 'email', label: 'Email', type: 'email' },
       { key: 'address', label: 'Address' },
     ]}
+  />
+);
+
+const ACTIVE_OPTIONS = [{ value: 'true', label: 'Active' }, { value: 'false', label: 'Hidden' }];
+
+export const ProgramsAdmin = () => (
+  <Crud
+    title="program"
+    queryKey="programs"
+    intro="Programs a travel clearance (TC-10) can name. Hide a program instead of deleting it: clearances that name it keep printing it."
+    list={adminApi.programs}
+    create={adminApi.createProgram}
+    update={adminApi.patchProgram}
+    fields={[
+      { key: 'name', label: 'Name' },
+      { key: 'active', label: 'Status', type: 'select', initial: 'true', options: ACTIVE_OPTIONS },
+    ]}
+  />
+);
+
+export const TravellersAdmin = () => (
+  <Crud
+    title="traveller"
+    queryKey="travellers"
+    intro="Saved details of people who travelled: filled in automatically on the next travel clearance, which is e-mailed to each traveller. They are saved when a clearance is submitted; correct or hide them here."
+    list={adminApi.travellers}
+    update={adminApi.patchTraveller as (id: string, body: Record<string, unknown>) => Promise<unknown>}
+    fields={[
+      { key: 'full_name', label: 'Name' },
+      { key: 'id_type', label: 'ID type', type: 'select', options: [{ value: 'rwanda_national_id', label: 'Rwanda national ID' }, { value: 'passport', label: 'Passport' }] },
+      { key: 'id_number', label: 'ID number' },
+      { key: 'account_number', label: 'Account number' },
+      { key: 'function', label: 'Function' },
+      { key: 'email', label: 'E-mail (external travellers; staff use their account e-mail)', type: 'email' },
+      { key: 'active', label: 'Status', type: 'select', options: ACTIVE_OPTIONS },
+    ]}
+    extraColumns={[{ header: 'Kind', cell: (t: TravellerProfile) => (t.traveller_type === 'external' ? 'External' : 'AfS staff') }]}
   />
 );

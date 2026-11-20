@@ -46,8 +46,10 @@ function documentParent(doc: { case_id: string | null; doc_type: string; request
 export function DocumentPage() {
   const { id = '' } = useParams();
   const docQ = useQuery({ queryKey: ['document', id], queryFn: () => documentsApi.get(id) });
+  // the version the document was made with: it is shown exactly as it was filled, signed and printed (archive included)
   const code = docQ.data?.template.code;
-  const tplQ = useQuery({ queryKey: ['template', code], queryFn: () => templatesApi.get(code!), enabled: !!code, staleTime: 5 * 60_000 });
+  const version = docQ.data?.template.version;
+  const tplQ = useQuery({ queryKey: ['template', code, version], queryFn: () => templatesApi.get(code!, { version }), enabled: !!code, staleTime: 5 * 60_000 });
 
   if (docQ.isLoading) return <PageSpinner />;
   if (docQ.error || !docQ.data) return <ErrorState error={docQ.error} />;
@@ -109,10 +111,13 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
       submitKey.current ??= newIdempotencyKey();
       return documentsApi.submit(doc.id, submitKey.current, signature);
     },
-    onSuccess: async () => {
+    onSuccess: async (res) => {
       submitKey.current = null;
       setSignOpen(false);
-      toast.success(ownSlot ? 'Signed and submitted' : submitsForOther ? `Submitted. ${requesterName} has been asked to sign first.` : 'Submitted for signing');
+      const many = res.issued_documents?.length ?? 0;
+      toast.success(many > 1 ? `Signed and submitted: ${many} travel clearances issued, one per traveller. Find them under Travel clearance.`
+        : ownSlot ? 'Signed and submitted' : submitsForOther ? `Submitted. ${requesterName} has been asked to sign first.` : 'Submitted for signing');
+      if (many > 1) void qc.invalidateQueries({ queryKey: ['documents'] });
       await refresh();
     },
     onError: (e: Error) => {
@@ -203,6 +208,13 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
           You are filling this form for <strong>{requesterName}</strong>. When you submit, they are asked to sign
           {' '}<strong>{requesterDef.label}</strong> first; then it goes to the next signers.
           {requesterField && <> To sign it yourself, set <strong>{requesterField.label}</strong> to your own name.</>}
+        </Alert>
+      )}
+      {!!doc.requester_blocked?.length && (
+        <Alert tone="info">
+          You requested this document, so you cannot sign its approval box
+          {doc.requester_blocked.length > 1 ? 'es' : ''}: <strong>{doc.slots.filter((s) => doc.requester_blocked!.includes(s.slot_key)).map((s) => s.label).join(', ')}</strong>.
+          {' '}Another person with that role signs it; the Accountant or an administrator can assign someone to the box.
         </Alert>
       )}
       {(doc.state === 'signed' || doc.state === 'archived') && (

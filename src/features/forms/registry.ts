@@ -15,6 +15,8 @@ import { FileField } from './fields/FileField';
 import { UserRefField } from './fields/UserRefField';
 import { SupplierRefField } from './fields/SupplierRefField';
 import { BudgetLineRefField } from './fields/BudgetLineRefField';
+import { ProgramRefField } from './fields/ProgramRefField';
+import { TravellersField } from './fields/TravellersField';
 import { ComputedField } from './fields/ComputedField';
 import { CaseRefField } from './fields/CaseRefField';
 
@@ -40,6 +42,7 @@ const registry: Record<string, FieldComponent> = {
   user_ref: UserRefField,
   supplier_ref: SupplierRefField,
   budget_line_ref: BudgetLineRefField,
+  program_ref: ProgramRefField,
   computed: ComputedField,
   case_ref: CaseRefField,
 };
@@ -48,8 +51,11 @@ export function registerField(type: string, component: FieldComponent) {
   registry[type] = component;
 }
 
-export function getFieldComponent(type: string): FieldComponent {
-  return registry[type] ?? TextField;
+/** Dedicated editors for some tables (FieldDef.widget). */
+const widgets: Record<string, FieldComponent> = { travellers: TravellersField };
+
+export function getFieldComponent(type: string, widget?: string): FieldComponent {
+  return (widget && widgets[widget]) || registry[type] || TextField;
 }
 
 /** Types that should span the full grid width. */

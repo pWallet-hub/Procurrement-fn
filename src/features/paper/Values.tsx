@@ -64,10 +64,12 @@ export function PaperValue({ field, value, ctx, compact }: { field: FieldDef; va
       return isEmpty(value) ? <Blank /> : <>{isMoney(value) ? paperMoney(value) : typeof value === 'number' ? paperNumber(value) : String(value)}</>;
     case 'user_ref':
     case 'supplier_ref':
-    case 'budget_line_ref': {
+    case 'budget_line_ref':
+    case 'program_ref': {
       if (isEmpty(value)) return <Blank />;
       const id = String(value);
-      const label = field.type === 'user_ref' ? ctx.refs.user(id) : field.type === 'supplier_ref' ? ctx.refs.supplier(id) : ctx.refs.budget(id);
+      const label = field.type === 'user_ref' ? ctx.refs.user(id) : field.type === 'supplier_ref' ? ctx.refs.supplier(id)
+        : field.type === 'program_ref' ? ctx.refs.program(id) : ctx.refs.budget(id);
       if (label) return <>{label}</>;
       return looksLikeId(id) ? <Blank /> : <>{id}</>; // never print a raw uuid on a form
     }

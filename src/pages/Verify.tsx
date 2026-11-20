@@ -13,6 +13,17 @@ const LABELS: Record<string, string> = {
   audit_chain: 'Audit trail is intact',
 };
 
+/** Why a verification failed, by the `failing` code the server returns. */
+function failure(code?: string): string {
+  if (!code) return 'This document could not be verified.';
+  if (code === 'content_hash') return 'The document content no longer matches the fingerprint taken when it was signed. Contact the administrator.';
+  if (code === 'pdf_hash') return 'The stored PDF does not match the signed fingerprint. The system redraws archived PDFs automatically; try again in a few minutes, and contact the administrator if it persists.';
+  if (code === 'pdf_unavailable') return 'The stored PDF could not be read right now (file storage unavailable). The document content itself is checked; try again later.';
+  if (code.startsWith('audit_event')) return `The audit trail is broken at entry ${code.split(' ')[1] ?? ''}. Contact the administrator.`;
+  if (code.includes('not been submitted')) return 'This document has not been submitted for signing yet, so there is nothing to verify.';
+  return `This document could not be verified: ${code}.`;
+}
+
 /** Public page behind the QR code on the PDF audit page. */
 export function Verify() {
   const { documentId = '' } = useParams();
@@ -27,7 +38,7 @@ export function Verify() {
               <div>
                 <h1>{q.data.ok ? 'Document verified' : 'Verification failed'}</h1>
                 <p className="muted" style={{ margin: 0 }}>
-                  {q.data.ok ? 'This document is authentic and has not been altered since it was signed.' : `This document could not be verified${q.data.failing ? `: ${q.data.failing}` : '.'}`}
+                  {q.data.ok ? 'This document is authentic and has not been altered since it was signed.' : failure(q.data.failing)}
                 </p>
               </div>
             </div>

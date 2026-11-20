@@ -32,9 +32,10 @@ function fmtValue(refs: RefLabels) {
       case 'money': return paperMoney(v);
       case 'number': return typeof v === 'number' ? paperNumber(v) : String(v);
       case 'select': case 'radio': return optionLabel(field, v);
-      case 'user_ref': case 'supplier_ref': case 'budget_line_ref': {
+      case 'user_ref': case 'supplier_ref': case 'budget_line_ref': case 'program_ref': {
         const id = String(v);
-        const label = field.type === 'user_ref' ? refs.user(id) : field.type === 'supplier_ref' ? refs.supplier(id) : refs.budget(id);
+        const label = field.type === 'user_ref' ? refs.user(id) : field.type === 'supplier_ref' ? refs.supplier(id)
+          : field.type === 'program_ref' ? refs.program(id) : refs.budget(id);
         return label ?? (looksLikeId(id) ? '' : id); // never print a raw uuid on a form
       }
       default:

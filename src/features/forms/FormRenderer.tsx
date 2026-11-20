@@ -82,7 +82,7 @@ export function FormRenderer({ template, data, onChange, errors = {}, hints = {}
           </details>
         )}
         {template.schema.sections.map((section) =>
-          evalCondition(section.visible_if, data) ? (
+          !section.hidden && evalCondition(section.visible_if, data) ? (
             <fieldset key={section.key} className="form-section">
               <legend className="form-section__title">{section.title}</legend>
               {section.description && <p className="form-section__desc">{fillPlaceholders(section.description, data)}</p>}
