@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ApiError, newIdempotencyKey } from '../api/client';
 import { documentsApi } from '../api/documents';
+import { lookupsApi } from '../api/lookups';
 import { templatesApi } from '../api/templates';
 import type { Doc } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
@@ -11,6 +12,7 @@ import { AuditTable } from '../features/documents/AuditTable';
 import { PdfPreview } from '../features/documents/PdfPreview';
 import { FormRenderer, SaveIndicator, useDocumentEditor } from '../features/forms';
 import { previewSlotComputed } from '../features/forms/computed';
+import { isVisible } from '../features/forms/conditions';
 import { PaperForm } from '../features/paper';
 import { SigningPanel } from '../features/signing/SigningPanel';
 import { SubmitSignModal, type SubmitSignature } from '../features/signing/SubmitSignModal';
@@ -81,11 +83,21 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
     }
   };
 
-  // The creator signs their own first box (Prepared / Requested by, Originating Staff, Traveller) as part of submitting.
+  // The requester's first box (Prepared / Requested by, Originating Staff, Traveller). The person filling the form is not
+  // always the requester: the form names them (Requested By, Originating staff, Issued to). When the submitter is the
+  // requester they sign as part of submitting; otherwise the named requester is asked to sign first after submit.
   const firstSeq = Math.min(...template.signature_slots.map((sl) => sl.seq));
-  const ownSlot = doc.created_by?.id === user?.id
-    ? template.signature_slots.find((sl) => sl.assign === 'creator' && sl.seq === firstSeq)
-    : undefined;
+  const requesterDef = template.signature_slots.find((sl) => sl.seq === firstSeq && (sl.assign === 'creator' || sl.assign?.startsWith('requester:')));
+  const requesterKey = requesterDef?.assign?.startsWith('requester:') ? requesterDef.assign.slice('requester:'.length) : null;
+  const requesterField = requesterKey ? template.schema.sections.flatMap((s) => s.fields).find((f) => f.key === requesterKey) : undefined;
+  const namedRequester = requesterField && isVisible(requesterField, editor.data) && typeof editor.data[requesterField.key] === 'string'
+    ? (editor.data[requesterField.key] as string) || null
+    : null;
+  const requesterId = requesterDef ? (namedRequester ?? doc.created_by?.id) : undefined;
+  const ownSlot = requesterDef && requesterId === user?.id ? requesterDef : undefined;
+  const submitsForOther = !!requesterDef && !ownSlot && doc.can.submit;
+  const usersQ = useQuery({ queryKey: ['lookups', 'users'], queryFn: lookupsApi.users, staleTime: 5 * 60_000, enabled: submitsForOther });
+  const requesterName = submitsForOther ? (usersQ.data?.items.find((u) => u.id === requesterId)?.full_name ?? 'the requester') : null;
   const [signOpen, setSignOpen] = useState(false);
   const [signError, setSignError] = useState<string | null>(null);
 
@@ -100,7 +112,7 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
     onSuccess: async () => {
       submitKey.current = null;
       setSignOpen(false);
-      toast.success(ownSlot ? 'Signed and submitted' : 'Submitted for signing');
+      toast.success(ownSlot ? 'Signed and submitted' : submitsForOther ? `Submitted. ${requesterName} has been asked to sign first.` : 'Submitted for signing');
       await refresh();
     },
     onError: (e: Error) => {
@@ -177,7 +189,7 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
           {editor.editable && <SaveIndicator status={editor.status} />}
           {doc.can.submit && (ownSlot
             ? <Button variant="primary" loading={submit.isPending} onClick={() => { setSignError(null); setSignOpen(true); }}><Icon name="edit" size={16} /> Sign &amp; submit</Button>
-            : <Button variant="primary" loading={submit.isPending} onClick={() => submit.mutate(undefined)}>Submit for signing</Button>)}
+            : <Button variant="primary" loading={submit.isPending} onClick={() => submit.mutate(undefined)}>{submitsForOther ? `Submit to ${requesterName}` : 'Submit for signing'}</Button>)}
           {doc.can.revise && <Button variant="primary" loading={revise.isPending} onClick={() => revise.mutate()}>Revise</Button>}
           {doc.can.edit_request && <Button onClick={() => setEditReqOpen(true)}>Request edit</Button>}
           {doc.can.cancel && <Button variant="danger" onClick={() => setCancelOpen(true)}>Cancel</Button>}
@@ -186,6 +198,13 @@ function DocumentView({ doc, template }: { doc: Doc; template: Template }) {
 
       {doc.state === 'returned' && doc.returned_reason && <Alert tone="warning">Returned: {doc.returned_reason}</Alert>}
       {submitError && editor.editable && <Alert tone="error"><strong>Not submitted.</strong> {submitError}</Alert>}
+      {submitsForOther && requesterDef && (
+        <Alert tone="info">
+          You are filling this form for <strong>{requesterName}</strong>. When you submit, they are asked to sign
+          {' '}<strong>{requesterDef.label}</strong> first; then it goes to the next signers.
+          {requesterField && <> To sign it yourself, set <strong>{requesterField.label}</strong> to your own name.</>}
+        </Alert>
+      )}
       {(doc.state === 'signed' || doc.state === 'archived') && (
         <Alert tone="success">
           This document is complete. <Link to={`/verify/${doc.id}`}>Verify authenticity</Link>

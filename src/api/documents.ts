@@ -2,8 +2,12 @@ import { api, apiBlob } from './client';
 import type { AuditEvent, Doc, Paginated, SignBody, SignResult } from './types';
 
 export interface DocListParams {
+  /** one form code, or several separated by commas */
   doc_type?: string;
+  /** one state, or several separated by commas (the archive asks for "signed,archived") */
   state?: string;
+  /** searches the request number, form code, title, the form's text and the creator's name */
+  q?: string;
   mine?: boolean;
   limit?: number;
   cursor?: string | null;

@@ -13,6 +13,7 @@ import { CaseDetail } from './pages/CaseDetail';
 import { DocumentPage } from './pages/DocumentPage';
 import { StandaloneList } from './pages/StandaloneList';
 import { StandaloneNew } from './pages/StandaloneNew';
+import { Archive } from './pages/Archive';
 import { Notifications } from './pages/Notifications';
 import { Audit } from './pages/Audit';
 import { Reports } from './pages/Reports';
@@ -51,6 +52,7 @@ export function App() {
           <Route path="memos/new" element={<StandaloneNew docType="IM-08" title="New memo (IM-08)" basePath="/memos" listLabel="memos" />} />
           <Route path="travel" element={<StandaloneList docType="TC-10" title="Travel clearances" noun="travel clearance" basePath="/travel" />} />
           <Route path="travel/new" element={<StandaloneNew docType="TC-10" title="New travel clearance (TC-10)" basePath="/travel" listLabel="travel clearances" />} />
+          <Route path="archive" element={<Archive />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="profile" element={<Profile />} />
           <Route path="help" element={<Help />} />

@@ -172,7 +172,8 @@ export interface SlotDef {
   seq: number;
   group?: string;
   declaration: string;
-  assign?: 'creator' | 'case_requester' | `field:${string}`;
+  /** `requester:<field>`: signed by the person picked in that user field (the requester), or the creator when it is empty */
+  assign?: 'creator' | 'case_requester' | `field:${string}` | `requester:${string}`;
   /** holders of this slot's role may fill its fill_at fields already in the draft (TC-10 costs by an administrator) */
   draft_fill?: boolean;
 }

@@ -29,6 +29,8 @@ const PATHS = {
   help: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01',
   activity: 'M22 12h-4l-3 9L9 3l-3 9H2',
   lock: 'M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zM7 11V7a5 5 0 0 1 10 0v4',
+  archive: 'M21 8v13H3V8M1 3h22v5H1zM10 12h4',
+  download: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3',
 } as const;
 
 export type IconName = keyof typeof PATHS;

@@ -25,6 +25,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { to: '/', label: 'My actions', icon: 'tasks', end: true },
       { to: '/cases', label: 'Procurement cases', icon: 'folder' },
+      { to: '/archive', label: 'Archive', icon: 'archive' },
       { to: '/notifications', label: 'Notifications', icon: 'bell' },
     ],
   },

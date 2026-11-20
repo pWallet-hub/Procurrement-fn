@@ -458,3 +458,7 @@ a.ov-tile:hover { border-color: var(--color-primary); color: var(--color-text); 
 .help-faq { display: flex; flex-direction: column; gap: var(--space-2); }
 .help-faq .collapse > summary { font-size: var(--text-base); padding: var(--space-3); }
 .help-faq .collapse__body p { margin: 0; }
+
+/* Archive: the form code as a small tag before the document title */
+.archive-doc { display: inline-flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
+.archive-doc__code { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--text-xs, 0.75rem); font-weight: 600; padding: 0.1rem 0.45rem; border-radius: var(--radius-sm, 4px); background: var(--color-surface-alt); color: var(--color-text-muted); white-space: nowrap; }
